@@ -8,12 +8,11 @@ class Entangler():
         IS_INVERSE_DEFINED: Set to be true when apply_inverse_gate() is implemented
     """
     n_parameter = -1
-    parameter = None
+    parameter = list()
     is_inversed = False
     IS_INVERSE_DEFINED = False
 
-    def __init__(self, identity, init_parameter):
-        self.parameter=[]
+    def __init__(self, init_parameter):
         return
 
     def apply(self, parameter, wavefunction):

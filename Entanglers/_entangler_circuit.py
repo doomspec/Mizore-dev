@@ -11,11 +11,10 @@ class EntanglerCircuit:
         n_qubit: Number of qubits in the circuit
     """
 
-    entangler_list = None
+    entangler_list = list()
     n_qubit = -1
 
     def __init__(self, n_qubit):
-        self.entangler_list=[]
         self.n_qubit = n_qubit
         return
 

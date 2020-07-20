@@ -5,8 +5,6 @@ This file provides the function to produce geometry object for the chemistry pac
 H2, LiH, H2O, N2 are provided.
 """
 
-equilibrium_geometry_dict={"H2":0.74,"LiH":1.4,"H2O":0.96,"N2":1.1}
-geometry_generator_dict={"H2":get_H2_geo,"LiH":get_LiH_geo,"H2O":get_H2O_geo,"N2":get_N2_geo}
 
 def get_H2_geo(bond_len):
     atom_1 = 'H'
@@ -105,3 +103,6 @@ def get_C2H2_geo(bond_len):
                 (atom_3, coordinate_3), (atom_4, coordinate_4)]
     return geometry
 
+
+equilibrium_geometry_dict={"H2":0.74,"LiH":1.4,"H2O":0.96,"N2":1.1}
+geometry_generator_dict={"H2":get_H2_geo,"LiH":get_LiH_geo,"H2O":get_H2O_geo,"N2":get_N2_geo}

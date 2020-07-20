@@ -7,8 +7,10 @@ class EntanglerPool:
     Attributes:
         entanglers: List of entanglers in the pool
     """
-    entanglers=[]
-    def __init__(self):
+    entanglers=list()
+    def __init__(self,init_entangler=None):
+        if init_entangler!=None:
+            self.entanglers.append(init_entangler)
         return
     def __iter__(self):
         return iter(self.entanglers)

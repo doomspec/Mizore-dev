@@ -1,5 +1,20 @@
 import itertools
 
+def iter_qsubset_pauli_of_operator(operator):
+    for pauli_and_coff in operator.get_operators():
+            for string_pauli in pauli_and_coff.terms:
+                if string_pauli!=():
+                    yield string_pauli2qsubset_pauli(string_pauli)
+
+def string_pauli2qsubset_pauli(string_pauli,make_imaginary=False):
+    qsubset=[]
+    pauli=[]
+    pauli_dict={'X':1,'Y':2,'Z':3}
+    for term in string_pauli:
+        qsubset.append(term[0])
+        pauli.append(pauli_dict[term[1]])
+    return qsubset,pauli
+    
 def is_contain_odd_Y(pauli):
     y_num = 0
     for i in pauli:
