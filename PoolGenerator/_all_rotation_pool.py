@@ -10,7 +10,6 @@ class AllRotationPool(BlockPool):
         d/dt <psi|e^{-iPt}He^{iPt}|psi> = 0,
         for all the state |psi>
     """
-    only_odd_Y_operators=True
     def __init__(self,n_qubit,max_length=-1,only_odd_Y_operators=True):
         self.only_odd_Y_operators=only_odd_Y_operators
         if max_length==-1:

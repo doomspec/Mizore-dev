@@ -7,10 +7,13 @@ class BlockPool:
     Attributes:
         blocks: List of blocks in the pool
     """
-    blocks=list()
+    
     def __init__(self,init_block=None):
+        self.blocks=[]
         if init_block!=None:
             self.blocks.append(init_block)
+        else:
+            self.blocks=[]
         return
     def __iter__(self):
         return iter(self.blocks)
@@ -19,4 +22,5 @@ class BlockPool:
         for block in self.blocks:
             info+=str(block)+"\n"
         return info
-        
+    def __iadd__(self,block):
+        self.blocks.append(block)

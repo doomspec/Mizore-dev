@@ -1,19 +1,18 @@
 from Blocks import Block
 from Utilities.Operations import generalized_rotation
 from Utilities.Tools import pauliword2string
-from projectq.ops import QubitOperator
+from openfermion.ops import QubitOperator
 from Utilities.Iterators import iter_qsubset_pauli_of_operator
 class MultiRotationEntangler(Block):
     """Entangler of the form: e^{iP_1 t_1} e^{iP_2 t_1} .. e^{iP_n t_n}
     Attributes:
         operator: Ops = sum_i a_i P_i
     """
-    n_parameter = -1
     IS_INVERSE_DEFINED = True
-    qsubset_pauliword_list = list()
 
     def __init__(self, operator:QubitOperator, init_angle=None):
-        n_parameter=0
+        Block.__init__(self,is_inversed=True)
+        self.is_inversed = True
         self.qsubset_pauliword_list=[]
         for qsubset,pauli in iter_qsubset_pauli_of_operator(operator):
             n_parameter+=1

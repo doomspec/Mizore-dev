@@ -11,11 +11,8 @@ class BlockCircuit:
         n_qubit: Number of qubits in the circuit
     """
 
-    block_list = list()
-    n_qubit = -1
-    init_operation=None
-
     def __init__(self, n_qubit):
+        self.block_list = []
         self.n_qubit = n_qubit
         return
 

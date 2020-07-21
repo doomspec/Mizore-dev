@@ -1,5 +1,6 @@
 class Objective:
-    obj_info={}
-    obj_type=""
+    
     def __init__(self):
+        self.obj_info={}
+        self.obj_type=""
         return

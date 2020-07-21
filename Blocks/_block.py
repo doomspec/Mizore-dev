@@ -7,12 +7,14 @@ class Block():
         is_inversed: If true, the function apply() will apply apply_inverse_gate() when called
         IS_INVERSE_DEFINED: Set to be true when apply_inverse_gate() is implemented
     """
-    n_parameter = -1
-    parameter = list()
-    is_inversed = False
+    
+    
     IS_INVERSE_DEFINED = False
 
-    def __init__(self, init_parameter):
+    def __init__(self,is_inversed=False,n_parameter=-1):
+        self.is_inversed = is_inversed
+        self.parameter=[]
+        self.n_parameter = n_parameter
         return
 
     def apply(self, parameter, wavefunction):

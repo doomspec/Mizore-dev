@@ -5,6 +5,9 @@ from openfermion.ops import QubitOperator
 from openfermionpyscf import run_pyscf
 from .Molecule._geometry_generator import geometry_generator_dict,equilibrium_geometry_dict
 from .Molecule._generate_HF_operation import get_dressed_operator,get_HF_operator,get_electron_fermion_operator
+from Objective._hamiltonian_obj import HamiltonianObjective
+from Blocks._HF_init_block import HartreeFockInitBlock
+from Utilities.Tools import get_operator_chain
 NOT_DEFINED=999999
 
 
@@ -38,14 +41,17 @@ def get_example_molecular_hamiltonian(molecule_name, geometry_info=NOT_DEFINED, 
 
     #qubit_electron_operator=fermi_qubit_transform(get_electron_fermion_operator(molecule.n_electrons))
     qubit_electron_operator=get_HF_operator(molecule.n_electrons,fermi_qubit_transform)
-    qubit_hamiltonian=get_dressed_operator(qubit_electron_operator,qubit_hamiltonian)
+    #qubit_hamiltonian=get_dressed_operator(qubit_electron_operator,qubit_hamiltonian)
 
     # Ignore terms in Hamiltonian that close to zero
     qubit_hamiltonian.compress()
     #print(qubit_hamiltonian)
     hamiltonian_info={"n_qubit":molecule.n_qubits,"start_energy":molecule.hf_energy,"terminate_energy":molecule.fci_energy}
 
-    return qubit_hamiltonian,hamiltonian_info
+    print(get_operator_chain(qubit_electron_operator))
+    init_operator=HartreeFockInitBlock(get_operator_chain(qubit_electron_operator))
+
+    return HamiltonianObjective(qubit_hamiltonian,molecule.n_qubits,init_operator,hamiltonian_info)
 
 
 def _get_example_qaoa_hamiltonian(problem, n_qubit):
