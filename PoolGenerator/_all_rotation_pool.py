@@ -11,13 +11,14 @@ class AllRotationPool(BlockPool):
         for all the state |psi>
     """
     def __init__(self,n_qubit,max_length=-1,only_odd_Y_operators=True):
+        BlockPool.__init__(self)
         self.only_odd_Y_operators=only_odd_Y_operators
         if max_length==-1:
             max_length=n_qubit
         
         if only_odd_Y_operators:
             for qsubset,pauli in iter_qsubset_odd_Y_pauli_by_length(max_length,range(n_qubit)):
-                self.blocks.append(RotationEntangler(qsubset,pauli))
+                self.blocks.add(RotationEntangler(qsubset,pauli))
         else:
             for qsubset,pauli in iter_all_qsubset_pauli_by_length(max_length,range(n_qubit)):
-                self.blocks.append(RotationEntangler(qsubset,pauli))
+                self.blocks.add(RotationEntangler(qsubset,pauli))

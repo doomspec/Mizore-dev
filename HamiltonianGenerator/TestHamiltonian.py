@@ -9,7 +9,7 @@ from Objective._hamiltonian_obj import HamiltonianObjective
 from Blocks._HF_init_block import HartreeFockInitBlock
 from Utilities.Tools import get_operator_chain
 NOT_DEFINED=999999
-
+CHEMICAL_ACCURACY=0.001
 
 
 def get_example_molecular_hamiltonian(molecule_name, geometry_info=NOT_DEFINED, fermi_qubit_transform=bravyi_kitaev):
@@ -45,10 +45,11 @@ def get_example_molecular_hamiltonian(molecule_name, geometry_info=NOT_DEFINED, 
 
     # Ignore terms in Hamiltonian that close to zero
     qubit_hamiltonian.compress()
-    #print(qubit_hamiltonian)
-    hamiltonian_info={"n_qubit":molecule.n_qubits,"start_energy":molecule.hf_energy,"terminate_energy":molecule.fci_energy}
 
-    print(get_operator_chain(qubit_electron_operator))
+    #Set the terminate_energy to be achieving the chemical accuracy
+    terminate_energy=molecule.fci_energy+CHEMICAL_ACCURACY 
+    hamiltonian_info={"n_qubit":molecule.n_qubits,"start_energy":molecule.hf_energy,"terminate_energy":terminate_energy}
+
     init_operator=HartreeFockInitBlock(get_operator_chain(qubit_electron_operator))
 
     return HamiltonianObjective(qubit_hamiltonian,molecule.n_qubits,init_operator,hamiltonian_info)

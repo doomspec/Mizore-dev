@@ -8,11 +8,11 @@ class QuasiImaginaryEvolutionRotationPool(BlockPool):
     The modification of Pauli words is to replace one Y by X or one X by Y.
     """
     def __init__(self,hamiltonian):
-        self.blocks=[]
+        BlockPool.__init__(self)
         for qsubset,pauli in iter_qsubset_pauli_of_operator(hamiltonian):
                 pauli=make_pauli_imaginary(pauli)
                 if pauli!=None:
-                    self.blocks.append(RotationEntangler(qsubset,pauli))
+                    self.blocks.add(RotationEntangler(qsubset,pauli))
     
 
 def make_pauli_imaginary(pauli):

@@ -28,22 +28,39 @@ class GreedyConstructor(CircuitConstructor):
     def run(self):
         print("Here is GreedyConstructor")
         print("Size of Block Pool:", len(self.block_pool.blocks))
-        # print(self.block_pool)
         self.init_energy = self.circuit.get_energy(self.hamiltonian)
         self.current_energy = self.init_energy
         print("Initial Energy:", self.init_energy)
         for layer in range(self.max_n_block):
-            self.add_one_block()
-            print(self.circuit)
+            if self.add_one_block():
+                # Succeed to add new block
+                print(self.circuit)
+                if self.when_terminate_energy_achieved!=-1:
+                    print("Target energy achieved by", self.when_terminate_energy_achieved," blocks!")
+                    print("Construction process ends!")
+                    return
+            else:
+                # Fail to add new block
+                return
         return
 
     def add_one_block(self):
+        """Try to add a new block
+        Return True is succeed, return False otherwise
+        """
         trial_result_list = self.do_trial_on_blocks()
         best_block = self.get_block_by_trial_result(trial_result_list)
-        self.circuit.add_block(best_block)
-        print("Block added, energy now is:", self.current_energy)
-        print(self.terminate_energy)
-        return
+        if best_block!=None:
+            self.circuit.add_block(best_block)
+            print("Block added, energy now is:", self.current_energy, "Hartree")
+            print("Distance to target energy:",self.current_energy-self.terminate_energy)
+            if self.current_energy<=self.terminate_energy:
+                self.when_terminate_energy_achieved=len(self.circuit.block_list)
+            return True
+        else:
+            print("No entangler in the pool provides a lower energy")
+            print("A larger pool is needed or Ground energy was achieved")
+            return False
 
     def do_trial_on_blocks(self):
         trial_result_list = []
@@ -58,6 +75,7 @@ class GreedyConstructor(CircuitConstructor):
         return trial_result_list
 
     def get_block_by_trial_result(self, trial_result_list):
+
         lowest_energy = NOT_DEFINED
         lowest_energy_index = -1
         for i in range(len(trial_result_list)):
@@ -65,7 +83,13 @@ class GreedyConstructor(CircuitConstructor):
                 lowest_energy = trial_result_list[i][0]
                 lowest_energy_index = i
         best_result = trial_result_list[lowest_energy_index]
-        new_block = copy(best_result[3])
-        new_block.parameter = best_result[2]
-        self.current_energy = best_result[0]
-        return new_block
+
+        # See whether the new entangler decreases the energy,
+        # otherwise return None
+        if best_result[1]>0: 
+            new_block = copy(best_result[3])
+            new_block.parameter = best_result[2]
+            self.current_energy = best_result[0]
+            return new_block
+        else:
+            return None

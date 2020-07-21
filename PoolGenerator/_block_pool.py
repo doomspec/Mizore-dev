@@ -9,11 +9,9 @@ class BlockPool:
     """
     
     def __init__(self,init_block=None):
-        self.blocks=[]
+        self.blocks=set()
         if init_block!=None:
-            self.blocks.append(init_block)
-        else:
-            self.blocks=[]
+            self.blocks.add(init_block)
         return
     def __iter__(self):
         return iter(self.blocks)
@@ -23,4 +21,4 @@ class BlockPool:
             info+=str(block)+"\n"
         return info
     def __iadd__(self,block):
-        self.blocks.append(block)
+        self.blocks.add(block)

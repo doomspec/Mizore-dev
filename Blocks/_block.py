@@ -46,3 +46,6 @@ class Block():
 
     def __str__(self):
         return self.basic_info_string()
+
+    def __hash__(self):
+        return self.__str__().__hash__()
