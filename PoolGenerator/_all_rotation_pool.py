@@ -1,9 +1,9 @@
-from PoolGenerator._entangler_pool import EntanglerPool
-from Entanglers._rotation_entangler import RotationEntangler
+from PoolGenerator._block_pool import BlockPool
+from Blocks._rotation_entangler import RotationEntangler
 from Utilities.Iterators import iter_qsubset_odd_Y_pauli_by_length,iter_all_qsubset_pauli_by_length
 
-class AllRotationPool(EntanglerPool):
-    """Entangler pool contains all the possible RotationEntangler.
+class AllRotationPool(BlockPool):
+    """Block pool contains all the possible RotationEntangler.
     Attributes:
         only_odd_Y_operators: If true, only RotationEntangler whose Pauli word only has odd number of Y operators will be added.
         Even Y entanglers are exclueded because they commute with Hamiltonian without imaginary terms (usually because of the absense of magnetic field), which means 
@@ -18,7 +18,7 @@ class AllRotationPool(EntanglerPool):
         
         if only_odd_Y_operators:
             for qsubset,pauli in iter_qsubset_odd_Y_pauli_by_length(max_length,range(n_qubit)):
-                self.entanglers.append(RotationEntangler(qsubset,pauli))
+                self.blocks.append(RotationEntangler(qsubset,pauli))
         else:
             for qsubset,pauli in iter_all_qsubset_pauli_by_length(max_length,range(n_qubit)):
-                self.entanglers.append(RotationEntangler(qsubset,pauli))
+                self.blocks.append(RotationEntangler(qsubset,pauli))

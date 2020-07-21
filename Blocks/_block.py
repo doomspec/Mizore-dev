@@ -1,9 +1,9 @@
 
-class Entangler():
-    """Base class of all the entanglers
+class Block():
+    """Base class of all the blocks
     
     Attributes:
-        parameter: The list of parameters of the parametried entangler
+        parameter: The list of parameters of the parametried block
         is_inversed: If true, the function apply() will apply apply_inverse_gate() when called
         IS_INVERSE_DEFINED: Set to be true when apply_inverse_gate() is implemented
     """

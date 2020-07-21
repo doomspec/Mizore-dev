@@ -1,10 +1,10 @@
-from Entanglers._entangler_circuit import EntanglerCircuit
+from Blocks._block_circuit import BlockCircuit
 from scipy.optimize import minimize, basinhopping
 from ParameterOptimizer.ObjWrapper import get_obj_for_optimizer
 from Utilities.Tools import random_list
-from Entanglers._parametrized_circuit import ParametrizedCircuit
+from Blocks._parametrized_circuit import ParametrizedCircuit
 
-def basinhopping_optimizer(pcircuit:ParametrizedCircuit, hamiltonian, random_initial=0, niter=10, temperature=0.5):
+def basinhopping_optimizer(pcircuit:ParametrizedCircuit, hamiltonian, random_initial=0.1, niter=10, temperature=0.5):
 
     initial_parameter=[0.0]*pcircuit.n_parameter
     

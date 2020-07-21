@@ -1,8 +1,8 @@
-from Entanglers import Entangler
+from Blocks import Block
 from Utilities.Operations import generalized_rotation
 from Utilities.Tools import pauliword2string
 
-class RotationEntangler(Entangler):
+class RotationEntangler(Block):
     """Entangler of the form: e^{iPt}
     Attributes:
         qsubset: The subset of qubits in the wavefunction that the entangler applies on

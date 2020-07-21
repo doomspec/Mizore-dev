@@ -1,11 +1,14 @@
 from projectq.ops import H, X, All, Measure, CNOT, Z, Rz, Rx, C
 import math
 
+def apply_X_gates(qsubset,wavefunction):
+    for i in qsubset:
+        X | wavefunction[i]
 
 def generalized_rotation(wavefunction, qsubset, pauliword, evolution_time):
     """Apply e^{iPt} on the wavefunction
     Args:
-        qsubset: The subset of qubits in the wavefunction that the entangler applies on
+        qsubset: The subset of qubits in the wavefunction that the operation applies on
         pauliword: The Pauli word P in e^{iPt}
         evolution_time: t in e^{iPt}
     """

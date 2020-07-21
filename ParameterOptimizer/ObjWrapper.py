@@ -10,7 +10,7 @@ from projectq.cengines import (MainEngine,
                                TagRemover,
                                DecompositionRuleSet)
 import projectq.setups.decompositions
-from Entanglers._parametrized_circuit import ParametrizedCircuit
+from Blocks._parametrized_circuit import ParametrizedCircuit
 
 
 def get_obj_for_optimizer(pcircuit: ParametrizedCircuit, hamiltonian):

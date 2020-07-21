@@ -1,11 +1,11 @@
-from Entanglers._entangler_circuit import EntanglerCircuit
+from Blocks._block_circuit import BlockCircuit
 from multiprocessing import Process
 NOT_DEFINED = 999999
 
 class CircuitConstructor(Process):
 
-    entangler_pool=None
-    circuit:EntanglerCircuit=None
+    block_pool=None
+    circuit:BlockCircuit=None
     init_energy = NOT_DEFINED
     terminate_energy = -NOT_DEFINED
     when_terminate_energy_achieved = -1

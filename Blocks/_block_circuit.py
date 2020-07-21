@@ -1,56 +1,57 @@
-from Entanglers._entangler import Entangler
-from Entanglers._parametrized_circuit import ParametrizedCircuit
+from Blocks._block import Block
+from Blocks._parametrized_circuit import ParametrizedCircuit
 from ParameterOptimizer.ObjWrapper import evaluate_circuit_energy
 from copy import copy
 
-class EntanglerCircuit:
-    """Circuit consists of entanglers
+class BlockCircuit:
+    """Circuit consists of blocks
     This class provides functions to produce ParametrizedCircuit for parameter optimizers to process. The users can easily fix some parameters while make the others adjustable.
     Attributes:
-        entangler_list: The list of entanglers contained in the circuit
+        block_list: The list of blocks contained in the circuit
         n_qubit: Number of qubits in the circuit
     """
 
-    entangler_list = list()
+    block_list = list()
     n_qubit = -1
+    init_operation=None
 
     def __init__(self, n_qubit):
         self.n_qubit = n_qubit
         return
 
-    def add_entangler(self, entangler: Entangler):
-        self.entangler_list.append(entangler)
+    def add_block(self, block: Block):
+        self.block_list.append(block)
 
     def count_n_parameter_by_position_list(self, position_list):
         n_parameter = 0
         for i in position_list:
-            n_parameter += self.entangler_list[i].n_parameter
+            n_parameter += self.block_list[i].n_parameter
         return n_parameter
 
     def get_ansatz_by_position_list(self, position_list):
         """Return a ParametrizedCircuit with certain parameter adjustable
         Args:
-            position_list: contains the indices of the entangler_list where the entangler's parameter is adjustable
+            position_list: contains the indices of the block_list where the block's parameter is adjustable
         """
         def ansatz(parameter, wavefunction):
             para_index = 0
-            for i in range(len(self.entangler_list)):
-                entangler: Entangler = self.entangler_list[i]
+            for i in range(len(self.block_list)):
+                block: Block = self.block_list[i]
                 if i in position_list:
-                    entangler.apply(
-                        parameter[para_index:para_index+entangler.n_parameter], wavefunction)
-                    para_index += entangler.n_parameter
+                    block.apply(
+                        parameter[para_index:para_index+block.n_parameter], wavefunction)
+                    para_index += block.n_parameter
                 else:
-                    entangler.apply(
-                        [0.0]*entangler.n_parameter, wavefunction)
+                    block.apply(
+                        [0.0]*block.n_parameter, wavefunction)
         return ParametrizedCircuit(ansatz,self.n_qubit,self.count_n_parameter_by_position_list(position_list))
 
-    def get_ansatz_last_entangler(self):
-        position_list = [len(self.entangler_list)-1]
+    def get_ansatz_last_block(self):
+        position_list = [len(self.block_list)-1]
         return self.get_ansatz_by_position_list(position_list)
 
     def get_ansatz(self):
-        position_list = range(len(self.entangler_list))
+        position_list = range(len(self.block_list))
         return self.get_ansatz_by_position_list(position_list)
 
     def get_fixed_parameter_ansatz(self):
@@ -61,18 +62,18 @@ class EntanglerCircuit:
         return evaluate_circuit_energy([],self.n_qubit,hamiltonian,ansatz)
     
     def duplicate(self):
-        copy_circuit=EntanglerCircuit(self.n_qubit)
-        for entangler in self.entangler_list:
-            copy_circuit.add_entangler(entangler)
+        copy_circuit=BlockCircuit(self.n_qubit)
+        for block in self.block_list:
+            copy_circuit.add_block(block)
         return copy_circuit
 
     def __str__(self):
         info=""
-        if len(self.entangler_list)!=0:
-            info+="Entangler Num:"+str(len(self.entangler_list))+"; Qubit Num:"+str(self.n_qubit)+"\n"
-            info+="Entangler list:"+"\n"
-            for entangler in self.entangler_list:
-                info+=str(entangler)+"\n"
+        if len(self.block_list)!=0:
+            info+="Block Num:"+str(len(self.block_list))+"; Qubit Num:"+str(self.n_qubit)+"\n"
+            info+="Block list:"+"\n"
+            for block in self.block_list:
+                info+=str(block)+"\n"
         else:
             info+="This is an Empty circuit. Qubit Num:"+str(self.n_qubit)+"\n"
         return info
