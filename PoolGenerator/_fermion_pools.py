@@ -98,13 +98,12 @@ def uccgsd_generator(n_qubit, packed_amplitudes, anti_hermitian=True):
     return generator
 
 
-def upccgsd_pool(n_qubit, packed_amplitudes=None, hamiltonian=QubitOperator(()), fermi_qubit_transform=bravyi_kitaev):
+def upccgsd_pool(n_qubit, packed_amplitudes=None, fermi_qubit_transform=bravyi_kitaev):
     """Pools proposed in J. Chem. Theory Comput. 2018, 15, 311–324., also called k-UpCCGSD.
     Operators are single and pair double unitary excitation operators.
     Args:
         n_qubit: number of qubits to generate excitation operators
         packed_amplitudes: variational parameters, defaul all 0
-        hamiltonian: if or not only choose excitations from hamiltonian
         fermi_qubit_transform: transformation, default bravyi_kitaev
     Return:
         Class MultiRotationEntangler with attribute QubitOperator
@@ -113,8 +112,8 @@ def upccgsd_pool(n_qubit, packed_amplitudes=None, hamiltonian=QubitOperator(()),
     if packed_amplitudes==None:
         packed_amplitudes = [0.0]*n_parameters
 
-    if hamiltonian == QubitOperator(()):
-        hamiltonian = fermi_qubit_transform(upccgsd_generator(n_qubit, packed_amplitudes))
+    hamiltonian = fermi_qubit_transform(upccgsd_generator(n_qubit, packed_amplitudes))
+    
     return MultiRotationEntangler(hamiltonian)
 
 def get_upccgsd_parameter_number(n_qubit):
