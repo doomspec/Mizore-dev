@@ -1,7 +1,6 @@
 from Blocks._block import Block
 from Blocks._parametrized_circuit import ParametrizedCircuit
-from ParameterOptimizer.ObjWrapper import evaluate_circuit_energy
-from copy import copy
+from copy import copy,deepcopy
 
 class BlockCircuit:
     """Circuit consists of blocks
@@ -25,6 +24,10 @@ class BlockCircuit:
         for i in position_list:
             n_parameter += self.block_list[i].n_parameter
         return n_parameter
+    
+    def count_n_parameter(self):
+        position_list = list(range(len(self.block_list)))
+        return self.count_n_parameter_by_position_list(position_list)
 
     def get_ansatz_by_position_list(self, position_list):
         """Return a ParametrizedCircuit with certain parameter adjustable
@@ -54,21 +57,46 @@ class BlockCircuit:
     def set_only_last_block_active(self):
         self.active_position_list = [len(self.block_list)-1]
 
+    def get_active_n_parameter(self):
+        return self.count_n_parameter_by_position_list(self.active_position_list)
+
     def get_ansatz(self):
-        position_list = range(len(self.block_list))
+        position_list = list(range(len(self.block_list)))
         return self.get_ansatz_by_position_list(position_list)
 
     def get_fixed_parameter_ansatz(self):
         return self.get_ansatz_by_position_list([]).ansatz
 
-    def get_energy(self, hamiltonian):
-        ansatz = self.get_fixed_parameter_ansatz()
-        return evaluate_circuit_energy([],self.n_qubit,hamiltonian,ansatz)
+    def adjust_parameter_by_postion(self,adjust_value,position):
+        n_parameter = 0
+        block_postion=0
+        in_block_position=0
+        for i in range(len(self.block_list)):
+            n_parameter += self.block_list[i].n_parameter
+            if n_parameter>position:
+                block_postion=i
+                in_block_position=self.block_list[i].n_parameter-n_parameter+position
+                break
+        self.block_list[block_postion].parameter[in_block_position]+=adjust_value
+        return
+
+    def adjust_parameter_by_list(self,adjust_list):
+
+        if len(adjust_list)!=self.count_n_parameter():
+            raise Exception(
+                    "The number of parameters provided does not match the circuit!")
+        para_index_begin = 0
+        for block_postion in range(len(self.block_list)):
+            n_block_para=self.block_list[block_postion].n_parameter
+            for in_block_position in range(n_block_para):
+                self.block_list[block_postion].parameter[in_block_position]+=adjust_list[para_index_begin+in_block_position]
+            para_index_begin+=n_block_para
+        return
     
     def duplicate(self):
         copy_circuit=BlockCircuit(self.n_qubit)
         for block in self.block_list:
-            copy_circuit.add_block(block)
+            copy_circuit.add_block(deepcopy(block))
         return copy_circuit
 
     def __str__(self):

@@ -6,7 +6,8 @@ from copy import copy, deepcopy
 from Blocks._utilities import *
 from Objective._hamiltonian_obj import HamiltonianObjective
 from ParallelTaskRunner import TaskManager,OptimizationTask
-from ParameterOptimizer import BasinhoppingOptimizer
+from ParameterOptimizer import BasinhoppingOptimizer,ImaginaryTimeEvolutionOptimizer
+from Blocks._utilities import get_inner_two_circuit_product,get_circuit_energy
 NOT_DEFINED=999999
 class GreedyConstructor(CircuitConstructor):
 
@@ -36,7 +37,7 @@ class GreedyConstructor(CircuitConstructor):
     def run(self):
         print("Here is GreedyConstructor")
         print("Size of Block Pool:", len(self.block_pool.blocks))
-        self.init_energy = self.circuit.get_energy(self.hamiltonian)
+        self.init_energy = get_circuit_energy(self.circuit,self.hamiltonian)
         self.current_energy = self.init_energy
         print("Initial Energy:", self.init_energy)
         #print(self.block_pool)
@@ -81,7 +82,8 @@ class GreedyConstructor(CircuitConstructor):
             trial_circuit = self.circuit.duplicate()
             trial_circuit.add_block(block)
             trial_circuit.set_only_last_block_active()
-            task=OptimizationTask(trial_circuit,BasinhoppingOptimizer(),self.hamiltonian)
+            #task=OptimizationTask(trial_circuit,BasinhoppingOptimizer(),self.hamiltonian)
+            task=OptimizationTask(trial_circuit,ImaginaryTimeEvolutionOptimizer(),self.hamiltonian)
             self.task_manager.add_task(task,task_series_id=self.id)
         
         res_list=self.task_manager.receive_task_result(task_series_id=self.id)

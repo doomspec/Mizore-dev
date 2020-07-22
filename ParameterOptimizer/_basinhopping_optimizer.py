@@ -1,7 +1,6 @@
 from scipy.optimize import minimize, basinhopping
 from ParameterOptimizer.ObjWrapper import get_obj_for_optimizer
 from Utilities.Tools import random_list
-from Blocks._parametrized_circuit import ParametrizedCircuit
 from ParameterOptimizer import ParameterOptimizer
 
 
@@ -16,7 +15,9 @@ class BasinhoppingOptimizer(ParameterOptimizer):
         self.stepsize = stepsize
         self.tol = tol
 
-    def run_optimization(self, pcircuit: ParametrizedCircuit, hamiltonian):
+    def run_optimization(self, circuit, hamiltonian):
+
+        pcircuit=circuit.get_ansatz_on_active_position()
 
         initial_parameter = [0.0]*pcircuit.n_parameter
 

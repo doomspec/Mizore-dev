@@ -1,4 +1,4 @@
-from Blocks._block_circuit import BlockCircuit
+from ._block_circuit import BlockCircuit
 from copy import copy
 
 
@@ -25,3 +25,23 @@ def get_inverse_circuit(circuit: BlockCircuit):
         reversed_block.is_inversed = True
         new_circuit.add_block(reversed_block)
     return new_circuit
+
+def get_inner_two_circuit_product(first_circuit: BlockCircuit, second_circuit: BlockCircuit):
+    """
+    Return <0...00|circuit(second)^ circuit(first)|0...00>
+    """
+    from Utilities.CircuitEvaluation import evaluate_circuit_0000_amplitudes
+
+    circuit = concatenate_circuit(
+        first_circuit, get_inverse_circuit(second_circuit))
+    
+    ansatz = circuit.get_fixed_parameter_ansatz()
+    amp_0000 = evaluate_circuit_0000_amplitudes(first_circuit.n_qubit, ansatz)
+    #print(amp_0000,circuit)
+    return amp_0000
+
+
+def get_circuit_energy(circuit, hamiltonian):
+    from ParameterOptimizer.ObjWrapper import evaluate_circuit_energy
+    ansatz = circuit.get_fixed_parameter_ansatz()
+    return evaluate_circuit_energy([],circuit.n_qubit,hamiltonian,ansatz)

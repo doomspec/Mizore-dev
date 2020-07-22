@@ -13,6 +13,5 @@ class OptimizationTask(Task):
         self.hamiltonian = hamiltonian
 
     def run(self):
-        pcircuit = self.circuit.get_ansatz_on_active_position()
-        res = self.optimizer.run_optimization(pcircuit, self.hamiltonian)
+        res = self.optimizer.run_optimization(self.circuit, self.hamiltonian)
         return res

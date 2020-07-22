@@ -13,6 +13,7 @@ class MultiRotationEntangler(Block):
     def __init__(self, operator:QubitOperator, init_angle=None):
         Block.__init__(self)
         self.qsubset_pauliword_list=[]
+        n_parameter=0
         for qsubset,pauli in iter_qsubset_pauli_of_operator(operator):
             n_parameter+=1
             self.qsubset_pauliword_list.append((qsubset,pauli))
@@ -38,6 +39,8 @@ class MultiRotationEntangler(Block):
     def __str__(self):
         info=self.basic_info_string()
         info+="; N Rotation:"+str(len(self.qsubset_pauliword_list))
+        info+="; "+str(self.parameter)
+
         #info+="; Qsubset:"+str(self.qsubset)
         #info+="; Pauli:"+pauliword2string(self.pauliword)
         return info

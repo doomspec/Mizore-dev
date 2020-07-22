@@ -1,3 +1,3 @@
 x={123:321}
 x[32]=1
-print(x[32],id(x))
+print(bool(int(1)))
