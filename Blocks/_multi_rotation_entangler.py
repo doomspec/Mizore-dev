@@ -11,8 +11,7 @@ class MultiRotationEntangler(Block):
     IS_INVERSE_DEFINED = True
 
     def __init__(self, operator:QubitOperator, init_angle=None):
-        Block.__init__(self,is_inversed=True)
-        self.is_inversed = True
+        Block.__init__(self)
         self.qsubset_pauliword_list=[]
         for qsubset,pauli in iter_qsubset_pauli_of_operator(operator):
             n_parameter+=1

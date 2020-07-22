@@ -6,7 +6,7 @@ from openfermionpyscf import run_pyscf
 from .Molecule._geometry_generator import geometry_generator_dict,equilibrium_geometry_dict
 from .Molecule._generate_HF_operation import get_dressed_operator,get_HF_operator,get_electron_fermion_operator
 from Objective._hamiltonian_obj import HamiltonianObjective
-from Blocks._HF_init_block import HartreeFockInitBlock
+from Blocks import HartreeFockInitBlock
 from Utilities.Tools import get_operator_chain
 NOT_DEFINED=999999
 CHEMICAL_ACCURACY=0.001
@@ -79,7 +79,7 @@ def get_maxcut(n_qubit):
         for j in range(i):
             hamiltonian += coeff*QubitOperator("Z"+str(i)+" Z"+str(j))
     hamiltonian_info={"n_qubit":n_qubit}
-    return hamiltonian,hamiltonian_info
+    return HamiltonianObjective(hamiltonian,n_qubit,None,hamiltonian_info)
 
 
 def get_tsp(n_qubit):
@@ -94,6 +94,6 @@ def get_tsp(n_qubit):
                 hamiltonian += coeff * \
                     QubitOperator("Z"+str(i*n_qubit+s)+"Z"+str(j*n_qubit+s+1))
     hamiltonian_info={"n_qubit":n_qubit}
-    return hamiltonian,hamiltonian_info
+    return HamiltonianObjective(hamiltonian,n_qubit,None,hamiltonian_info)
 
 

@@ -8,10 +8,13 @@ class BlockPool:
         blocks: List of blocks in the pool
     """
     
-    def __init__(self,init_block=None):
+    def __init__(self,init_block=None,block_iter=None):
         self.blocks=set()
         if init_block!=None:
             self.blocks.add(init_block)
+        if block_iter!=None:
+            for block in block_iter:
+                self.blocks.add(block)
         return
     def __iter__(self):
         return iter(self.blocks)
