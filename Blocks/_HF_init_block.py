@@ -7,9 +7,9 @@ class HartreeFockInitBlock(Block):
     """
     n_parameter = 0
     IS_INVERSE_DEFINED = True
-    qsubset = None
 
     def __init__(self, qsubset, init_angle=0):
+        Block.__init__(self,n_parameter=0)
         self.qsubset = qsubset
 
     def apply_forward_gate(self, parameter, wavefunction):

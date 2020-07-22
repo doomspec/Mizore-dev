@@ -11,12 +11,10 @@ class BlockCircuit:
         n_qubit: Number of qubits in the circuit
     """
 
-    block_list = list()
-    n_qubit = -1
-    init_operation=None
-
     def __init__(self, n_qubit):
+        self.block_list = []
         self.n_qubit = n_qubit
+        self.active_position_list=[]
         return
 
     def add_block(self, block: Block):
@@ -46,9 +44,15 @@ class BlockCircuit:
                         [0.0]*block.n_parameter, wavefunction)
         return ParametrizedCircuit(ansatz,self.n_qubit,self.count_n_parameter_by_position_list(position_list))
 
+    def get_ansatz_on_active_position(self):
+        return self.get_ansatz_by_position_list(self.active_position_list)
+
     def get_ansatz_last_block(self):
         position_list = [len(self.block_list)-1]
         return self.get_ansatz_by_position_list(position_list)
+
+    def set_only_last_block_active(self):
+        self.active_position_list = [len(self.block_list)-1]
 
     def get_ansatz(self):
         position_list = range(len(self.block_list))
