@@ -77,7 +77,7 @@ def build_graph():
 def main():
     graph = build_graph()
     maxcut, solution_set = solve_maxcut_by_exhaustive_search(graph)
-    print maxcut, solution_set
+    print (maxcut, solution_set)
 
 
 if __name__ == '__main__':
