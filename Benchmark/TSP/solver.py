@@ -1,6 +1,7 @@
 import random
 import itertools
-from Benchmark.TSP.city import City
+from Benchmark.graph import Graph
+from Benchmark.node import Node
 
 
 def sim_annealing(cities, start, epoch=5000):
@@ -38,7 +39,7 @@ def gen_rand_path(cities, start):
         current_city = random.choice([a for a in current_city.neighbors if a not in path])
 
         # Calculate total distance
-        tot_dist += prev_city.find_distance(current_city)
+        tot_dist += prev_city.find_weight(current_city)
 
         # Append current city to path
         path.append(current_city)
@@ -59,9 +60,10 @@ def brute_force(cities, start):
             # valid path
             if not cur_city.has_neighbor(next_city):
                 return 0xFFFFFFFFFFFFF
-            cost += cur_city.find_distance(next_city)
+            cost += cur_city.find_weight(next_city)
         return cost
 
+    # brute force iteration
     for path in itertools.permutations(cities):
         if path[0] != start:
             continue
@@ -74,28 +76,26 @@ def brute_force(cities, start):
 
 
 def build_cities():
-    # simple testcase
-    rv = City("RV")
-    s = City("S")
-    ul = City("UL")
-    m = City("M")
-    rv.add_neighbor(s, 195)
-    rv.add_neighbor(ul, 86)
-    rv.add_neighbor(m, 178)
-    s.add_neighbor(rv, 195)
-    s.add_neighbor(ul, 107)
-    s.add_neighbor(m, 230)
-    ul.add_neighbor(rv, 86)
-    ul.add_neighbor(s, 107)
-    ul.add_neighbor(m, 123)
-    m.add_neighbor(rv, 178)
-    m.add_neighbor(s, 230)
-    m.add_neighbor(ul, 123)
-    return [rv, s, ul, m]
+    # simple test case
+    graph = Graph()
+    graph.add_edge("RV", "UL", 86)
+    graph.add_edge("UL", "RV", 86)
+    graph.add_edge('RV', 'S', 195)
+    graph.add_edge('S', 'RV', 195)
+    graph.add_edge('RV', 'M', 178)
+    graph.add_edge('M', 'RV', 178)
+    graph.add_edge("UL", "S", 107)
+    graph.add_edge("S", "UL", 107)
+    graph.add_edge("UL", "M", 123)
+    graph.add_edge("M", "UL", 123)
+    graph.add_edge("S", "M", 230)
+    graph.add_edge("M", "S", 230)
+    return graph
 
 
 def main():
-    cities = build_cities()
+    graph = build_cities()
+    cities = list(graph.nodes)
     start = random.choice(cities)
     short_route_sa, tot_dist_sa = sim_annealing(cities, start)
     short_route_bf, tot_dist_bf = brute_force(cities, start)
