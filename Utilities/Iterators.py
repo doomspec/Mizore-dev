@@ -1,21 +1,28 @@
 import itertools
 
 def iter_qsubset_pauli_of_operator(operator):
-    for pauli_and_coff in operator.get_operators():
-            for string_pauli in pauli_and_coff.terms:
+    for pauli_and_coeff in operator.get_operators():
+            for string_pauli in pauli_and_coeff.terms:
                 if string_pauli!=():
                     yield string_pauli2qsubset_pauli(string_pauli)
 
+def iter_coeff_qsubset_pauli_of_operator(operator):
+    for pauli_and_coeff in operator.get_operators():
+            for string_pauli in pauli_and_coeff.terms:
+                if string_pauli!=():
+                    coeff=pauli_and_coeff.terms[string_pauli]
+                    yield [coeff].extend(string_pauli2qsubset_pauli(string_pauli))
+
 def iter_terms_in_fermion_operator(operator):
     from openfermion.ops import FermionOperator
-    for pauli_and_coff in operator.get_operators():
-            for string_pauli in pauli_and_coff.terms:
+    for pauli_and_coeff in operator.get_operators():
+            for string_pauli in pauli_and_coeff.terms:
                     yield FermionOperator(string_pauli)
 
 def iter_terms_in_qubit_operator(operator):
     from openfermion.ops import QubitOperator
-    for pauli_and_coff in operator.get_operators():
-            for string_pauli in pauli_and_coff.terms:
+    for pauli_and_coeff in operator.get_operators():
+            for string_pauli in pauli_and_coeff.terms:
                     yield QubitOperator(string_pauli)
 
 def string_pauli2qsubset_pauli(string_pauli,make_imaginary=False):

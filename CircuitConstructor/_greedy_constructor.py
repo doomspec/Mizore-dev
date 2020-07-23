@@ -15,7 +15,7 @@ class GreedyConstructor(CircuitConstructor):
 
     gradiant_cutoff = 1e-9
 
-    def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, task_manager: TaskManager = None):
+    def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None):
 
         CircuitConstructor.__init__(self)
 
@@ -27,6 +27,7 @@ class GreedyConstructor(CircuitConstructor):
         self.hamiltonian = hamiltonian_obj.hamiltonian
         self.circuit.add_block(hamiltonian_obj.init_block)
         self.id = id(self)
+        self.optimizer=optimizer
 
         if "terminate_energy" in hamiltonian_obj.obj_info.keys():
             self.terminate_energy = hamiltonian_obj.obj_info["terminate_energy"]
@@ -88,9 +89,7 @@ class GreedyConstructor(CircuitConstructor):
             trial_circuit = self.circuit.duplicate()
             trial_circuit.add_block(block)
             trial_circuit.set_only_last_block_active()
-            task=OptimizationTask(trial_circuit,BasinhoppingOptimizer(),self.hamiltonian)
-            #task = OptimizationTask(
-             #   trial_circuit, ImaginaryTimeEvolutionOptimizer(), self.hamiltonian)
+            task=OptimizationTask(trial_circuit,optimizer,self.hamiltonian)
             self.task_manager.add_task(task, task_series_id=self.id)
 
         res_list = self.task_manager.receive_task_result(
