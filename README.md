@@ -1,6 +1,9 @@
 # Mizore
+![image](https://github.com/doomspec/Mizore/blob/master/mizore_icon.png)
 
-Mizore is an open source effort for quantum computing which focus on adaptive construction of the unitary that create the ground state of certain Hamiltonian.
+Mizore is an open source effort for quantum computing which focus on adaptive construction of the quantum circuit for certain objective. Currently, Mizore focus on finding the quantum circuit that produce the ground state of a certain Hamiltonian by the Variational Quantum Eigensolver (VQE) approach. 
+
+Mizore focus on providing a framework for adpative VQE described in [J. Chem. Theory Comput. 2020, 16, 2](https://pubs.acs.org/doi/abs/10.1021/acs.jctc.9b01084) and [Nat Commun 10, 3007 (2019)](https://www.nature.com/articles/s41467-019-10988-2), where the structure of the parameterized circuit can be optimized, differing from traditional VQE which uses a fixed parameterized circuit and only adjusts the parameter.
 
 ## Setup
 It is very simple to setup Mizore in your computer.
