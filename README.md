@@ -1,5 +1,5 @@
 # Mizore
-![image](https://github.com/doomspec/Mizore/blob/master/mizore_icon.png)
+<img src="https://github.com/doomspec/Mizore/blob/master/mizore_icon.png" width="30%" align="left" />
 
 Mizore is an open source effort for quantum computing which focus on adaptive construction of the quantum circuit for certain objective. Currently, Mizore focus on finding the quantum circuit that produce the ground state of a certain Hamiltonian by the Variational Quantum Eigensolver (VQE) approach. 
 
@@ -44,4 +44,4 @@ constructor.terminate()
 Zi-Jian Zhang, Jia-Qi Hu and Yi Liu from Southern University of Science and Technology (SUSTech, Shenzhen, China)
 
 ## The meaning of Mizore
-Mizore is a Japanese word means sleet in English. Sleet contains both water and ice. Water is like parameter which can be adjusted continuously and ice is like blocks.
+霙 is a east-asian word reads *mizore* in Japanese and *ying* in Chinese. Mizore means sleet in English. The parameters in the circuit is like water because they can be adjusted continuously and the blocks in the circuit is like ice because they have fixed shape. In adaptive circuit construction, the blocks and parameters in the circuit are both optimized. Therefore, it is like sleet which contains both water and ice.
