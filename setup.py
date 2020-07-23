@@ -8,5 +8,12 @@ setuptools.setup(
     packages=setuptools.find_namespace_packages(),
     install_requires=[
         'numpy>=1.18.1',
+        "openfermion",
+        "projectq",
+        "openfermionpyscf",
+        "pyscf",
+        "multiprocess",
+        "numpy",
+        "scipy"
     ]
 )
