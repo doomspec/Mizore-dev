@@ -28,7 +28,7 @@ from mizore.PoolGenerator import BlockPool,all_rotation_pool
 # Generate the Hamiltonian
 hamiltonian_obj=get_example_molecular_hamiltonian("H2",basis="sto-3g",fermi_qubit_transform=bravyi_kitaev)
 
-# Generate the exponentiated pauliword e^(iPt) block pool
+# Generate the high-dimensional rotation e^(iPt) block pool
 pool=pool=BlockPool(all_rotation_pool(hamiltonian_obj.n_qubit,max_length=hamiltonian_obj.n_qubit))
 
 # Generate the circuit constructor
@@ -39,6 +39,8 @@ constructor.start()
 constructor.join()
 constructor.terminate()
 ```
+## Key ideas
+Differing from using elementary gate set from circuit construction, we introduce the concept *block* (mizore.Blocks.Block). A block is a piece of parameterized circuit that implements certain unitary such as a double excitation and high-dimensional rotation. In a run of Mizore program, one first generate a elementary block set for the construction which we call *block pool* (mizore.Blocks.BlockPool). Then, one use certain circuit constructor (mizore.CircuitConstructor) to find a block circuit (mizore.BlockCircuit) that achieves certain objective (mizore.Objective) using the blocks in the block pool.
 
 ## Authors
 Zi-Jian Zhang, Jia-Qi Hu and Yi Liu from Southern University of Science and Technology (SUSTech, Shenzhen, China)
