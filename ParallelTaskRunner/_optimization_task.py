@@ -1,7 +1,6 @@
 from ._task import Task
 from Blocks import BlockCircuit
 from ParameterOptimizer import ParameterOptimizer
-from openfermion.ops import QubitOperator
 
 
 class OptimizationTask(Task):
