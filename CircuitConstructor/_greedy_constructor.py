@@ -8,15 +8,14 @@ from Objective._hamiltonian_obj import HamiltonianObjective
 from ParallelTaskRunner import TaskManager, OptimizationTask
 from ParameterOptimizer import BasinhoppingOptimizer, ImaginaryTimeEvolutionOptimizer
 from Blocks._utilities import get_inner_two_circuit_product, get_circuit_energy
-
 NOT_DEFINED = 999999
 
 
 class GreedyConstructor(CircuitConstructor):
+
     gradiant_cutoff = 1e-9
 
-    def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100,
-                 terminate_energy=-NOT_DEFINED, task_manager: TaskManager = None):
+    def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, task_manager: TaskManager = None):
 
         CircuitConstructor.__init__(self)
 
@@ -49,7 +48,8 @@ class GreedyConstructor(CircuitConstructor):
                 # Succeed to add new block
                 print(self.circuit)
                 if self.when_terminate_energy_achieved != -1:
-                    print("Target energy achieved by", self.when_terminate_energy_achieved, " blocks!")
+                    print("Target energy achieved by",
+                          self.when_terminate_energy_achieved, " blocks!")
                     print("Construction process ends!")
                     return
             else:
@@ -65,10 +65,13 @@ class GreedyConstructor(CircuitConstructor):
         best_block = self.get_block_by_trial_result(trial_result_list)
         if best_block != None:
             self.circuit.add_block(best_block)
-            print("Block added, energy now is:", self.current_energy, "Hartree")
-            print("Distance to target energy:", self.current_energy - self.terminate_energy)
+            print("Block added, energy now is:",
+                  self.current_energy, "Hartree")
+            print("Distance to target energy:",
+                  self.current_energy-self.terminate_energy)
             if self.current_energy <= self.terminate_energy:
-                self.when_terminate_energy_achieved = len(self.circuit.block_list)
+                self.when_terminate_energy_achieved = len(
+                    self.circuit.block_list)
             return True
         else:
             print("No entangler in the pool provides a lower energy")
@@ -85,15 +88,17 @@ class GreedyConstructor(CircuitConstructor):
             trial_circuit = self.circuit.duplicate()
             trial_circuit.add_block(block)
             trial_circuit.set_only_last_block_active()
-            # task=OptimizationTask(trial_circuit,BasinhoppingOptimizer(),self.hamiltonian)
-            task = OptimizationTask(trial_circuit, ImaginaryTimeEvolutionOptimizer(), self.hamiltonian)
+            task=OptimizationTask(trial_circuit,BasinhoppingOptimizer(),self.hamiltonian)
+            #task = OptimizationTask(
+             #   trial_circuit, ImaginaryTimeEvolutionOptimizer(), self.hamiltonian)
             self.task_manager.add_task(task, task_series_id=self.id)
 
-        res_list = self.task_manager.receive_task_result(task_series_id=self.id)
+        res_list = self.task_manager.receive_task_result(
+            task_series_id=self.id)
         i = 0
         for block in self.block_pool:
             energy, amp = res_list[i]
-            energy_descent = self.current_energy - energy
+            energy_descent = self.current_energy-energy
             trial_result_list.append((energy, energy_descent, amp, block))
             i += 1
         return trial_result_list
@@ -112,7 +117,7 @@ class GreedyConstructor(CircuitConstructor):
         # otherwise return None
         if best_result[1] > GreedyConstructor.gradiant_cutoff:
             new_block = copy(best_result[3])
-            new_block.parameter = best_result[2]
+            new_block.adjust_parameter(best_result[2])
             self.current_energy = best_result[0]
             return new_block
         else:
