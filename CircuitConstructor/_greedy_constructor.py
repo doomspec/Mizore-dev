@@ -8,11 +8,11 @@ from Objective._hamiltonian_obj import HamiltonianObjective
 from ParallelTaskRunner import TaskManager, OptimizationTask
 from ParameterOptimizer import BasinhoppingOptimizer, ImaginaryTimeEvolutionOptimizer
 from Blocks._utilities import get_inner_two_circuit_product, get_circuit_energy
+
 NOT_DEFINED = 999999
 
 
 class GreedyConstructor(CircuitConstructor):
-
     gradiant_cutoff = 1e-9
 
     def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None):
@@ -82,7 +82,7 @@ class GreedyConstructor(CircuitConstructor):
             print("Block added, energy now is:",
                   self.current_energy, "Hartree")
             print("Distance to target energy:",
-                  self.current_energy-self.terminate_energy)
+                  self.current_energy - self.terminate_energy)
             if self.current_energy <= self.terminate_energy:
                 self.when_terminate_energy_achieved = len(
                     self.circuit.block_list)
@@ -110,7 +110,7 @@ class GreedyConstructor(CircuitConstructor):
         i = 0
         for block in self.block_pool:
             energy, amp = res_list[i]
-            energy_descent = self.current_energy-energy
+            energy_descent = self.current_energy - energy
             trial_result_list.append((energy, energy_descent, amp, block))
             i += 1
         return trial_result_list

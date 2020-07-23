@@ -1,7 +1,8 @@
 from openfermion.transforms import bravyi_kitaev
 from openfermion.transforms import jordan_wigner
-from openfermion.transforms import binary_code_transform,parity_code
-from openfermion.ops import FermionOperator,QubitOperator
+from openfermion.transforms import binary_code_transform, parity_code
+from openfermion.ops import FermionOperator, QubitOperator
+
 
 def get_parity_transform(n_spinorbital):
     def parity_transform(FermionOperator):

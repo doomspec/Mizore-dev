@@ -1,6 +1,8 @@
 from Blocks._block_circuit import BlockCircuit
-from scipy.optimize import minimize, basinhopping
-from ParameterOptimizer.ObjWrapper import get_obj_for_optimizer
+"""
+@Fix the unresolved reference
+By Yi
+"""
 from ParameterOptimizer._circuit_optimizer import basinhopping_optimizer
 from Utilities.Tools import random_list
 from Blocks._parametrized_circuit import ParametrizedCircuit
