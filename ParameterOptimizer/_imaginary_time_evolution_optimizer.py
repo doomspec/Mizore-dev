@@ -1,7 +1,7 @@
 from scipy.optimize import minimize, basinhopping
 from ParameterOptimizer.ObjWrapper import get_obj_for_optimizer
 from Utilities.Tools import random_list
-#from Blocks import BlockCircuit
+# from Blocks import BlockCircuit
 from ParameterOptimizer import ParameterOptimizer
 from Blocks._utilities import get_inner_two_circuit_product, get_circuit_energy
 from scipy import linalg
@@ -19,10 +19,10 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
 
     def run_optimization(self, _circuit, hamiltonian):
 
-        circuit=_circuit.duplicate()
+        circuit = _circuit.duplicate()
         n_parameter = circuit.get_active_n_parameter()
 
-        initial_parameter = [0.0]*n_parameter
+        initial_parameter = [0.0] * n_parameter
 
         if self.random_initial != 0:
             initial_parameter = random_list(-self.random_initial,
@@ -61,8 +61,8 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
                         adjusted_circuits[i], circuit)
                     inner_product3 = get_inner_two_circuit_product(
                         circuit, adjusted_circuits[j])
-                    term_value = inner_product1-inner_product2-inner_product3+1
-                    term_value /= diff*diff
+                    term_value = inner_product1 - inner_product2 - inner_product3 + 1
+                    term_value /= diff * diff
                     term_value = term_value.real
                     mat_A[i][j] = term_value
                     mat_A[j][i] = term_value
@@ -72,7 +72,7 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
             origin_energy = get_circuit_energy(circuit, hamiltonian)
             for i in range(n_parameter):
                 term_value = get_circuit_energy(
-                    adjusted_circuits[i], hamiltonian)-origin_energy
+                    adjusted_circuits[i], hamiltonian) - origin_energy
                 term_value /= diff
                 term_value *= -0.5
                 mat_C[i] = term_value
@@ -82,7 +82,7 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
                 ITE_derivative = linalg.solve(mat_A, mat_C)
             except linalg.LinAlgError:
                 ITE_derivative = random_list(-self.random_initial,
-                                            self.random_initial, n_parameter)
+                                             self.random_initial, n_parameter)
 
             ITE_derivative /= linalg.norm(ITE_derivative)
             ITE_derivative *= self.stepsize

@@ -5,7 +5,7 @@ from openfermion.ops import QubitOperator
 
 
 class OptimizationTask(Task):
-    
+
     def __init__(self, circuit: BlockCircuit, optimizer: ParameterOptimizer, hamiltonian: QubitOperator):
         Task.__init__(self)
         self.circuit = circuit

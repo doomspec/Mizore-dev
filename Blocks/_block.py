@@ -1,4 +1,3 @@
-
 class Block():
     """Base class of all the blocks
     
@@ -7,13 +6,12 @@ class Block():
         is_inversed: If true, the function apply() will apply apply_inverse_gate() when called
         IS_INVERSE_DEFINED: Set to be true when apply_inverse_gate() is implemented
     """
-    
-    
+
     IS_INVERSE_DEFINED = False
 
-    def __init__(self,is_inversed=False,n_parameter=-1):
+    def __init__(self, is_inversed=False, n_parameter=-1):
         self.is_inversed = is_inversed
-        self.parameter=[]
+        self.parameter = []
         self.n_parameter = n_parameter
         return
 
@@ -39,9 +37,9 @@ class Block():
         return
 
     def basic_info_string(self):
-        info="Type:"+self.__class__.__name__+"; Para Num:"+str(self.n_parameter)
+        info = "Type:" + self.__class__.__name__ + "; Para Num:" + str(self.n_parameter)
         if self.is_inversed:
-            info+="; INVERSED"
+            info += "; INVERSED"
         return info
 
     def __str__(self):

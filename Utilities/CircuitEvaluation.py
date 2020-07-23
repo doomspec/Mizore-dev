@@ -10,8 +10,8 @@ from projectq.cengines import (MainEngine,
                                DecompositionRuleSet)
 import projectq.setups.decompositions
 
-def get_quantum_engine():
 
+def get_quantum_engine():
     # Create a main compiler engine with a simulator backend:
     backend = Simulator(rnd_seed=1, gate_fusion=True)
     cache_depth = 10
@@ -19,9 +19,10 @@ def get_quantum_engine():
     engines = [TagRemover(),
                LocalOptimizer(cache_depth),
                AutoReplacer(rule_set)]
-    compiler_engine = MainEngine(backend=backend,engine_list=engines)
+    compiler_engine = MainEngine(backend=backend, engine_list=engines)
 
     return compiler_engine
+
 
 def evaluate_circuit_energy(parameter, n_qubit, hamiltonian, ansatz):
     """
@@ -30,8 +31,8 @@ def evaluate_circuit_energy(parameter, n_qubit, hamiltonian, ansatz):
     Returns:
 
     """
-    
-    compiler_engine=get_quantum_engine()
+
+    compiler_engine = get_quantum_engine()
 
     # Initialize the wavefunction
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
@@ -50,9 +51,10 @@ def evaluate_circuit_energy(parameter, n_qubit, hamiltonian, ansatz):
     All(Measure) | wavefunction
     compiler_engine.flush()
 
-    #print(energy,parameter)
+    # print(energy,parameter)
 
     return energy
+
 
 def evaluate_circuit_amplitudes(n_qubit, ansatz, bit_string_list):
     """
@@ -60,21 +62,21 @@ def evaluate_circuit_amplitudes(n_qubit, ansatz, bit_string_list):
     Each bit_string should be a list of booleans like [False]*n_qubit
     False: |0>; True: |1>
     """
-    compiler_engine=get_quantum_engine()
+    compiler_engine = get_quantum_engine()
 
     # Initialize the wavefunction
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
 
     # Apply the circuit
-    ansatz([],wavefunction)
+    ansatz([], wavefunction)
 
     # Use the engine to implement the gates
     compiler_engine.flush()
 
-    amp_list=[]
+    amp_list = []
     # Evaluate the amplitude
     for bit_string in bit_string_list:
-        amp = compiler_engine.backend.get_amplitude(bit_string,wavefunction)
+        amp = compiler_engine.backend.get_amplitude(bit_string, wavefunction)
         amp_list.append(amp)
 
     # For deallocate qubit
@@ -83,5 +85,6 @@ def evaluate_circuit_amplitudes(n_qubit, ansatz, bit_string_list):
 
     return amp_list
 
+
 def evaluate_circuit_0000_amplitudes(n_qubit, ansatz):
-    return evaluate_circuit_amplitudes(n_qubit,ansatz,[[False]*n_qubit])[0]
+    return evaluate_circuit_amplitudes(n_qubit, ansatz, [[False] * n_qubit])[0]
