@@ -1,9 +1,11 @@
 from projectq.ops import H, X, All, Measure, CNOT, Z, Rz, Rx, C
 import math
 
-def apply_X_gates(qsubset,wavefunction):
+
+def apply_X_gates(qsubset, wavefunction):
     for i in qsubset:
         X | wavefunction[i]
+
 
 def generalized_rotation(wavefunction, qsubset, pauliword, evolution_time):
     """Apply e^{iPt} on the wavefunction
@@ -12,7 +14,7 @@ def generalized_rotation(wavefunction, qsubset, pauliword, evolution_time):
         pauliword: The Pauli word P in e^{iPt}
         evolution_time: t in e^{iPt}
     """
-    HALF_PI = math.pi/2
+    HALF_PI = math.pi / 2
     n_qubit = len(qsubset)
 
     # Exponentiating each Pauli string requires five parts
@@ -37,7 +39,7 @@ def generalized_rotation(wavefunction, qsubset, pauliword, evolution_time):
         prev_index = qsubset[p]
 
     # 3. Rotation (Note kexp & Ntrot)
-    Rz(evolution_time*2) | wavefunction[prev_index]
+    Rz(evolution_time * 2) | wavefunction[prev_index]
 
     # 4. Second set of CNOTs
     prev_index = None

@@ -40,7 +40,7 @@ class TaskManager:
     def receive_task_result(self, task_series_id=0):
         result_list = []
         id_list = []
-        while(self.n_task_remain_by_series_id[task_series_id] != 0):
+        while (self.n_task_remain_by_series_id[task_series_id] != 0):
             task_result = self.result_queue.get(True)
             result_list.append(task_result.result)
             id_list.append(task_result.id)
