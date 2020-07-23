@@ -3,7 +3,7 @@
 
 Mizore is an open source effort for quantum computing which focus on adaptive construction of the quantum circuit for certain objective. Currently, Mizore focus on finding the quantum circuit that produce the ground state of a certain Hamiltonian by the Variational Quantum Eigensolver (VQE) approach. 
 
-Mizore focus on providing a framework for adpative VQE described in [J. Chem. Theory Comput. 2020, 16, 2](https://pubs.acs.org/doi/abs/10.1021/acs.jctc.9b01084) and [Nat Commun 10, 3007 (2019)](https://www.nature.com/articles/s41467-019-10988-2), where the structure of the parameterized circuit can be optimized, differing from traditional VQE which uses a fixed parameterized circuit and only adjusts the parameter.
+Mizore focus on providing a framework for adpative VQE similar to what is described in [J. Chem. Theory Comput. 2020, 16, 2](https://pubs.acs.org/doi/abs/10.1021/acs.jctc.9b01084) and [Nat Commun 10, 3007 (2019)](https://www.nature.com/articles/s41467-019-10988-2), where the structure of the parameterized circuit can be optimized, differing from traditional VQE which uses a fixed parameterized circuit and only adjusts the parameter. While providing better perfermance of convergence, adaptive method can also achieve certain objective with fewer quantum gates. We believe that adaptive circuit construction is a key method for near-term quantum applications.
 
 ## Setup
 It is very simple to setup Mizore in your computer.
@@ -29,7 +29,7 @@ from mizore.PoolGenerator import BlockPool,all_rotation_pool
 hamiltonian_obj=get_example_molecular_hamiltonian("H2",basis="sto-3g",fermi_qubit_transform=bravyi_kitaev)
 
 # Generate the high-dimensional rotation e^(iPt) block pool
-pool=pool=BlockPool(all_rotation_pool(hamiltonian_obj.n_qubit,max_length=hamiltonian_obj.n_qubit))
+pool=BlockPool(all_rotation_pool(hamiltonian_obj.n_qubit,max_length=hamiltonian_obj.n_qubit))
 
 # Generate the circuit constructor
 constructor=GreedyConstructor(hamiltonian_obj,pool)
@@ -44,7 +44,7 @@ Differing from using elementary gate set from circuit construction, we introduce
 
 <img src="https://github.com/doomspec/Mizore/blob/master/mizore_lifetime.png" width="90%" align="center" />
 
-Also, we provide methods for conveniently construct the problem Hamiltonian for tests in mizore.HamiltonianGenerator using PySCF and openfermion (HiQ Fermion). Parallel run of circuit evaluation is implemented in mizore.ParallelTaskRunner. Optimization methods including basin-hopping and ansatz-based imaginary time evolution ([npj Quantum Information (2019) 5:75](https://www.nature.com/articles/s41534-019-0187-2)) is implemented in mizore.ParameterOptimizer. The simulation of quantum circuit is implemented by Huawei's fork of ProjectQ (HiQ).
+Also, we provide methods for conveniently construct the problem Hamiltonian for tests in mizore.HamiltonianGenerator using PySCF and openfermion (HiQ Fermion). Parallel run of circuit evaluation is implemented in mizore.ParallelTaskRunner. Optimization methods including basin-hopping and ansatz-based imaginary time evolution ([npj Quantum Information (2019) 5:75](https://www.nature.com/articles/s41534-019-0187-2)) is implemented in mizore.ParameterOptimizer. The simulation of quantum circuit is implemented by Huawei's fork of ProjectQ (HiQ Simulator).
 
 We implement several adpative VQE methods presented in previous works in mizore.Example using the Mizore framework.
 

@@ -7,7 +7,7 @@ from Blocks._utilities import *
 from Objective._hamiltonian_obj import HamiltonianObjective
 from ParallelTaskRunner import TaskManager, OptimizationTask
 from ParameterOptimizer import BasinhoppingOptimizer, ImaginaryTimeEvolutionOptimizer
-from Blocks._utilities import get_inner_two_circuit_product, get_circuit_energy
+from Blocks._utilities import get_circuit_energy
 
 NOT_DEFINED = 999999
 
