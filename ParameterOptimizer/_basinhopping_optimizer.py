@@ -16,10 +16,9 @@ class BasinhoppingOptimizer(ParameterOptimizer):
         self.tol = tol
 
     def run_optimization(self, circuit, hamiltonian):
+        pcircuit = circuit.get_ansatz_on_active_position()
 
-        pcircuit=circuit.get_ansatz_on_active_position()
-
-        initial_parameter = [0.0]*pcircuit.n_parameter
+        initial_parameter = [0.0] * pcircuit.n_parameter
 
         if self.random_initial != 0:
             initial_parameter = random_list(-self.random_initial, self.random_initial, pcircuit.n_parameter
@@ -29,7 +28,7 @@ class BasinhoppingOptimizer(ParameterOptimizer):
 
         opt_result = basinhopping(obj, initial_parameter, niter=self.niter,
                                   T=self.temperature, stepsize=self.stepsize, minimizer_kwargs={
-                                      "tol": self.tol, "method": 'BFGS'},
+                "tol": self.tol, "method": 'BFGS'},
                                   take_step=None, accept_test=None, callback=None,
                                   disp=False, niter_success=None)
 
