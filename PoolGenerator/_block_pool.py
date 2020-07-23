@@ -1,4 +1,4 @@
-import math
+import math,numpy
 from collections import Iterable
 
 class BlockPool:
@@ -46,9 +46,6 @@ class BlockPool:
 
     def merge_with_another_pool(self, another_pool):
         self.blocks = set.union(another_pool.blocks, self.blocks)
-
-
-import numpy
 
 
 def random_select(collection=set(), num=1):
