@@ -1,4 +1,4 @@
-from Blocks import Block
+from ._block import Block
 from Utilities.Operations import full_rotation,inversed_full_rotation,CNOT_entangler,inversed_CNOT_entangler
 
 class HardwareEfficientEntangler(Block):

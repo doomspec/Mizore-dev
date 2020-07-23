@@ -1,8 +1,8 @@
 from scipy.optimize import minimize, basinhopping
-from ParameterOptimizer.ObjWrapper import get_obj_for_optimizer
+from .ObjWrapper import get_obj_for_optimizer
 from Utilities.Tools import random_list
 from Blocks import BlockCircuit
-from ParameterOptimizer import ParameterOptimizer
+from ._parameter_optimizer import ParameterOptimizer
 from Blocks._utilities import get_inner_two_circuit_product, get_circuit_energy
 from scipy import linalg
 import numpy

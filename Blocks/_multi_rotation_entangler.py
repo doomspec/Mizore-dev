@@ -1,4 +1,4 @@
-from Blocks import Block
+from ._block import Block
 from Utilities.Operations import generalized_rotation
 from Utilities.Tools import pauliword2string
 from openfermion.ops import QubitOperator

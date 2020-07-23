@@ -1,4 +1,4 @@
-from Blocks import Block
+from ._block import Block
 from Utilities.Operations import apply_X_gates
 
 

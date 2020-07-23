@@ -1,5 +1,5 @@
-from Blocks._block import Block
-from Blocks._parametrized_circuit import ParametrizedCircuit
+from ._block import Block
+from ._parametrized_circuit import ParametrizedCircuit
 from copy import copy, deepcopy
 
 

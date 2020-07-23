@@ -1,12 +1,12 @@
 from scipy.optimize import minimize, basinhopping
-from ParameterOptimizer.ObjWrapper import get_obj_for_optimizer
+from .ObjWrapper import get_obj_for_optimizer
 from Utilities.Tools import random_list
-from ParameterOptimizer import ParameterOptimizer
+from ._parameter_optimizer import ParameterOptimizer
 
 
 class BasinhoppingOptimizer(ParameterOptimizer):
 
-    def __init__(self, random_initial=0.01, niter=10, temperature=0.5, stepsize=1e-6, tol=1e-6):
+    def __init__(self, random_initial=0.1, niter=10, temperature=0.1, stepsize=1e-6, tol=1e-6):
         ParameterOptimizer.__init__(self)
 
         self.random_initial = random_initial

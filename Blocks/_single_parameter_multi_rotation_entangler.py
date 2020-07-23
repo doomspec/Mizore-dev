@@ -1,4 +1,4 @@
-from Blocks import Block
+from ._block import Block
 from Utilities.Operations import generalized_rotation
 from Utilities.Tools import pauliword2string
 from openfermion.ops import QubitOperator
@@ -18,7 +18,7 @@ class SingleParameterMultiRotationEntangler(Block):
         self.coeff_list=[]
         for coeff,qsubset,pauli in iter_coeff_qsubset_pauli_of_operator(operator):
             self.qsubset_pauliword_list.append((qsubset,pauli))
-            self.coeff_list.append(coeff)
+            self.coeff_list.append(abs(coeff)) # TODO
 
         if init_angle==None:
             init_angle=[0.0]
@@ -27,6 +27,7 @@ class SingleParameterMultiRotationEntangler(Block):
     def apply_forward_gate(self, parameter, wavefunction):
         for i in range(len(self.qsubset_pauliword_list)):
             qsubset, pauliword = self.qsubset_pauliword_list[i]
+            #print((parameter[0]+self.parameter[0])*self.coeff_list[i])
             generalized_rotation(wavefunction, qsubset,
                                 pauliword, evolution_time=(parameter[0]+self.parameter[0])*self.coeff_list[i])
         return

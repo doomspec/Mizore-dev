@@ -5,6 +5,14 @@ from PoolGenerator import BlockPool,all_rotation_pool
 
 if __name__=="__main__":
 
+    """
+    Implementation of ansatz-based imaginary time evolution described in
+    "Variational ansatz-based quantum simulation of imaginary time evolution"
+    on the Hamiltonian-based ansatz described in
+    "Improving the accuracy of quantum computational chemistry using the transcorrelated method"
+    (arXiv:2006.11181v1)
+    """
+
     # Generate the Hamiltonian
     hamiltonian_obj=get_example_molecular_hamiltonian("H2",basis="sto-3g",fermi_qubit_transform=bravyi_kitaev)
 

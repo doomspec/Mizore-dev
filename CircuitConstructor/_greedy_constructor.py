@@ -34,9 +34,11 @@ class GreedyConstructor(CircuitConstructor):
         if "terminate_energy" in hamiltonian_obj.obj_info.keys():
             self.terminate_energy = hamiltonian_obj.obj_info["terminate_energy"]
         self.task_manager = task_manager
+        self.task_manager_created=False
         if task_manager == None:
-            # If task_manager not specified, use a single processor manager
+            # If task_manager not specified, use 4 processors manager
             self.task_manager = TaskManager(4)
+            self.task_manager_created = True
         return
 
     def run(self):
@@ -56,9 +58,13 @@ class GreedyConstructor(CircuitConstructor):
                     print("Target energy achieved by",
                           self.when_terminate_energy_achieved, " blocks!")
                     print("Construction process ends!")
+                    if self.task_manager_created:
+                        self.task_manager.close()
                     return
             else:
                 # Fail to add new block
+                if self.task_manager_created:
+                    self.task_manager.close()
                 return
         return
 

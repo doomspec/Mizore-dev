@@ -51,7 +51,7 @@ def evaluate_circuit_energy(parameter, n_qubit, hamiltonian, ansatz):
     All(Measure) | wavefunction
     compiler_engine.flush()
 
-    # print(energy,parameter)
+    #print(energy,parameter)
 
     return energy
 

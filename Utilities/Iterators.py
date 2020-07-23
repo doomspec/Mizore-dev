@@ -12,7 +12,9 @@ def iter_coeff_qsubset_pauli_of_operator(operator):
             for string_pauli in pauli_and_coeff.terms:
                 if string_pauli!=():
                     coeff=pauli_and_coeff.terms[string_pauli]
-                    yield [coeff].extend(string_pauli2qsubset_pauli(string_pauli))
+                    res=[coeff]
+                    res.extend(string_pauli2qsubset_pauli(string_pauli))
+                    yield res
 
 def iter_terms_in_fermion_operator(operator):
     from openfermion.ops import FermionOperator

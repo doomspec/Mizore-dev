@@ -1,5 +1,5 @@
 import math
-
+from collections import Iterable
 
 class BlockPool:
     """Base class of block pools
@@ -8,13 +8,13 @@ class BlockPool:
         blocks: List of blocks in the pool
     """
 
-    def __init__(self, block_iter=None, init_block=None):
+    def __init__(self, block_iter_or_init_block):
         self.blocks = set()
-        if init_block != None:
-            self.blocks.add(init_block)
-        if block_iter != None:
-            for block in block_iter:
+        if isinstance(block_iter_or_init_block, Iterable):
+            for block in block_iter_or_init_block:
                 self.blocks.add(block)
+        else:
+            self.blocks.add(block_iter_or_init_block)
         return
 
     def __iter__(self):
