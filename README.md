@@ -1,4 +1,7 @@
 # Mizore
+
+Mizore is an open source effort for quantum computing which focus on adaptive construction of the unitary that create the ground state of certain Hamiltonian.
+
 ## Setup
 It is very simple to setup Mizore in your computer.
 
@@ -11,7 +14,7 @@ cd Mizore
 python3 setup.py install
 ```
 
-## Hello World
+## First adptive-VQE program 
 
 ```python
 from mizore.CircuitConstructor import GreedyConstructor
@@ -35,6 +38,7 @@ constructor.terminate()
 ```
 
 ## Authors
-Zi-Jian Zhang, Jia-Qi Hu and Yi Liu
+Zi-Jian Zhang, Jia-Qi Hu and Yi Liu from Southern University of Science and Technology (SUSTech, Shenzhen, China)
 
-
+## The meaning of Mizore
+Mizore is a Japanese word means sleet in English. Sleet contains both water and ice. Water is like parameter which can be adjusted continuously and ice is like blocks.
