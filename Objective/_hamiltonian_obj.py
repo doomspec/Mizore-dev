@@ -1,5 +1,5 @@
-from Objective._objective import Objective
-from Blocks._HF_init_block import HartreeFockInitBlock
+from ._objective import Objective
+from Blocks import HartreeFockInitBlock
 
 
 class HamiltonianObjective(Objective):

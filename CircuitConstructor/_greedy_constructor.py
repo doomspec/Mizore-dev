@@ -27,7 +27,8 @@ class GreedyConstructor(CircuitConstructor):
         max_n_block: Max number of blocks to be added in the circuit
         terminate_energy: the energy where the construction stops
         optimizer: a ParameterOptimizer for parameter optimization
-        task_manager: a TaskManager for parallel run of parameter optimization. If left None, a new task manager uses 4 processes will be created and used 
+        task_manager: a TaskManager for parallel run of parameter optimization. 
+        If left None, a new task manager uses 4 processes will be created and used 
 
     """
 

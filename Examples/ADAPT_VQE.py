@@ -26,3 +26,6 @@ if __name__ == "__main__":
 
     # Run the constructor
     constructor.start()
+    constructor.join()
+    
+    constructor.terminate()
