@@ -116,7 +116,7 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
                 increase_n_step+=1
 
             previous_energy=energy
-            print(self.lowest_energy,self.energy_list)
+            #print(self.lowest_energy,self.energy_list)
 
             if increase_n_step>=self.max_increase_n_step:
                 break

@@ -69,6 +69,9 @@ class BlockCircuit:
     def set_only_last_block_active(self):
         self.active_position_list = [len(self.block_list)-1]
 
+    def set_all_block_active(self):
+        self.active_position_list = list(range(len(self.block_list)))
+
     def get_active_n_parameter(self):
         return self.count_n_parameter_by_position_list(self.active_position_list)
 
@@ -135,9 +138,9 @@ class BlockCircuit:
         info=""
         if len(self.block_list)!=0:
             info+="Block Num:"+str(len(self.block_list))+"; Qubit Num:"+str(self.n_qubit)+"\n"
-            info+="Block list:"+"\n"
+            info+="Block list:"
             for block in self.block_list:
-                info+=str(block)+"\n"
+                info+="\n"+str(block)
         else:
-            info+="This is an Empty circuit. Qubit Num:"+str(self.n_qubit)+"\n"
+            info+="\n"+"This is an Empty circuit. Qubit Num:"+str(self.n_qubit)
         return info

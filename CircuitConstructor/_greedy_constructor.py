@@ -28,6 +28,8 @@ class GreedyConstructor(CircuitConstructor):
         self.circuit.add_block(hamiltonian_obj.init_block)
         self.id = id(self)
         self.optimizer=optimizer
+        
+        self.energy_list=[]
 
         if "terminate_energy" in hamiltonian_obj.obj_info.keys():
             self.terminate_energy = hamiltonian_obj.obj_info["terminate_energy"]
@@ -42,12 +44,14 @@ class GreedyConstructor(CircuitConstructor):
         print("Size of Block Pool:", len(self.block_pool.blocks))
         self.init_energy = get_circuit_energy(self.circuit, self.hamiltonian)
         self.current_energy = self.init_energy
+        self.energy_list.append(self.current_energy)
         print("Initial Energy:", self.init_energy)
         # print(self.block_pool)
         for layer in range(self.max_n_block):
             if self.add_one_block():
                 # Succeed to add new block
                 print(self.circuit)
+                self.do_global_optimization()
                 if self.when_terminate_energy_achieved != -1:
                     print("Target energy achieved by",
                           self.when_terminate_energy_achieved, " blocks!")
@@ -57,6 +61,15 @@ class GreedyConstructor(CircuitConstructor):
                 # Fail to add new block
                 return
         return
+
+    def do_global_optimization(self):
+        print("Doing global optimization")
+        self.circuit.set_all_block_active()
+        task=OptimizationTask(self.circuit,BasinhoppingOptimizer(random_initial=0.0),self.hamiltonian)
+        self.current_energy,parameter=task.run()
+        self.circuit.adjust_parameter_on_active_position(parameter)
+        self.energy_list.append(self.current_energy)
+        print("Global Optimized Energy:",self.current_energy)
 
     def add_one_block(self):
         """Try to add a new block
@@ -89,7 +102,7 @@ class GreedyConstructor(CircuitConstructor):
             trial_circuit = self.circuit.duplicate()
             trial_circuit.add_block(block)
             trial_circuit.set_only_last_block_active()
-            task=OptimizationTask(trial_circuit,optimizer,self.hamiltonian)
+            task=OptimizationTask(trial_circuit,self.optimizer,self.hamiltonian)
             self.task_manager.add_task(task, task_series_id=self.id)
 
         res_list = self.task_manager.receive_task_result(

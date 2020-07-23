@@ -12,7 +12,7 @@ NOT_DEFINED = 999999
 CHEMICAL_ACCURACY = 0.001
 
 
-def get_example_molecular_hamiltonian(molecule_name, geometry_info=NOT_DEFINED, fermi_qubit_transform=bravyi_kitaev):
+def get_example_molecular_hamiltonian(molecule_name, basis="sto-3g", geometry_info=NOT_DEFINED, fermi_qubit_transform=bravyi_kitaev):
     if geometry_info == NOT_DEFINED:
         geometry_info = equilibrium_geometry_dict[molecule_name]
 
@@ -24,7 +24,6 @@ def get_example_molecular_hamiltonian(molecule_name, geometry_info=NOT_DEFINED, 
     geometry = geometry_generator_dict[molecule_name](geometry_info)
 
     # Get fermion Hamiltonian
-    basis = 'sto-3g'
     multiplicity = 1
     charge = 0
     molecule = MolecularData(geometry, basis, multiplicity, charge, str(

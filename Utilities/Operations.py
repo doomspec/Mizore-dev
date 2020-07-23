@@ -7,6 +7,39 @@ def apply_X_gates(qsubset, wavefunction):
         X | wavefunction[i]
 
 
+def CNOT_entangler(wavefunction,qsubset):
+    for i in range(len(qsubset)-1):
+        CNOT | (wavefunction[qsubset[i]], wavefunction[qsubset[i+1]])
+    CNOT | (wavefunction[qsubset[i+1]], wavefunction[qsubset[0]])
+
+def inversed_CNOT_entangler(wavefunction,qsubset):
+
+    CNOT | (wavefunction[qsubset[len(qsubset)-1]], wavefunction[qsubset[0]])
+    for i in reversed(range(len(qsubset)-1)):
+        CNOT | (wavefunction[qsubset[i]], wavefunction[qsubset[i+1]])
+    
+
+def full_rotation(wavefunction,qsubset,parameter):
+    """
+    Apply Rx(t1)Rz(t2)Rx(t3) rotation to all the qubits with different angle
+    """
+    n_qubit=len(qsubset)
+    for i in range(len(qsubset)):
+        Rx(parameter[i]) | wavefunction[qsubset[i]]
+        Rz(parameter[n_qubit+i]) | wavefunction[qsubset[i]]
+        Rx(parameter[2*n_qubit+i]) | wavefunction[qsubset[i]]
+
+def inversed_full_rotation(wavefunction,qsubset,parameter):
+    """
+    The inversed operation of full_rotation() of the same parameter
+    """
+    n_qubit=len(qsubset)
+    for i in range(len(qsubset)):
+        Rx(-parameter[2*n_qubit+i]) | wavefunction[qsubset[i]]
+        Rz(-parameter[n_qubit+i]) | wavefunction[qsubset[i]]
+        Rx(-parameter[i]) | wavefunction[qsubset[i]]
+        
+
 def generalized_rotation(wavefunction, qsubset, pauliword, evolution_time):
     """Apply e^{iPt} on the wavefunction
     Args:
