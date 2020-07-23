@@ -7,7 +7,7 @@ class BlockPool:
         blocks: List of blocks in the pool
     """
     
-    def __init__(self,init_block=None,block_iter=None):
+    def __init__(self,block_iter=None,init_block=None):
         self.blocks=set()
         if init_block!=None:
             self.blocks.add(init_block)
@@ -41,7 +41,7 @@ class BlockPool:
         pool.blocks=new_block_set
         return new_block_set
     
-    def merge_with_another_pool(self,another_pool:BlockPool):
+    def merge_with_another_pool(self,another_pool):
         self.blocks=set.union(another_pool.blocks,self.blocks)
 
 

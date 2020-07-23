@@ -4,24 +4,25 @@ from openfermion.transforms import bravyi_kitaev
 from Blocks._multi_rotation_entangler import MultiRotationEntangler
 from copy import copy
 
-def fermion_pool(n_qubit, packed_amplitudes=None, hamiltonian=QubitOperator(()), fermi_qubit_transform=bravyi_kitaev):
+def fermion_single_double_excitation_pool(n_qubit, hamiltonian=None, fermi_qubit_transform=bravyi_kitaev):
     """Pools proposed in Nat Commun 10, 3007 (2019), also called ADAPT-VQE.
     Operators are single and double unitary excitation operators
     Args:
         n_qubit: number of qubits to generate excitation operators
-        packed_amplitudes: variational parameters, defaul all 0
         hamiltonian: if or not only choose excitations from hamiltonian
         fermi_qubit_transform: transformation, default bravyi_kitaev
     Return:
-        Class MultiRotationEntangler with attribute QubitOperator
+        MultiRotationEntangler
     """
-    n_parameters = get_uccgsd_parameter_number(n_qubit)
-    if packed_amplitudes==None:
-        packed_amplitudes = [0.0]*n_parameters
+    if hamiltonian == None:
+        hamiltonian = uccgsd_generator(n_qubit)
 
-    if hamiltonian == QubitOperator(()):
-        hamiltonian = fermi_qubit_transform(uccgsd_generator(n_qubit, packed_amplitudes))
-    return MultiRotationEntangler(hamiltonian)
+    from Utilities.Iterators import iter_terms_in_fermion_operator
+    
+    for term in iter_terms_in_fermion_operator(hamiltonian):
+        print(term)
+        qubit_excitation_operator=fermi_qubit_transform(hamiltonian)
+        yield MultiRotationEntangler(qubit_excitation_operator)
 
 def get_uccgsd_parameter_number(n_qubit):
     n_spatial_orbitals = n_qubit // 2
@@ -29,9 +30,13 @@ def get_uccgsd_parameter_number(n_qubit):
     n_parameters = 2*n_single_amplitudes+n_single_amplitudes*n_single_amplitudes
     return n_parameters
 
-def uccgsd_generator(n_qubit, packed_amplitudes, anti_hermitian=True):
+
+def uccgsd_generator(n_qubit, anti_hermitian=True):
     if n_qubit % 2 != 0:
         raise ValueError('The total number of spin-orbitals should be even.')
+
+    n_parameters = get_uccgsd_parameter_number(n_qubit)
+    packed_amplitudes = [1]*n_parameters
 
     n_spatial_orbitals = n_qubit // 2
     # Unpack amplitudes
@@ -103,7 +108,7 @@ def upccgsd_pool(n_qubit, packed_amplitudes=None, fermi_qubit_transform=bravyi_k
     Operators are single and pair double unitary excitation operators.
     Args:
         n_qubit: number of qubits to generate excitation operators
-        packed_amplitudes: variational parameters, defaul all 0
+        packed_amplitudes: variational parameters, default all 0
         fermi_qubit_transform: transformation, default bravyi_kitaev
     Return:
         Class MultiRotationEntangler with attribute QubitOperator

@@ -6,6 +6,18 @@ def iter_qsubset_pauli_of_operator(operator):
                 if string_pauli!=():
                     yield string_pauli2qsubset_pauli(string_pauli)
 
+def iter_terms_in_fermion_operator(operator):
+    from openfermion.ops import FermionOperator
+    for pauli_and_coff in operator.get_operators():
+            for string_pauli in pauli_and_coff.terms:
+                    yield FermionOperator(string_pauli)
+
+def iter_terms_in_qubit_operator(operator):
+    from openfermion.ops import QubitOperator
+    for pauli_and_coff in operator.get_operators():
+            for string_pauli in pauli_and_coff.terms:
+                    yield QubitOperator(string_pauli)
+
 def string_pauli2qsubset_pauli(string_pauli,make_imaginary=False):
     qsubset=[]
     pauli=[]
@@ -50,3 +62,9 @@ def iter_all_qsubset_pauli_by_length(length, indices):
     for qsubset in iter_qsubset(length,indices):
         for pauli in itertools.product(range(1, 4), repeat=length):
             yield qsubset,pauli
+
+if __name__=="__main__":
+    from openfermion.ops import FermionOperator
+    a=FermionOperator('4^ 3 9 3^')+FermionOperator('4^  3^')
+    for term in iter_terms_in_fermion_operator(a):
+        print(term)

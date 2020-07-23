@@ -35,6 +35,12 @@ class Block():
         self.apply_forward_gate(parameter, wavefunction)
         return
 
+    def adjust_parameter(self,adjuct_list):
+        if len(adjuct_list)!=len(self.parameter):
+            raise Exception("The number of parameter do not match the block!")
+        for i in range(len(adjuct_list)):
+            self.parameter[i]+=adjuct_list[i]
+
     def __or__(self, wavefunction):
         return
 
