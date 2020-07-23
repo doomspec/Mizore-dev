@@ -5,7 +5,8 @@ from Blocks import MultiRotationEntangler,SingleParameterMultiRotationEntangler,
 from copy import copy
 
 def fermion_SD_excitation_single_parameter_pool(n_qubit, fermi_qubit_transform=bravyi_kitaev):
-    """Pools proposed in Nat Commun 10, 3007 (2019), also called ADAPT-VQE.
+    """
+    Pools proposed in Nat Commun 10, 3007 (2019), also called ADAPT-VQE.
     Operators are single and double unitary excitation operators
     Args:
         n_qubit: number of qubits to generate excitation operators
@@ -22,6 +23,10 @@ def fermion_SD_excitation_single_parameter_pool(n_qubit, fermi_qubit_transform=b
         yield SingleParameterMultiRotationEntangler(qubit_excitation_operator)
 
 def fermion_SD_excitation_multi_parameter_pool(n_qubit, fermi_qubit_transform=bravyi_kitaev):
+    """
+    A modified version of the pool purposed in Nat Commun 10, 3007 (2019), 
+    where the parameter of every high-dimensional rotation in the ansatz is adjustable.
+    """
     excitation_operators = general_single_generator(n_qubit)+uccgsd_double_generator(n_qubit)
 
     from Utilities.Iterators import iter_terms_in_fermion_operator

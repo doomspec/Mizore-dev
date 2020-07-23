@@ -4,7 +4,14 @@ NOT_DEFINED = 999999
 
 
 class CircuitConstructor(Process):
-
+    """
+    The base class of all circuit construtor
+    Attributes:
+        block_pool:
+        circuit:
+        init_energy:
+        terminate_energy:
+    """
     def __init__(self):
         Process.__init__(self)
 

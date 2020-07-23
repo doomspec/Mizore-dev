@@ -4,8 +4,18 @@ from copy import copy, deepcopy
 
 
 class BlockCircuit:
-    """Circuit consists of blocks
-    This class provides functions to produce ParametrizedCircuit for parameter optimizers to process. The users can easily fix some parameters while make the others adjustable.
+    """
+    Circuit consists of blocks. 
+    Blocks are listed in self.block_list to form a circuit. 
+
+    And the class provides functions to produce ParametrizedCircuit for parameter optimizers to process. 
+    The users can easily fix some parameters while make the others adjustable.
+
+    Especially, in self.active_position_list records the indices of blocks in self.block_list
+    whose parameter should be adjustable.
+
+    One can make use of duplicate() to duplicate a circuit
+    
     Attributes:
         block_list: The list of blocks contained in the circuit
         n_qubit: Number of qubits in the circuit

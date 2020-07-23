@@ -1,6 +1,12 @@
 class Block():
-    """Base class of all the blocks
-    
+    """
+    Base class of all the blocks
+    A block is a piece of parameterized circuit which achieves certain operation.
+    The users may override the methods apply_forward_gate() and apply_inverse_gate()
+    to define a new block.
+
+    Blocks may be used in a BlockCircuit or a BlockPool.
+
     Attributes:
         parameter: The list of parameters of the parametried block
         is_inversed: If true, the function apply() will apply apply_inverse_gate() when called

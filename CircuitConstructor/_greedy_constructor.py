@@ -13,10 +13,30 @@ NOT_DEFINED = 999999
 
 
 class GreedyConstructor(CircuitConstructor):
+    """
+    Greedy circuit constructor which try all the blocks in self.block_pool in each iteration 
+    and add the block that decrease the energy most to the self.circuit.
+
+    This strategy is used in the following works
+    J. Chem. Theory Comput. 2020, 16, 2
+    Nat Commun 10, 3007 (2019)
+
+    Attributes:
+        hamiltonian: a Hamiltonian that defines the problem
+        circuit: the circuit kept by the constructor, should be developed when running
+        max_n_block: Max number of blocks to be added in the circuit
+        terminate_energy: the energy where the construction stops
+        optimizer: a ParameterOptimizer for parameter optimization
+        task_manager: a TaskManager for parallel run of parameter optimization. If left None, a new task manager uses 4 processes will be created and used 
+
+    """
+
     gradiant_cutoff = 1e-9
 
     def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None):
-
+        """
+        
+        """
         CircuitConstructor.__init__(self)
 
         self.circuit = BlockCircuit(hamiltonian_obj.n_qubit)

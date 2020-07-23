@@ -40,7 +40,18 @@ constructor.join()
 constructor.terminate()
 ```
 ## Key ideas
-Differing from using elementary gate set from circuit construction, we introduce the concept *block* (mizore.Blocks.Block). A block is a piece of parameterized circuit that implements certain unitary such as a double excitation and high-dimensional rotation. In a run of Mizore program, one first generate a elementary block set for the construction which we call *block pool* (mizore.Blocks.BlockPool). Then, one use certain circuit constructor (mizore.CircuitConstructor) to find a block circuit (mizore.BlockCircuit) that achieves certain objective (mizore.Objective) using the blocks in the block pool.
+Differing from using elementary gate set from circuit construction, we introduce the concept *block* (mizore.Blocks.Block). A block is a piece of parameterized circuit that implements certain unitary such as a double excitation and high-dimensional rotation. In a run of Mizore program, one first generate a elementary block set for the construction which we call *block pool* (mizore.PoolGenerator.BlockPool). Then, one use certain circuit constructor (in mizore.CircuitConstructor) to find a block circuit (mizore.Blocks.BlockCircuit) that achieves certain objective (mizore.Objective) using the blocks in the block pool. For detail usage instruction of these modules, please refer to the annotation in the sourse codes. 
+
+Also, we provide methods for conveniently construct the problem Hamiltonian for tests in mizore.HamiltonianGenerator using PySCF and openfermion (HiQ Fermion). Parallel run of circuit evaluation is implemented in mizore.ParallelTaskRunner. Optimization methods including basin-hopping and ansatz-based imaginary time evolution ([npj Quantum Information (2019) 5:75](https://www.nature.com/articles/s41534-019-0187-2)) is implemented in mizore.ParameterOptimizer. The simulation of quantum circuit is implemented by Huawei's fork of ProjectQ (HiQ).
+
+We implement several adpative VQE methods presented in previous works in mizore.Example using the Mizore framework.
+
+## Plans and Future
+We plan to 
+1. Implement modules for visulization of Mizore runs
+2. Harness machine learning methods for block arrangement
+3. Implement modules to use adaptive circuit construction for more objectives such as producing excited states
+   
 
 ## Authors
 Zi-Jian Zhang, Jia-Qi Hu and Yi Liu from Southern University of Science and Technology (SUSTech, Shenzhen, China)

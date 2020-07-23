@@ -1,14 +1,11 @@
 from Blocks._block_circuit import BlockCircuit
-"""
-@Fix the unresolved reference
-By Yi
-"""
 from ParameterOptimizer._circuit_optimizer import basinhopping_optimizer
 from Utilities.Tools import random_list
 from Blocks._parametrized_circuit import ParametrizedCircuit
 
 
 def LayerwiseOptimizer(circuit: BlockCircuit, hamiltonian, random_initial=0.1, niter=10, temperature=0.5):
+    # TODO not finished
     _circuit = circuit.duplicate()
     energy = 0
     parameter = []

@@ -6,7 +6,8 @@ from copy import copy
 
 
 def all_rotation_pool(n_qubit, max_length=-1, only_odd_Y_operators=True):
-    """Block pool contains all the possible RotationEntangler.
+    """
+    Block pool contains all the possible RotationEntangler.
     Args:
         only_odd_Y_operators: If true, only RotationEntangler whose Pauli word only has odd number of Y operators will be added.
         Even Y entanglers are exclueded because they commute with Hamiltonian without imaginary terms (usually because of the absense of magnetic field), which means 
@@ -41,7 +42,8 @@ def make_pauli_imaginary(pauli):
 
 
 def quasi_imaginary_evolution_rotation_pool(hamiltonian):
-    """Entangler pool inspired by QAOA from arXiv:1908.09533v1.
+    """
+    Entangler pool inspired by QAOA from arXiv:1908.09533v1.
     The pool consists of the RotationEntangler with Pauli words modified from the Hamiltonian.
     The modification of Pauli words is to replace one Y by X or one X by Y.
     """
