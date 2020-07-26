@@ -10,6 +10,9 @@ from projectq.cengines import (MainEngine,
                                DecompositionRuleSet)
 import projectq.setups.decompositions
 
+# This part can easily change to use HiQ. 
+# We use projectq here because it can be easily installed by pip and thus easily for Mizore to be installed.
+
 
 def get_quantum_engine():
     # Create a main compiler engine with a simulator backend:
@@ -51,7 +54,7 @@ def evaluate_circuit_energy(parameter, n_qubit, hamiltonian, ansatz):
     All(Measure) | wavefunction
     compiler_engine.flush()
 
-    #print(energy,parameter)
+    print(energy,parameter)
 
     return energy
 

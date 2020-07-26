@@ -2,8 +2,7 @@ from ._block import Block
 from Utilities.Operations import full_rotation,inversed_full_rotation,CNOT_entangler,inversed_CNOT_entangler
 
 class HardwareEfficientEntangler(Block):
-    """
-    """
+    
     IS_INVERSE_DEFINED = True
 
     def __init__(self, qsubset, init_angle=None):

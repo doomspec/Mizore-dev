@@ -1,7 +1,7 @@
-from mizore.CircuitConstructor import GreedyConstructor
+from CircuitConstructor import GreedyConstructor
 from openfermion.transforms import bravyi_kitaev
-from mizore.HamiltonianGenerator import get_example_molecular_hamiltonian
-from mizore.PoolGenerator import BlockPool,quasi_imaginary_evolution_rotation_pool
+from HamiltonianGenerator import get_example_molecular_hamiltonian
+from PoolGenerator import BlockPool,quasi_imaginary_evolution_rotation_pool
 
 if __name__=="__main__":
     
@@ -26,3 +26,7 @@ if __name__=="__main__":
     constructor.join()
     
     constructor.terminate()
+
+"""
+
+"""

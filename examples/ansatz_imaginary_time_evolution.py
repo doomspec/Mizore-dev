@@ -1,15 +1,15 @@
-from mizore.CircuitConstructor import GreedyConstructor
+from CircuitConstructor import GreedyConstructor
 from openfermion.transforms import bravyi_kitaev
-from mizore.HamiltonianGenerator import get_example_molecular_hamiltonian
-from mizore.PoolGenerator import BlockPool
-from mizore.Blocks import MultiRotationEntangler,BlockCircuit,HardwareEfficientEntangler
-from mizore.ParameterOptimizer import ImaginaryTimeEvolutionOptimizer
+from HamiltonianGenerator import get_example_molecular_hamiltonian
+from PoolGenerator import BlockPool
+from Blocks import MultiRotationEntangler,BlockCircuit,HardwareEfficientEntangler
+from ParameterOptimizer import ImaginaryTimeEvolutionOptimizer
 
 if __name__ == "__main__":
 
      """
-     Implementation of ansatz-based imaginary time evolution described in
-     "Variational ansatz-based quantum simulation of imaginary time evolution"
+     Implementation of ansatz-based imaginary time evolution described in npj Quantum Information (2019) 5:75
+     (Variational ansatz-based quantum simulation of imaginary time evolution)
      """
 
      transform = bravyi_kitaev

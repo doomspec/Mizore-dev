@@ -3,7 +3,7 @@ from ._block_circuit import BlockCircuit
 from ._utilities import get_inverse_circuit
 class CompositiveBlock(Block):
     """
-
+    To define a Block by a Blockcircuit
     """
     IS_INVERSE_DEFINED = True
 

@@ -1,5 +1,9 @@
 from openfermion.ops import FermionOperator, QubitOperator
 
+"""
+Methods for generating S^2 Sx Sy and Sz
+These operators can be used for adding penalty in the Hamiltonian and help VQE to converge.
+"""
 
 def spin_operators(n_qubit, fermion_qubit_transformation, opt_type, spin_separate=True):
     n0 = n_qubit // 2

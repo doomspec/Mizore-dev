@@ -6,7 +6,8 @@ from Utilities.Iterators import iter_qsubset_pauli_of_operator
 
 
 class MultiRotationEntangler(Block):
-    """Entangler of the form: e^{iP_1 t_1} e^{iP_2 t_1} .. e^{iP_n t_n}
+    """Entangler of the form: e^{iP_1 t_1} e^{iP_2 t_2} .. e^{iP_n t_n}
+    There are n adjustable parameters
     Attributes:
         operator: Ops = sum_i a_i P_i
     """

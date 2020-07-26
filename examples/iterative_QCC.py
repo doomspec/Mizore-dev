@@ -1,7 +1,7 @@
-from mizore.CircuitConstructor import GreedyConstructor
+from CircuitConstructor import GreedyConstructor
 from openfermion.transforms import bravyi_kitaev
-from mizore.HamiltonianGenerator import get_example_molecular_hamiltonian
-from mizore.PoolGenerator import BlockPool,all_rotation_pool
+from HamiltonianGenerator import get_example_molecular_hamiltonian
+from PoolGenerator import BlockPool,all_rotation_pool
 
 if __name__=="__main__":
 
@@ -26,3 +26,19 @@ if __name__=="__main__":
     constructor.join()
     
     constructor.terminate()
+
+"""
+Here is GreedyConstructor
+Size of Block Pool: 40
+Initial Energy: -1.1167593073964257
+Block added, energy now is: -1.1372838344885021 Hartree
+Distance to target energy: -0.0009999999999996678
+Block Num:2; Qubit Num:4
+Block list:
+Type:HartreeFockInitBlock; Para Num:0; Qsubset:[0]
+Type:RotationEntangler; Para Num:1; Qsubset:[0, 1, 2, 3]; Pauli:YZXZ
+Doing global optimization
+Global Optimized Energy: -1.1372838344885021
+Target energy achieved by 2  blocks!
+Construction process ends!
+"""

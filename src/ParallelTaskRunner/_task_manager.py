@@ -6,7 +6,10 @@ import numpy
 
 
 class TaskManager:
-
+    """
+    The class for parallelly evaluate quantum circuits.
+    Holds the task queue and result queue for TaskRunner to read the inputs and put the outputs.
+    """
     def __init__(self, n_processor):
 
         self.n_processor = n_processor

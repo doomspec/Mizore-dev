@@ -11,7 +11,10 @@ NOT_DEFINED = 999999
 
 
 class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
-
+    """
+    This class implements imaginary time evolution described in npj Quantum Information (2019) 5:75.
+    Differing from the original paper, here we calculate the A and C matrix by finite difference rather than the swap test.
+    """
     def __init__(self, random_adjust=0.01, diff=1e-4, stepsize=1e-1, n_step=10, max_increase_n_step=3,
                  task_manager=None,verbose=False):
         ParameterOptimizer.__init__(self)

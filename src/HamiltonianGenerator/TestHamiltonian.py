@@ -11,6 +11,9 @@ from Utilities.Tools import get_operator_chain
 NOT_DEFINED = 999999
 CHEMICAL_ACCURACY = 0.001
 
+"""
+The methods for generating simple molecular and graph theory Hamiltonian for VQE to find ground state energy.
+"""
 
 def get_example_molecular_hamiltonian(molecule_name, basis="sto-3g", geometry_info=NOT_DEFINED, fermi_qubit_transform=bravyi_kitaev):
     if geometry_info == NOT_DEFINED:

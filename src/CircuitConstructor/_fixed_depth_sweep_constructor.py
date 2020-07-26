@@ -17,7 +17,7 @@ class FixedDepthSweepConstructor(CircuitConstructor):
     Fixed depth sweep constructor which contains limited number of blocks.
     In the construction, the constructor first grow the circuit like GreedyConstrutor.
     After achieving the limit of block number, the constructor starts to sweep the blocks in the circuit
-    and optimize the blocks in each position. In each position, both the type of block and its parameter will be optimized.
+    and optimize the blocks in each position. In each position, both the type of block and its parameters will be optimized.
 
     NOT FINISHED!!
     """
