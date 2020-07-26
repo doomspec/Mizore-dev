@@ -14,7 +14,7 @@ git clone https://github.com/doomspec/Mizore.git
 
 # install mizore via setup.py
 cd Mizore
-python3 setup.py install
+sudo python3 setup.py install
 ```
 
 ## First adptive-VQE program 

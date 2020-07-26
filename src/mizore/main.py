@@ -10,7 +10,7 @@ if __name__=="__main__":
     "Variational ansatz-based quantum simulation of imaginary time evolution"
     on the Hamiltonian-based ansatz described in
     "Improving the accuracy of quantum computational chemistry using the transcorrelated method"
-    (arXiv:2006.11181v1)
+    (arXiv:2006.11181v1)cd 
     """
 
     # Generate the Hamiltonian

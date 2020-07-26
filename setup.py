@@ -1,11 +1,12 @@
 import setuptools
 import os
-
-setuptools.setup(
+from setuptools import setup, find_packages
+setup(
     name="mizore",
     version="0.1.0",
-    description="A framework for hybrid quantum computing machine learning",
-    packages=setuptools.find_namespace_packages(exclude=["venv"]),
+    description="A framework for adaptive quantum circuit construction",
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     install_requires=[
         "openfermion",
         "projectq",

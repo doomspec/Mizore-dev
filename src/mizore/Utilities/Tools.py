@@ -1,4 +1,4 @@
-from Utilities.Iterators import iter_qsubset_pauli_of_operator
+from .Iterators import iter_qsubset_pauli_of_operator
 from openfermion.ops import QubitOperator
 
 number2pauli_name = ["I", "X", "Y", "Z"]

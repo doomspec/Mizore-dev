@@ -1,0 +1,7 @@
+openfermion
+projectq
+openfermionpyscf
+pyscf
+multiprocess
+numpy
+scipy
