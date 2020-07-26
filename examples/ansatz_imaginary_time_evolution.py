@@ -1,9 +1,9 @@
-from CircuitConstructor import GreedyConstructor
+from mizore.CircuitConstructor import GreedyConstructor
 from openfermion.transforms import bravyi_kitaev
-from HamiltonianGenerator import get_example_molecular_hamiltonian
-from PoolGenerator import BlockPool
-from Blocks import MultiRotationEntangler,BlockCircuit,HardwareEfficientEntangler
-from ParameterOptimizer import ImaginaryTimeEvolutionOptimizer
+from mizore.HamiltonianGenerator import get_example_molecular_hamiltonian
+from mizore.PoolGenerator import BlockPool
+from mizore.Blocks import MultiRotationEntangler,BlockCircuit,HardwareEfficientEntangler
+from mizore.ParameterOptimizer import ImaginaryTimeEvolutionOptimizer
 
 if __name__ == "__main__":
 
