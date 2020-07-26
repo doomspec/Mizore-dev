@@ -57,18 +57,18 @@ def get_example_molecular_hamiltonian(molecule_name, basis="sto-3g", geometry_in
 def _get_example_qaoa_hamiltonian(problem, n_qubit):
     # print('r = {} A'.format(bond_len))
     if problem == 'maxcut':
-        qubit_hamiltonian = get_maxcut(n_qubit)
+        qubit_hamiltonian = get_maxcut_hamiltonian(n_qubit)
     elif problem == 'tsp':
-        qubit_hamiltonian = get_tsp(n_qubit)
+        qubit_hamiltonian = get_tsp_hamiltonian(n_qubit)
     else:
         print(
             "Such example qaoa problem is not supported, using default maxcut hamiltonian.")
-        qubit_hamiltonian = get_maxcut(n_qubit)
+        qubit_hamiltonian = get_maxcut_hamiltonian(n_qubit)
 
     return qubit_hamiltonian
 
 
-def get_maxcut(n_qubit):
+def get_maxcut_hamiltonian(n_qubit):
     '''
     Same with n qubit Ising model, qubit is site number.
     '''
@@ -81,7 +81,7 @@ def get_maxcut(n_qubit):
     return HamiltonianObjective(hamiltonian, n_qubit, None, hamiltonian_info)
 
 
-def get_tsp(n_qubit):
+def get_tsp_hamiltonian(n_qubit):
     # Here qubit means number of cities
     hamiltonian = 0 * QubitOperator("")
     coeff = 1 / 4

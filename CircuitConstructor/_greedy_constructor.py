@@ -34,19 +34,20 @@ class GreedyConstructor(CircuitConstructor):
 
     gradiant_cutoff = 1e-9
 
-    def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None):
+    def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None, init_circuit=None):
         """
         
         """
         CircuitConstructor.__init__(self)
-
-        self.circuit = BlockCircuit(hamiltonian_obj.n_qubit)
+        self.circuit=init_circuit
+        if self.circuit==None:
+            self.circuit = BlockCircuit(hamiltonian_obj.n_qubit)
+            self.circuit.add_block(hamiltonian_obj.init_block)
         self.max_n_block = max_n_block
         self.terminate_energy = terminate_energy
         self.block_pool = block_pool
         self.n_qubit = hamiltonian_obj.n_qubit
         self.hamiltonian = hamiltonian_obj.hamiltonian
-        self.circuit.add_block(hamiltonian_obj.init_block)
         self.id = id(self)
         self.optimizer=optimizer
         

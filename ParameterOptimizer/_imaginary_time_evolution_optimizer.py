@@ -13,7 +13,7 @@ NOT_DEFINED = 999999
 class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
 
     def __init__(self, random_adjust=0.01, diff=1e-4, stepsize=1e-1, n_step=10, max_increase_n_step=3,
-                 task_manager=None):
+                 task_manager=None,verbose=False):
         ParameterOptimizer.__init__(self)
 
         self.random_adjust = random_adjust
@@ -24,6 +24,7 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
         self.n_step = n_step
         self.lowest_energy = NOT_DEFINED
         self.lowest_energy_circuit = None
+        self.verbose=verbose
 
     def run_optimization(self, _circuit: BlockCircuit, hamiltonian):
         """
@@ -60,6 +61,7 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
 
             adjusted_circuits = []
 
+
             diff = self.diff
             for position in circuit.active_position_list:
                 block_n_para = circuit.block_list[position].n_parameter
@@ -85,7 +87,6 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
                     mat_A[j][i] = term_value
 
             # print(mat_A)
-
             origin_energy = get_circuit_energy(circuit, hamiltonian)
             for i in range(n_parameter):
                 term_value = get_circuit_energy(
@@ -95,7 +96,6 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
                 mat_C[i] = term_value
 
             # print(mat_C)
-
             try:
                 ITE_derivative = linalg.solve(mat_A, mat_C)
             except linalg.LinAlgError:
@@ -117,7 +117,9 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
                 increase_n_step += 1
 
             previous_energy=energy
-            #print(self.lowest_energy,self.energy_list)
+
+            if self.verbose:
+                print("Lowest History Energy:",self.lowest_energy,"; Energy Now:",energy)
 
             if increase_n_step >= self.max_increase_n_step:
                 break

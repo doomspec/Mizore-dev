@@ -1,6 +1,6 @@
 from CircuitConstructor import GreedyConstructor
 from openfermion.transforms import bravyi_kitaev
-from HamiltonianGenerator.TestHamiltonian import get_example_molecular_hamiltonian
+from HamiltonianGenerator import get_example_molecular_hamiltonian
 from PoolGenerator import BlockPool,quasi_imaginary_evolution_rotation_pool
 
 if __name__=="__main__":
