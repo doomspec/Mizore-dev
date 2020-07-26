@@ -1,5 +1,5 @@
 # Mizore
-<img src="https://github.com/doomspec/Mizore/blob/master/mizore_icon.png" width="30%" align="left" />
+<img src="docs/mizore_icon.png" width="30%" align="left" />
 
 Mizore is an open source effort for quantum computing which focus on adaptive construction of the quantum circuit for certain objective. Currently, Mizore focus on finding the quantum circuit that produce the ground state of a certain Hamiltonian by the Variational Quantum Eigensolver (VQE) approach. 
 
@@ -42,7 +42,7 @@ constructor.terminate()
 ## Key ideas
 Differing from using elementary gate set from circuit construction, we introduce the concept *block* (mizore.Blocks.Block). A block is a piece of parameterized circuit that implements certain unitary such as a double excitation and high-dimensional rotation. In a run of Mizore program, one first generate a elementary block set for the construction which we call *block pool* (mizore.PoolGenerator.BlockPool). Then, one use certain circuit constructor (in mizore.CircuitConstructor) to find a block circuit (mizore.Blocks.BlockCircuit) that achieves certain objective (mizore.Objective) using the blocks in the block pool. For detail usage instruction of these modules, please refer to the annotation in the sourse codes. 
 
-<img src="https://github.com/doomspec/Mizore/blob/master/mizore_lifetime.png" width="90%" align="center" />
+<img src="docs/mizore_lifetime.png" width="90%" align="center" />
 
 Also, we provide methods for conveniently construct the problem Hamiltonian for tests in mizore.HamiltonianGenerator using PySCF and openfermion (HiQ Fermion). Parallel run of circuit evaluation is implemented in mizore.ParallelTaskRunner. Optimization methods including basin-hopping and ansatz-based imaginary time evolution ([npj Quantum Information (2019) 5:75](https://www.nature.com/articles/s41534-019-0187-2)) is implemented in mizore.ParameterOptimizer. The simulation of quantum circuit is implemented by Huawei's fork of ProjectQ (HiQ Simulator).
 
