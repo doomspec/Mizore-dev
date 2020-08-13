@@ -1,16 +1,15 @@
 from ._task import Task
 from Blocks import BlockCircuit
-from Utilities.CircuitEvaluation import evaluate_circuit_energy
+from Utilities.CircuitEvaluation import evaluate_circuit_expectation
 
 
-class EvaluationTask(Task):
-
-    def __init__(self, circuit: BlockCircuit, hamiltonian):
+class ExpectationValueTask(Task):
+    
+    def __init__(self, circuit: BlockCircuit, observable):
         Task.__init__(self)
         self.circuit = circuit
-        self.hamiltonian = hamiltonian
+        self.observable = observable
 
     def run(self):
-        res = evaluate_circuit_energy([], self.circuit.n_qubit, self.circuit.get_fixed_parameter_ansatz(),
-                                      self.bit_strings)
+        res = evaluate_circuit_expectation([], self.circuit.n_qubit, self.observable,self.circuit.get_fixed_parameter_ansatz())
         return res

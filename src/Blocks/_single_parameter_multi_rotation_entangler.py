@@ -6,6 +6,7 @@ from Utilities.Iterators import iter_coeff_qsubset_pauli_of_operator
 
 class SingleParameterMultiRotationEntangler(Block):
     """Entangler of the form: e^{i P_1 a_1 t} e^{iP_2 a_2 t} .. e^{iP_n a_n t}
+    There is only one adjustable parameter
     Attributes:
         operator: Ops = sum_i a_i P_i
     """

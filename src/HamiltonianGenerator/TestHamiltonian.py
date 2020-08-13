@@ -4,7 +4,7 @@ from openfermion.ops import QubitOperator
 from openfermionpyscf import run_pyscf
 from .Molecule._geometry_generator import geometry_generator_dict, equilibrium_geometry_dict
 from .Molecule._generate_HF_operation import get_dressed_operator, get_HF_operator, get_electron_fermion_operator
-from Objective._hamiltonian_obj import HamiltonianObjective
+from Objective._energy_obj import EnergyObjective
 from Blocks import HartreeFockInitBlock
 from Utilities.Tools import get_operator_chain
 
@@ -54,7 +54,7 @@ def get_example_molecular_hamiltonian(molecule_name, basis="sto-3g", geometry_in
 
     init_operator = HartreeFockInitBlock(get_operator_chain(qubit_electron_operator))
 
-    return HamiltonianObjective(qubit_hamiltonian, molecule.n_qubits, init_operator, hamiltonian_info)
+    return EnergyObjective(qubit_hamiltonian, molecule.n_qubits, init_operator, hamiltonian_info)
 
 
 def _get_example_qaoa_hamiltonian(problem, n_qubit):

@@ -28,7 +28,7 @@ class BlockCircuit:
         return
 
     def add_block(self, block: Block):
-        self.block_list.append(block)
+        self.block_list.append(copy(block))
 
     def count_n_parameter_by_position_list(self, position_list):
         n_parameter = 0
@@ -138,7 +138,16 @@ class BlockCircuit:
             for in_block_position in range(n_block_para):
                 self.block_list[block_postion].parameter[in_block_position] += adjust_list[para_index]
                 para_index += 1
-        return
+        return 
+    
+    def get_gate_used(self):
+        gate_used={"CNOT":0,"SingleRotation":0}
+        for block in self.block_list:
+            block_gate=block.get_gate_used()
+            for key in block_gate.keys():
+                gate_used[key]+=block_gate[key]
+        return gate_used
+
 
     def duplicate(self):
         copy_circuit = BlockCircuit(self.n_qubit)

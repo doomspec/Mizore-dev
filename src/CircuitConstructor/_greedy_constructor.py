@@ -4,7 +4,7 @@ from PoolGenerator import BlockPool
 from multiprocessing import Process
 from copy import copy, deepcopy
 from Blocks._utilities import *
-from Objective._hamiltonian_obj import HamiltonianObjective
+from Objective._energy_obj import EnergyObjective
 from ParallelTaskRunner import TaskManager, OptimizationTask
 from ParameterOptimizer import BasinhoppingOptimizer, ImaginaryTimeEvolutionOptimizer
 from Blocks._utilities import get_circuit_energy
@@ -34,7 +34,7 @@ class GreedyConstructor(CircuitConstructor):
 
     gradiant_cutoff = 1e-9
 
-    def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None, init_circuit=None):
+    def __init__(self, hamiltonian_obj: EnergyObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None, init_circuit=None):
         """
         
         """
@@ -58,8 +58,7 @@ class GreedyConstructor(CircuitConstructor):
         self.task_manager = task_manager
         self.task_manager_created=False
         if task_manager == None:
-            # If task_manager not specified, use 4 processors manager
-            self.task_manager = TaskManager(4)
+            self.task_manager = TaskManager()
             self.task_manager_created = True
         return
 
@@ -71,7 +70,7 @@ class GreedyConstructor(CircuitConstructor):
         self.energy_list.append(self.current_energy)
         print("Initial Energy:", self.init_energy)
         # print(self.block_pool)
-        for layer in range(self.max_n_block):
+        for _layer in range(self.max_n_block):
             if self.add_one_block():
                 # Succeed to add new block
                 print(self.circuit)
@@ -98,6 +97,7 @@ class GreedyConstructor(CircuitConstructor):
         self.circuit.adjust_parameter_on_active_position(parameter)
         self.energy_list.append(self.current_energy)
         print("Global Optimized Energy:",self.current_energy)
+        print(self.circuit.get_gate_used())
 
     def add_one_block(self):
         """Try to add a new block
@@ -131,8 +131,8 @@ class GreedyConstructor(CircuitConstructor):
             trial_circuit.add_block(block)
             trial_circuit.set_only_last_block_active()
             task=OptimizationTask(trial_circuit,self.optimizer,self.hamiltonian)
-            self.task_manager.add_task(task, task_series_id=self.id)
-
+            self.task_manager.add_task_to_buffer(task, task_series_id=self.id)
+        self.task_manager.flush(task_series_id=self.id)
         res_list = self.task_manager.receive_task_result(
             task_series_id=self.id)
         i = 0

@@ -2,7 +2,7 @@ from ._objective import Objective
 from Blocks import HartreeFockInitBlock
 
 
-class HamiltonianObjective(Objective):
+class EnergyObjective(Objective):
     def __init__(self, hamiltonian, n_qubit, init_block=None, obj_info={}):
         self.hamiltonian = hamiltonian
         self.n_qubit = n_qubit

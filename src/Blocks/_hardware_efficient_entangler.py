@@ -1,4 +1,4 @@
-from ._block import Block
+from Blocks import Block
 from Utilities.Operations import full_rotation,inversed_full_rotation,CNOT_entangler,inversed_CNOT_entangler
 
 class HardwareEfficientEntangler(Block):
@@ -13,16 +13,26 @@ class HardwareEfficientEntangler(Block):
         self.qsubset = qsubset
 
     def apply_forward_gate(self, parameter, wavefunction):
-        CNOT_entangler(wavefunction,self.qsubset)
         full_rotation(wavefunction,self.qsubset,[self.parameter[i]+parameter[i] for i in range(len(self.parameter))])
+        CNOT_entangler(wavefunction,self.qsubset)
         return
 
     def apply_inverse_gate(self, parameter, wavefunction):
-        inversed_full_rotation(wavefunction,self.qsubset,[-self.parameter[i]-parameter[i] for i in range(len(self.parameter))])
         inversed_CNOT_entangler(wavefunction,self.qsubset)
+        inversed_full_rotation(wavefunction,self.qsubset,[self.parameter[i]+parameter[i] for i in range(len(self.parameter))])
         return
+
+    def get_gate_used(self):
+        return {"CNOT":len(self.qsubset),"SingleRotation":len(self.qsubset)}
 
     def __str__(self):
         info = self.basic_info_string()
         info += "; Qsubset:" + str(self.qsubset)
         return info
+
+def iter_H_E_entangler_by_qsubsets(qsubsets):
+    from PoolGenerator._qsubset_pools import number2qsubset
+    for num in qsubsets:
+        qsubset=number2qsubset(num)
+        if len(qsubset)>=2:
+            yield HardwareEfficientEntangler(qsubset)

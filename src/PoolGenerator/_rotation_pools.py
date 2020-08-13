@@ -18,11 +18,13 @@ def all_rotation_pool(n_qubit, max_length=-1, only_odd_Y_operators=True):
         max_length = n_qubit
 
     if only_odd_Y_operators:
-        for qsubset, pauli in iter_qsubset_odd_Y_pauli_by_length(max_length, range(n_qubit)):
-            yield RotationEntangler(qsubset, pauli)
+        for length in [i+1 for i in range(max_length)]:
+            for qsubset, pauli in iter_qsubset_odd_Y_pauli_by_length(length, range(n_qubit)):
+                yield RotationEntangler(qsubset, pauli)
     else:
-        for qsubset, pauli in iter_all_qsubset_pauli_by_length(max_length, range(n_qubit)):
-            yield RotationEntangler(qsubset, pauli)
+        for length in [i+1 for i in range(max_length)]:
+            for qsubset, pauli in iter_all_qsubset_pauli_by_length(length, range(n_qubit)):
+                yield RotationEntangler(qsubset, pauli)
 
 
 def make_pauli_imaginary(pauli):

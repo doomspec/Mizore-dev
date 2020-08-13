@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
      init_circuit=BlockCircuit(hamiltonian_obj.n_qubit)
      init_circuit.add_block(hamiltonian_obj.init_block)
-     init_circuit.add_block(HardwareEfficientEntangler((0,2)))
+     #init_circuit.add_block(HardwareEfficientEntangler((0,2)))
 
      # Generate the circuit constructor
      constructor = GreedyConstructor(hamiltonian_obj, pool, optimizer=ImaginaryTimeEvolutionOptimizer(

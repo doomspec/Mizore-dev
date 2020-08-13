@@ -16,6 +16,12 @@ git clone https://github.com/doomspec/Mizore.git
 cd Mizore
 sudo python3 setup.py install
 ```
+Notice: Mizore does not support Windows now because PySCF is used for Hamiltonian generating.
+
+## Important Dependence
+1. ProjectQ (HiQ Simulator)
+2. Openfermion (HiQ Fermion)
+3. PySCF (and openfermionpyscf)
 
 ## First adaptive-VQE program 
 

@@ -22,6 +22,9 @@ class HartreeFockInitBlock(Block):
         apply_X_gates(self.qsubset, wavefunction)
         return
 
+    def get_gate_used(self):
+        return {"SingleRotation":len(self.qsubset)}
+
     def __str__(self):
         info = self.basic_info_string()
         info += "; Qsubset:" + str(self.qsubset)

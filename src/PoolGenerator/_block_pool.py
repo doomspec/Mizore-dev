@@ -37,6 +37,7 @@ class BlockPool:
 
     def __iadd__(self, block):
         self.blocks.add(block)
+        return self
 
     def __add__(self, pool):
         self.merge_with_another_pool(pool)
@@ -58,7 +59,7 @@ class BlockPool:
         new_block_set = random_select(self.blocks, n_block)
         pool = BlockPool()
         pool.blocks = new_block_set
-        return new_block_set
+        return pool
 
     def merge_with_another_pool(self, another_pool):
         self.blocks = set.union(another_pool.blocks, self.blocks)

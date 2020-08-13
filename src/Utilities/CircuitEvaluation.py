@@ -27,7 +27,7 @@ def get_quantum_engine():
     return compiler_engine
 
 
-def evaluate_circuit_energy(parameter, n_qubit, hamiltonian, ansatz):
+def evaluate_circuit_expectation(parameter, n_qubit, hamiltonian, ansatz):
     """
     Args:
 
@@ -54,7 +54,7 @@ def evaluate_circuit_energy(parameter, n_qubit, hamiltonian, ansatz):
     All(Measure) | wavefunction
     compiler_engine.flush()
 
-    print(energy,parameter)
+    #print(energy,parameter)
 
     return energy
 
@@ -71,7 +71,7 @@ def evaluate_circuit_amplitudes(n_qubit, ansatz, bit_string_list):
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
 
     # Apply the circuit
-    ansatz([], wavefunction)
+    ansatz([0]*100, wavefunction)
 
     # Use the engine to implement the gates
     compiler_engine.flush()

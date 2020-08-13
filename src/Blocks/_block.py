@@ -54,6 +54,9 @@ class Block():
             info += "; INVERSED"
         return info
 
+    def get_gate_used(self):
+        return dict()
+
     def __str__(self):
         return self.basic_info_string()
 
