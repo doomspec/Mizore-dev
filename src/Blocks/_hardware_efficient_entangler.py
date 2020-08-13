@@ -30,9 +30,3 @@ class HardwareEfficientEntangler(Block):
         info += "; Qsubset:" + str(self.qsubset)
         return info
 
-def iter_H_E_entangler_by_qsubsets(qsubsets):
-    from PoolGenerator._qsubset_pools import number2qsubset
-    for num in qsubsets:
-        qsubset=number2qsubset(num)
-        if len(qsubset)>=2:
-            yield HardwareEfficientEntangler(qsubset)

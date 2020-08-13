@@ -16,7 +16,7 @@ def number2qsubset(number):
             qsubset.append(i)
     return qsubset
 
-def get_hamiltonian_qsubset_pool(operator):
+def get_operator_qsubset_pool(operator):
     qsubsets=set()
     for qsubset, _pauli in iter_qsubset_pauli_of_operator(operator):
         qsubsets.add(qsubset2number(qsubset))
@@ -28,3 +28,10 @@ def get_qsubset_pool_reduced_block_pool(block_pool,qsubset_pool):
         if qsubset2number(block.qsubset) in qsubset_pool:
             reduced_pool+=block
     return reduced_pool
+
+def iter_entangler_by_qsubsets(qsubsets,constructor):
+    from PoolGenerator._qsubset_pools import number2qsubset
+    for num in qsubsets:
+        qsubset=number2qsubset(num)
+        if len(qsubset)>=2:
+            yield constructor(qsubset)

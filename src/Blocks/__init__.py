@@ -7,3 +7,4 @@ from ._HF_init_block import HartreeFockInitBlock
 from ._parametrized_circuit import ParametrizedCircuit
 from ._hardware_efficient_entangler import HardwareEfficientEntangler
 from ._single_parameter_multi_rotation_entangler import SingleParameterMultiRotationEntangler
+from ._efficient_coupled_cluster import EfficientCoupledCluster
