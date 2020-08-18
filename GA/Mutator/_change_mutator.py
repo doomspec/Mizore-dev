@@ -8,7 +8,7 @@ class ChangeMutator(Mutator):
     Change mutator
     """
 
-    def can_mutate(self, chromosome):
+    def can_mutate(self, ga, chromosome):
         """
         Check chromosome chould be mutate or not
         Args:
@@ -19,7 +19,7 @@ class ChangeMutator(Mutator):
         """
         return True
 
-    def mutate(self, chromosome):
+    def mutate(self, ga, chromosome):
         """
 
         Args:
@@ -29,6 +29,11 @@ class ChangeMutator(Mutator):
 
         """
         genes = chromosome.genes.copy()
+        original_genes = set()
+        [original_genes.add(gene) for gene in genes]
         position = np.random.randint(0, len(genes))
-        genes[position] = np.random.choice(list(GeneBank.genes))
-        return genes
+        genes[position] = np.random.choice(list(set.difference(GeneBank.genes, original_genes)))
+        mutate_prob = 0.2
+        if ga._fitness(genes) > chromosome.fitness and np.random.random() > mutate_prob:
+            return genes
+        return chromosome.genes

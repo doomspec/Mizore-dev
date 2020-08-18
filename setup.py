@@ -14,6 +14,7 @@ setup(
         "pyscf",
         "multiprocess",
         "numpy",
-        "scipy"
+        "scipy",
+        "networkx"
     ]
 )

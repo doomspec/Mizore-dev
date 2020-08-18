@@ -7,7 +7,7 @@ class DeleteMutator(Mutator):
     Delete mutator
     """
 
-    def can_mutate(self, chromosome):
+    def can_mutate(self, ga, chromosome):
         """
         Check chromosome chould be mutate or not
         Args:
@@ -16,9 +16,9 @@ class DeleteMutator(Mutator):
         Returns: whether chromosome can be mutate
 
         """
-        return len(chromosome.genes) > 1
+        return len(chromosome.genes) > 2
 
-    def mutate(self, chromosome):
+    def mutate(self, ga, chromosome):
         """
 
         Args:
@@ -29,4 +29,7 @@ class DeleteMutator(Mutator):
         """
         genes = chromosome.genes.copy()
         genes.remove(np.random.choice(genes))
-        return genes
+        mutate_prob = 0.2
+        if ga._fitness(genes) > chromosome.fitness and np.random.random() > mutate_prob:
+            return genes
+        return chromosome.genes

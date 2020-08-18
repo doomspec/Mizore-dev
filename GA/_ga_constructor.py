@@ -4,10 +4,12 @@ from ._chromosome import Chromosome
 from .Mutator._add_mutator import AddMutator
 from .Mutator._delete_mutator import DeleteMutator
 from .Mutator._change_mutator import ChangeMutator
+import networkx as nx
 import numpy as np
 import logging
 import time
 import copy
+import itertools
 
 logger = logging.getLogger(__name__)
 
@@ -17,13 +19,16 @@ class GAConstructor:
     GA Constructor for the circuit
     """
 
-    def __init__(self, max_block_size=4, max_chromosome_size=5):
+    def __init__(self, graph: nx.Graph, initial_gene_size=4, max_chromosome_size=10):
+        self._graph = graph
         # add identical block to gene bank
         self._gene_bank = list(self._build_gene_bank())
-        self._chromosomes = self._init_chromosomes(max_chromosome_size, max_block_size)
+        self._chromosomes = self._init_chromosomes(max_chromosome_size, initial_gene_size)
         self._mutators = self._init_mutators()
+        for c in self._chromosomes:
+            self._fitness(c.genes)
         # note that result is a list of best individual in each iteration
-        self.result = Chromosome([], max_block_size)
+        self.result = []
 
     def _build_gene_bank(self):
         """
@@ -33,13 +38,11 @@ class GAConstructor:
 
         """
         gene_bank = GeneBank()
-        gene_bank.genes.add(Gene("1"))
-        gene_bank.genes.add(Gene("2"))
-        gene_bank.genes.add(Gene("3"))
-        gene_bank.genes.add(Gene("4"))
+        for node in self._graph.nodes:
+            gene_bank.genes.add(node)
         return gene_bank.genes
 
-    def _init_chromosomes(self, max_chromosome_size, size):
+    def _init_chromosomes(self, max_chromosome_size, initial_gene_size):
         """
         Initial  chromosomes
         Args:
@@ -51,9 +54,8 @@ class GAConstructor:
         """
         chromosomes = []
         for i in range(max_chromosome_size):
-            chromosome_len = np.random.randint(1, size + 1)
-            genes = list(np.random.choice(self._gene_bank, size=chromosome_len))
-            chromosomes.append(Chromosome(genes, size))
+            genes = list(np.random.choice(self._gene_bank, size=initial_gene_size, replace=False))
+            chromosomes.append(Chromosome(genes))
         return chromosomes
 
     def _init_mutators(self):
@@ -81,9 +83,11 @@ class GAConstructor:
         counter = 0
         start_time = time.time()
         while (time_budget != 0 and start_time + time_budget > time.time()) or (iteration != 0 and counter < iteration):
-            best_individual, self._chromosomes = self._evolve(self._chromosomes)
-            if self.result.fitness > best_individual.fitness:
-                self.result = copy.deepcopy(best_individual)
+            self._chromosomes = self._evolve(self._chromosomes)
+            for chromosome in self._chromosomes:
+                self.result.append(copy.deepcopy(chromosome))
+            print(
+                f'time: {time.time()}, round:{counter}, best result:{sorted(self._chromosomes, key=lambda x: x.fitness)[0].fitness}')
             counter += 1
         return self.result
 
@@ -93,17 +97,19 @@ class GAConstructor:
         Args:
             chromosomes: population
 
-        Returns: best individual, generated chromosomes
+        Returns: generated chromosomes
 
         """
-        self._fitness(chromosomes)
-        best_individual = min(chromosomes, key=lambda x: x.fitness)
+        for chromosome in chromosomes:
+            chromosome.fitness = self._fitness(chromosome.genes)
         chromosomes = self._selection(chromosomes)
         chromosomes = self._crossover(chromosomes)
         self._mutation(chromosomes)
-        return best_individual, chromosomes
+        for chromosome in chromosomes:
+            chromosome.fitness = self._fitness(chromosome.genes)
+        return chromosomes
 
-    def _fitness(self, chromosomes=[]):
+    def _fitness(self, genes=[]):
         """
         Fitness function for chromosomes
         Args:
@@ -112,8 +118,11 @@ class GAConstructor:
         Returns: calculated chromosomes
 
         """
-        for chromosome in chromosomes:
-            chromosome.fitness = np.random.random()
+        edges = itertools.combinations(genes, 2)
+        node_num = len(genes)
+        fitness = np.sum([self._graph[item[0]][item[1]]["weight"] for item in edges]) / (
+                (node_num - 1) * node_num)
+        return fitness
 
     def _mutation(self, chromosomes=[]):
         """
@@ -129,10 +138,12 @@ class GAConstructor:
             if np.random.random() < mutation_prob:
                 applied_mutators = []
                 for mutator in self._mutators:
-                    if mutator.can_mutate(chromosome):
+                    if mutator.can_mutate(self, chromosome):
                         applied_mutators.append(mutator)
+                if len(applied_mutators) == 0:
+                    continue
                 mutator = np.random.choice(applied_mutators)
-                chromosome.genes = mutator.mutate(chromosome)
+                chromosome.genes = mutator.mutate(self, chromosome)
 
     def _selection(self, chromosomes=[]):
         """
