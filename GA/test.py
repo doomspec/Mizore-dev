@@ -1,7 +1,9 @@
 from GA._ga_constructor import GAConstructor
+from GA._brute_force import _brute_force
 import networkx as nx
 import itertools
 import numpy as np
+import time
 
 
 def generate_graph(size=10):
@@ -15,6 +17,9 @@ def generate_graph(size=10):
     return g
 
 
-g = generate_graph()
+g = generate_graph(10)
 ga = GAConstructor(g)
 ga.run(time_budget=10)
+begin = time.time()
+_brute_force(g, 10)
+print(time.time() - begin)

@@ -133,7 +133,7 @@ class GAConstructor:
         Returns: mutated chromosomes
 
         """
-        mutation_prob = 1
+        mutation_prob = 0.2
         for chromosome in chromosomes:
             if np.random.random() < mutation_prob:
                 applied_mutators = []
