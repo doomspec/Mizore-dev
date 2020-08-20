@@ -1,11 +1,14 @@
-from projectq.ops import H, X, All, Measure, CNOT, Z, Rz, Ry, Rx, C
+from projectq.ops import H, X,Y,Z, All, Measure, CNOT, Z, Rz, Ry, Rx, C
 import math
-
+PAULI_CHAR2OPERATION={"X":X,"Y":Y,"Z":Z}
 
 def apply_X_gates(qsubset, wavefunction):
     for i in qsubset:
         X | wavefunction[i]
 
+def apply_Pauli_gates(paulistring, wavefunction):
+    for term in paulistring:
+        PAULI_CHAR2OPERATION[term[1]] | wavefunction[term[0]]
 
 def CNOT_entangler(wavefunction, qsubset):
     for i in range(len(qsubset)-1):

@@ -6,4 +6,5 @@
 /.pychainfolder/
 /mizore_results/
 tmp*
-/.vscode/
+.vscode/
+.vscode/.ropeproject/objectdb

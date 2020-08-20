@@ -31,13 +31,13 @@ def get_inner_two_circuit_product(first_circuit: BlockCircuit, second_circuit: B
     """
     Return <0...00|circuit(second)^ circuit(first)|0...00>
     """
-    from Utilities.CircuitEvaluation import evaluate_circuit_0000_amplitudes
+    from Utilities.CircuitEvaluation import evaluate_ansatz_0000_amplitudes
 
     circuit = concatenate_circuit(
         first_circuit, get_inverse_circuit(second_circuit))
 
     ansatz = circuit.get_fixed_parameter_ansatz().ansatz
-    amp_0000 = evaluate_circuit_0000_amplitudes(first_circuit.n_qubit, ansatz)
+    amp_0000 = evaluate_ansatz_0000_amplitudes(first_circuit.n_qubit, ansatz)
     # print(amp_0000,circuit)
     return amp_0000
 
