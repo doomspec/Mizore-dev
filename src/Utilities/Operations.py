@@ -1,6 +1,16 @@
-from projectq.ops import H, X,Y,Z, All, Measure, CNOT, Z, Rz, Ry, Rx, C
+from projectq.ops import H, X,Y,Z, All, Measure, CNOT, Z, Rz, Ry, Rx, C,TimeEvolution
 import math
+import projectq
+from openfermion.ops import QubitOperator
+
 PAULI_CHAR2OPERATION={"X":X,"Y":Y,"Z":Z}
+
+def apply_time_evolution(hamiltonian:QubitOperator,time,wavefunction):
+    projectq_qubit_operator = projectq.ops.QubitOperator()
+    for term, coefficient in hamiltonian.terms.items():
+        projectq_qubit_operator.terms[term] = coefficient
+    #print(time)
+    TimeEvolution(time,projectq_qubit_operator) | wavefunction
 
 def apply_X_gates(qsubset, wavefunction):
     for i in qsubset:

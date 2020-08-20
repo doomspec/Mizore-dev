@@ -3,10 +3,8 @@ from Utilities.Operations import apply_Pauli_gates
 
 
 class PauliGatesBlock(Block):
-    """Apply X gates on a few of qubits. Usually for getting Hartree-Fock qubit wavefunction
-    Attributes:
-        qsubset: should be the qubits where X gates to be applied
-    """
+
+
     n_parameter = 0
     IS_INVERSE_DEFINED = True
 
