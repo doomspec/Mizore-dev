@@ -43,6 +43,6 @@ def get_inner_two_circuit_product(first_circuit: BlockCircuit, second_circuit: B
 
 
 def get_circuit_energy(circuit, hamiltonian):
-    from ParameterOptimizer.ObjWrapper import evaluate_circuit_expectation
+    from ParameterOptimizer.ObjWrapper import evaluate_ansatz_expectation
     ansatz = circuit.get_fixed_parameter_ansatz()
-    return evaluate_circuit_expectation([], circuit.n_qubit, hamiltonian, ansatz)
+    return evaluate_ansatz_expectation([], circuit.n_qubit, hamiltonian, ansatz)

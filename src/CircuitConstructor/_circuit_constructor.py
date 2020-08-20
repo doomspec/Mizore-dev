@@ -24,3 +24,8 @@ class CircuitConstructor(Process):
         self.init_operator = None
 
         return
+    def execute_construction(self):
+        self.start()
+        self.join()
+        self.terminate()
+        return self.circuit

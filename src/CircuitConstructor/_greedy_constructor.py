@@ -34,7 +34,7 @@ class GreedyConstructor(CircuitConstructor):
 
     gradiant_cutoff = 1e-9
 
-    def __init__(self, hamiltonian_obj: EnergyObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None, init_circuit=None):
+    def __init__(self, hamiltonian_obj: EnergyObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None, init_circuit=None, project_name=None):
         """
         
         """
@@ -50,6 +50,7 @@ class GreedyConstructor(CircuitConstructor):
         self.hamiltonian = hamiltonian_obj.hamiltonian
         self.id = id(self)
         self.optimizer=optimizer
+        self.project_name=project_name
         
         self.energy_list=[]
 
@@ -64,13 +65,15 @@ class GreedyConstructor(CircuitConstructor):
 
     def run(self):
         print("Here is GreedyConstructor")
-        print("Size of Block Pool:", len(self.block_pool.blocks))
+        print("Project Name:",self.project_name)
+        print("Block Pool Size:", len(self.block_pool.blocks))
         self.init_energy = get_circuit_energy(self.circuit, self.hamiltonian)
         self.current_energy = self.init_energy
         self.energy_list.append(self.current_energy)
         print("Initial Energy:", self.init_energy)
         # print(self.block_pool)
         for _layer in range(self.max_n_block):
+            print("********Adding "+str(_layer)+"th Block*********")
             if self.add_one_block():
                 # Succeed to add new block
                 print(self.circuit)
@@ -90,6 +93,7 @@ class GreedyConstructor(CircuitConstructor):
         return
 
     def do_global_optimization(self):
+        
         print("Doing global optimization")
         self.circuit.set_all_block_active()
         task=OptimizationTask(self.circuit,BasinhoppingOptimizer(random_initial=0.0),self.hamiltonian)
@@ -97,7 +101,9 @@ class GreedyConstructor(CircuitConstructor):
         self.circuit.adjust_parameter_on_active_position(parameter)
         self.energy_list.append(self.current_energy)
         print("Global Optimized Energy:",self.current_energy)
-        print(self.circuit.get_gate_used())
+        print("Gate Usage:",self.circuit.get_gate_used())
+        print("Energy list:",self.energy_list)
+        
 
     def add_one_block(self):
         """Try to add a new block

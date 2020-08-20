@@ -1,7 +1,9 @@
 from CircuitConstructor import GreedyConstructor
 from openfermion.transforms import bravyi_kitaev
 from HamiltonianGenerator import get_example_molecular_hamiltonian
-from PoolGenerator import BlockPool,quasi_imaginary_evolution_rotation_pool
+from HamiltonianGenerator.FermionTransform import make_transform_spin_separating,get_parity_transform,bravyi_kitaev
+from HamiltonianGenerator import get_reduced_energy_obj_with_HF_init
+from PoolGenerator import BlockPool,quasi_imaginary_evolution_rotation_pool,all_rotation_pool
 
 if __name__=="__main__":
     
@@ -12,20 +14,27 @@ if __name__=="__main__":
     arXiv:1908.09533v1
     """
 
+    n_spinorbital=8
+
+    #transform=make_transform_spin_separating(get_parity_transform(n_spinorbital),n_spinorbital)
+    transform=bravyi_kitaev#make_transform_spin_separating(get_parity_transform(n_spinorbital),n_spinorbital)
+
+    mole_name="H2"
+    basis="sto-3g"
     # Generate the Hamiltonian
-    hamiltonian_obj=get_example_molecular_hamiltonian("H2",basis="6-31g",fermi_qubit_transform=bravyi_kitaev)
+    hamiltonian_obj=get_example_molecular_hamiltonian(mole_name,basis=basis,fermi_qubit_transform=transform)
+
+    hamiltonian_obj=get_reduced_energy_obj_with_HF_init(hamiltonian_obj,(3,))
 
     # Generate the block pool
+    #pool=BlockPool(all_rotation_pool(hamiltonian_obj.n_qubit,max_length=hamiltonian_obj.n_qubit,only_odd_Y_operators=True))
     pool=BlockPool(quasi_imaginary_evolution_rotation_pool(hamiltonian_obj.hamiltonian))
 
     # Generate the circuit constructor
-    constructor=GreedyConstructor(hamiltonian_obj,pool)
+    constructor=GreedyConstructor(hamiltonian_obj,pool,project_name="_".join([mole_name,basis]))
 
     # Run the constructor
-    constructor.start()
-    constructor.join()
-    
-    constructor.terminate()
+    constructor.execute_construction()
 
 """
 Here is GreedyConstructor

@@ -30,7 +30,7 @@ class RotationEntangler(Block):
         return
 
     def get_gate_used(self):
-        return {"CNOT":len(self.qsubset)*2,"SingleRotation":count_single_gate_for_pauliword(self.pauliword)+1}
+        return {"CNOT":(len(self.qsubset)-1)*2,"SingleRotation":count_single_gate_for_pauliword(self.pauliword)+1}
 
     def __str__(self):
         info = self.basic_info_string()

@@ -1,9 +1,9 @@
 from Blocks import Block
 from Blocks import BlockCircuit
-from Blocks import HardwareEfficientEntangler,RotationEntangler
+from Blocks import HardwareEfficientEntangler,RotationEntangler,EfficientCoupledCluster
 from copy import copy
 from Utilities.Tools import random_list
-from Utilities.CircuitEvaluation import evaluate_circuit_amplitudes
+from Utilities.CircuitEvaluation import evaluate_ansatz_amplitudes
 
 def test_block_inverse(n_qubit,_block:Block):
     for _i in range(10):
@@ -18,7 +18,7 @@ def test_block_inverse(n_qubit,_block:Block):
         circuit.adjust_all_parameter_by_list(parameter)
         #print(circuit)
         #print(circuit.get_ansatz().n_parameter)
-        print(abs((evaluate_circuit_amplitudes(n_qubit,circuit.get_ansatz().ansatz,[[0]*4]))[0]))
+        print(abs((evaluate_ansatz_amplitudes(n_qubit,circuit.get_ansatz().ansatz,[[0]*4]))[0]))
 
 
 
@@ -34,7 +34,8 @@ if __name__ == "__main__":
     hamiltonian_obj = get_example_molecular_hamiltonian(
           "H2", basis="sto-3g", fermi_qubit_transform=transform)
 
-    block=MultiRotationEntangler(hamiltonian_obj.hamiltonian)
+    block=EfficientCoupledCluster((0,1,2,3))
+    #block=MultiRotationEntangler(hamiltonian_obj.hamiltonian)
     test_block_inverse(4,block)
 
 

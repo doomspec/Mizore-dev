@@ -44,7 +44,7 @@ class MultiRotationEntangler(Block):
         n_CNOT=0
         for qsubset, pauliword in self.qsubset_pauliword_list:
             n_rotation+=count_single_gate_for_pauliword(pauliword)
-            n_CNOT+=2*len(qsubset)
+            n_CNOT+=2*(len(qsubset)-1)
         n_rotation+=1
         return {"CNOT":n_CNOT,"SingleRotation":n_rotation}
 

@@ -27,7 +27,7 @@ def get_quantum_engine():
     return compiler_engine
 
 
-def evaluate_circuit_expectation(parameter, n_qubit, hamiltonian, ansatz):
+def evaluate_ansatz_expectation(parameter, n_qubit, hamiltonian, ansatz):
     """
     Args:
 
@@ -59,7 +59,7 @@ def evaluate_circuit_expectation(parameter, n_qubit, hamiltonian, ansatz):
     return energy
 
 
-def evaluate_circuit_amplitudes(n_qubit, ansatz, bit_string_list):
+def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list):
     """
     Return the amplitudes of the kets in the bit_string_list
     Each bit_string should be a list of booleans like [False]*n_qubit
@@ -89,5 +89,5 @@ def evaluate_circuit_amplitudes(n_qubit, ansatz, bit_string_list):
     return amp_list
 
 
-def evaluate_circuit_0000_amplitudes(n_qubit, ansatz):
-    return evaluate_circuit_amplitudes(n_qubit, ansatz, [[False] * n_qubit])[0]
+def evaluate_ansatz_0000_amplitudes(n_qubit, ansatz):
+    return evaluate_ansatz_amplitudes(n_qubit, ansatz, [[False] * n_qubit])[0]

@@ -42,18 +42,18 @@ def get_two_density_matrix(get_expectation_value, wavefunction):
             two_DMs[i][j] = two_DMs[i][j]/4
     return two_DMs
 
-def two_DM_to_one_DMs(two_DMs):
+def two_DM_to_one_DMs(two_DM):
     one_DM_1=np.array([[0.0+0.0j]*2]*2)
     one_DM_2=np.array([[0.0+0.0j]*2]*2)
-    one_DM_1[0][0]=two_DMs[0][0]+two_DMs[1][1]
-    one_DM_1[1][0]=two_DMs[2][0]+two_DMs[3][1]
-    one_DM_1[0][1]=two_DMs[0][2]+two_DMs[1][3]
-    one_DM_1[1][1]=two_DMs[2][2]+two_DMs[3][3]
+    one_DM_1[0][0]=two_DM[0][0]+two_DM[1][1]
+    one_DM_1[1][0]=two_DM[2][0]+two_DM[3][1]
+    one_DM_1[0][1]=two_DM[0][2]+two_DM[1][3]
+    one_DM_1[1][1]=two_DM[2][2]+two_DM[3][3]
 
-    one_DM_2[0][0]=two_DMs[0][0]+two_DMs[2][2]
-    one_DM_2[1][0]=two_DMs[0][1]+two_DMs[2][3]
-    one_DM_2[0][1]=two_DMs[1][0]+two_DMs[3][2]
-    one_DM_2[1][1]=two_DMs[1][1]+two_DMs[3][3]
+    one_DM_2[0][0]=two_DM[0][0]+two_DM[2][2]
+    one_DM_2[1][0]=two_DM[0][1]+two_DM[2][3]
+    one_DM_2[0][1]=two_DM[1][0]+two_DM[3][2]
+    one_DM_2[1][1]=two_DM[1][1]+two_DM[3][3]
     return one_DM_1,one_DM_2
 
 def entropy_one_DM(one_DM: np.array, test=0):
