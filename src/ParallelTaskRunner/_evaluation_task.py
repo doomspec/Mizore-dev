@@ -11,5 +11,5 @@ class ExpectationValueTask(Task):
         self.observable = observable
 
     def run(self):
-        res = evaluate_ansatz_expectation([], self.circuit.n_qubit, self.observable,self.circuit.get_fixed_parameter_ansatz())
+        res = evaluate_ansatz_expectation([], self.circuit.n_qubit, self.observable,self.circuit.get_fixed_parameter_ansatz().ansatz)
         return res

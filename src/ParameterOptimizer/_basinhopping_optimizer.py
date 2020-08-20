@@ -2,7 +2,7 @@ from scipy.optimize import minimize, basinhopping
 from .ObjWrapper import get_obj_for_optimizer
 from Utilities.Tools import random_list
 from ._parameter_optimizer import ParameterOptimizer
-
+from Objective._objective import CostFunction
 
 class BasinhoppingOptimizer(ParameterOptimizer):
 
@@ -15,16 +15,14 @@ class BasinhoppingOptimizer(ParameterOptimizer):
         self.stepsize = stepsize
         self.tol = tol
 
-    def run_optimization(self, circuit, hamiltonian):
-        pcircuit = circuit.get_ansatz_on_active_position()
+    def run_optimization(self, circuit, cost:CostFunction):
 
-        initial_parameter = [0.0] * pcircuit.n_parameter
-
+        n_parameter=circuit.get_active_n_parameter()
+        initial_parameter = [0.0] * n_parameter
         if self.random_initial != 0:
-            initial_parameter = random_list(-self.random_initial, self.random_initial, pcircuit.n_parameter
-                                            )
+            initial_parameter = random_list(-self.random_initial, self.random_initial, n_parameter)
 
-        obj = get_obj_for_optimizer(pcircuit, hamiltonian)
+        obj = cost.get_cost_obj(circuit)
 
         opt_result = basinhopping(obj, initial_parameter, niter=self.niter,
                                   T=self.temperature, stepsize=self.stepsize, minimizer_kwargs={

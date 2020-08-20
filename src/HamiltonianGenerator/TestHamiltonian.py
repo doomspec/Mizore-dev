@@ -49,8 +49,8 @@ def get_example_molecular_hamiltonian(molecule_name, basis="sto-3g", geometry_in
 
     # Set the terminate_energy to be achieving the chemical accuracy
     terminate_energy = molecule.fci_energy + CHEMICAL_ACCURACY
-    hamiltonian_info = {"n_qubit": molecule.n_qubits, "start_energy": molecule.hf_energy,
-                        "terminate_energy": terminate_energy}
+    hamiltonian_info = {"n_qubit": molecule.n_qubits, "start_cost": molecule.hf_energy,
+                        "terminate_cost": terminate_energy}
 
     init_operator = HartreeFockInitBlock(get_operator_chain(qubit_electron_operator))
 
@@ -81,7 +81,7 @@ def get_maxcut_hamiltonian(n_qubit):
         for j in range(i):
             hamiltonian += coeff * QubitOperator("Z" + str(i) + " Z" + str(j))
     hamiltonian_info = {"n_qubit": n_qubit}
-    return HamiltonianObjective(hamiltonian, n_qubit, None, hamiltonian_info)
+    return EnergyObjective(hamiltonian, n_qubit, None, hamiltonian_info)
 
 
 def get_tsp_hamiltonian(n_qubit):
@@ -96,4 +96,4 @@ def get_tsp_hamiltonian(n_qubit):
                 hamiltonian += coeff * \
                                QubitOperator("Z" + str(i * n_qubit + s) + "Z" + str(j * n_qubit + s + 1))
     hamiltonian_info = {"n_qubit": n_qubit}
-    return HamiltonianObjective(hamiltonian, n_qubit, None, hamiltonian_info)
+    return EnergyObjective(hamiltonian, n_qubit, None, hamiltonian_info)

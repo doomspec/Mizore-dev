@@ -28,7 +28,8 @@ class BlockCircuit:
         return
 
     def add_block(self, block: Block):
-        self.block_list.append(copy(block))
+        if block!=None:
+            self.block_list.append(copy(block))
 
     def count_n_parameter_by_position_list(self, position_list):
         n_parameter = 0
@@ -93,7 +94,7 @@ class BlockCircuit:
         return self.get_ansatz_by_position_list(position_list)
 
     def get_fixed_parameter_ansatz(self):
-        return self.get_ansatz_by_position_list([]).ansatz
+        return self.get_ansatz_by_position_list([])
 
     def adjust_parameter_by_para_postion(self, adjust_value, position):
         n_parameter = 0
