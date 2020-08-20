@@ -7,7 +7,7 @@ from Blocks._utilities import *
 from Objective._objective import Objective
 from ParallelTaskRunner import TaskManager, OptimizationTask
 from ParameterOptimizer import BasinhoppingOptimizer, ImaginaryTimeEvolutionOptimizer
-from ._result_display import save_circuit
+from ._result_display import save_construction
 import time
 NOT_DEFINED = 999999
 
@@ -48,10 +48,9 @@ class GreedyConstructor(CircuitConstructor):
         self.cost = construct_obj.get_cost()
         self.id = id(self)
         self.optimizer = optimizer
-        self.project_name = project_name
         self.time_string=time.strftime('%m-%d-%Hh%Mm%Ss', time.localtime(time.time()))
-        self.cost_list = []
-
+        self.project_name = project_name+"_"+self.time_string
+        
         if "terminate_cost" in construct_obj.obj_info.keys():
             self.terminate_cost = construct_obj.obj_info["terminate_cost"]
 
@@ -71,9 +70,14 @@ class GreedyConstructor(CircuitConstructor):
         self.cost_list.append(self.current_cost)
         print("Initial Energy:", self.init_cost)
         # print(self.block_pool)
+        self.start_time_number = time.time()
+        self.add_time_point()
         for _layer in range(self.max_n_block):
             print("********Adding "+str(_layer+1)+"th Block*********")
-            if self.add_one_block():
+            
+            is_succeed=self.add_one_block()
+            is_return=False
+            if is_succeed:
                 # Succeed to add new block
                 print(self.circuit)
                 self.do_global_optimization()
@@ -83,12 +87,24 @@ class GreedyConstructor(CircuitConstructor):
                     print("Construction process ends!")
                     if self.task_manager_created:
                         self.task_manager.close()
-                    return
+                    is_return=True
             else:
                 # Fail to add new block
+                print("No entangler in the pool provides a lower cost")
+                print("A larger pool is needed or Ground cost was achieved")
+                print("Final Energy:", self.current_cost)
+                print("********Final Circuit********")
+                print(self.circuit)
                 if self.task_manager_created:
                     self.task_manager.close()
-                return
+                is_return=True
+
+            self.add_time_point()
+            save_construction(self,self.project_name)
+
+            if is_return:
+                return    
+            
         return
 
     def do_global_optimization(self):
@@ -100,7 +116,7 @@ class GreedyConstructor(CircuitConstructor):
         self.current_cost, parameter = task.run()
         self.circuit.adjust_parameter_on_active_position(parameter)
         self.cost_list.append(self.current_cost)
-        save_circuit(self.circuit,self.project_name+"_"+self.time_string)
+        save_construction(self,self.project_name)
         print("Global Optimized Energy:", self.current_cost)
         print("Gate Usage:", self.circuit.get_gate_used())
         print("Energy list:", self.cost_list)
@@ -122,11 +138,6 @@ class GreedyConstructor(CircuitConstructor):
                     self.circuit.block_list)
             return True
         else:
-            print("No entangler in the pool provides a lower cost")
-            print("A larger pool is needed or Ground cost was achieved")
-            print("Final Energy:", self.current_cost)
-            print("********Final Circuit********")
-            print(self.circuit)
             return False
 
     def do_trial_on_blocks(self):

@@ -5,3 +5,5 @@
 /.mpsfolder/
 /.pychainfolder/
 /mizore_results/
+tmp*
+/.vscode/
