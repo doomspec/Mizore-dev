@@ -1,56 +1,53 @@
-from CircuitConstructor._circuit_constructor import CircuitConstructor
-from Blocks import Block, BlockCircuit
+from ._greedy_constructor import GreedyConstructor
+from Objective._objective import Objective
 from PoolGenerator import BlockPool
-from multiprocessing import Process
-from copy import copy, deepcopy
-from Blocks._utilities import *
-from Objective._hamiltonian_obj import HamiltonianObjective
-from ParallelTaskRunner import TaskManager, OptimizationTask
-from ParameterOptimizer import BasinhoppingOptimizer, ImaginaryTimeEvolutionOptimizer
-from Blocks._utilities import get_inner_two_circuit_product, get_circuit_energy
 
 NOT_DEFINED = 999999
 
-
-class FixedDepthSweepConstructor(CircuitConstructor):
+class FixedDepthSweepConstructor(GreedyConstructor):
     """
     Fixed depth sweep constructor which contains limited number of blocks.
     In the construction, the constructor first grow the circuit like GreedyConstrutor.
     After achieving the limit of block number, the constructor starts to sweep the blocks in the circuit
     and optimize the blocks in each position. In each position, both the type of block and its parameters will be optimized.
-
-    NOT FINISHED!!
     """
 
-    gradiant_cutoff = 1e-9
+    def __init__(self,construct_obj: Objective, block_pool: BlockPool,n_max_block=5,sweep_start_position=1,**kwargs):
+        GreedyConstructor.__init__(self,construct_obj,block_pool,**kwargs)
+        self.sweep_start_position=sweep_start_position
+        self.position2update=sweep_start_position
+        self.n_max_block=n_max_block
+        self.n_non_decrease_steps=0
 
-    def __init__(self, hamiltonian_obj: HamiltonianObjective, block_pool: BlockPool, max_n_block=100, terminate_energy=-NOT_DEFINED, optimizer=BasinhoppingOptimizer() ,task_manager: TaskManager = None):
-        """
-        
-        """
-        CircuitConstructor.__init__(self)
+    def update_trial_circuits(self, block_pool=None):
+        if block_pool == None:
+            block_pool = self.block_pool
+        if len(self.circuit.block_list)<self.n_max_block:
+            GreedyConstructor.update_trial_circuits(self,block_pool=block_pool)
+            return
+        self.trial_circuits = []
+        for block in block_pool:
+            trial_circuit = self.circuit.duplicate()
+            trial_circuit.block_list[self.position2update]=block
+            trial_circuit.active_position_list=[self.position2update]
+            #print(trial_circuit)
+            self.trial_circuits.append(trial_circuit)
+        self.position2update+=1
+        if self.position2update==self.n_max_block:
+            self.position2update=self.sweep_start_position
+    def update_one_block(self):
+        is_success=GreedyConstructor.update_one_block(self)
+        if len(self.circuit.block_list)>=self.n_max_block:
+            if is_success:
+                self.n_non_decrease_steps=0
+                return True
+            else:
+                self.n_non_decrease_steps+=1
+                if self.n_non_decrease_steps>=self.n_max_block-self.sweep_start_position:
+                    return False
+                else:
+                    return True
+        else:
+            return is_success
 
-        self.circuit = BlockCircuit(hamiltonian_obj.n_qubit)
-        self.max_n_block = max_n_block
-        self.terminate_energy = terminate_energy
-        self.block_pool = block_pool
-        self.n_qubit = hamiltonian_obj.n_qubit
-        self.hamiltonian = hamiltonian_obj.hamiltonian
-        self.circuit.add_block(hamiltonian_obj.init_block)
-        self.id = id(self)
-        self.optimizer=optimizer
-        
-        self.energy_list=[]
 
-        if "terminate_energy" in hamiltonian_obj.obj_info.keys():
-            self.terminate_energy = hamiltonian_obj.obj_info["terminate_energy"]
-        self.task_manager = task_manager
-        self.task_manager_created=False
-        if task_manager == None:
-            # If task_manager not specified, use 4 processors manager
-            self.task_manager = TaskManager(4)
-            self.task_manager_created = True
-        return
-
-    def run(self):
-        return
