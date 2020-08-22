@@ -188,3 +188,20 @@ class GAConstructor:
                 rest.extend(new_population)
                 new_population = rest
         return new_population
+
+    def get_result(self):
+        """
+
+        Returns: rest of GA
+
+        """
+        iter_set = set()
+        res = []
+        for chromosome in self.result:
+            elem = tuple(sorted(chromosome))
+            if iter_set.__contains__(elem):
+                continue
+            res.append(chromosome)
+            iter_set.add(elem)
+        res = sorted(res, key=lambda x: -x.fitness)
+        return res
