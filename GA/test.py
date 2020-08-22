@@ -19,7 +19,6 @@ def generate_graph(size=10):
 
 g = generate_graph(10)
 ga = GAConstructor(g)
-ga.run(time_budget=10)
-begin = time.time()
-_brute_force(g, 10)
-print(time.time() - begin)
+ga.run(iteration=10)
+res = ga.get_result()
+print(res)
