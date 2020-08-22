@@ -5,10 +5,10 @@ from multiprocessing import Process
 from copy import copy, deepcopy
 from Blocks._utilities import *
 from Objective._objective import Objective
-from ParallelTaskRunner import TaskManager, OptimizationTask
+from ParallelTaskRunner import TaskManager, OptimizationTask,GradientTask
 from ParameterOptimizer import BasinhoppingOptimizer, ImaginaryTimeEvolutionOptimizer
 from ._result_display import save_construction
-import time
+import time,numpy,math
 NOT_DEFINED = 999999
 
 
@@ -34,7 +34,7 @@ class GreedyConstructor(CircuitConstructor):
 
     gradiant_cutoff = 1e-9
 
-    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_block=100, terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), task_manager: TaskManager = None, init_circuit=None, project_name=None):
+    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_block=100,gradient_screening_rate=1, terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), task_manager: TaskManager = None, init_circuit=None, project_name=None):
 
         CircuitConstructor.__init__(self)
         self.circuit = init_circuit
@@ -43,6 +43,7 @@ class GreedyConstructor(CircuitConstructor):
             self.circuit.add_block(construct_obj.init_block)
         self.max_n_block = max_n_block
         self.terminate_cost = terminate_cost
+        self.gradient_screening_rate=gradient_screening_rate
         self.block_pool = block_pool
         self.n_qubit = construct_obj.n_qubit
         self.cost = construct_obj.get_cost()
@@ -125,7 +126,7 @@ class GreedyConstructor(CircuitConstructor):
         """Try to add a new block
         Return True is succeed, return False otherwise
         """
-        trial_result_list = self.do_trial_on_blocks()
+        trial_result_list = self.do_trial_on_blocks_by_cost_gradient()
         best_block = self.get_block_by_trial_result(trial_result_list)
         if best_block != None:
             self.circuit.add_block(best_block)
@@ -140,26 +141,48 @@ class GreedyConstructor(CircuitConstructor):
         else:
             return False
 
-    def do_trial_on_blocks(self):
+    def do_trial_on_blocks_by_cost_value(self,block_pool=None):
+        if block_pool==None:
+            block_pool=self.block_pool
         trial_result_list = []
-        for block in self.block_pool:
-            # print(block)
+        for block in block_pool:
             trial_circuit = self.circuit.duplicate()
             trial_circuit.add_block(block)
             trial_circuit.set_only_last_block_active()
-            task = OptimizationTask(
-                trial_circuit, self.optimizer, self.cost)
+            task = OptimizationTask(trial_circuit, self.optimizer, self.cost)
             self.task_manager.add_task_to_buffer(task, task_series_id=self.id)
         self.task_manager.flush(task_series_id=self.id)
         res_list = self.task_manager.receive_task_result(
             task_series_id=self.id)
         i = 0
-        for block in self.block_pool:
+        for block in block_pool:
             cost, amp = res_list[i]
             cost_descent = self.current_cost - cost
             trial_result_list.append((cost, cost_descent, amp, block))
             i += 1
         return trial_result_list
+
+    def do_trial_on_blocks_by_cost_gradient(self):
+        if abs(self.gradient_screening_rate-1)<0.00001:
+            return self.do_trial_on_blocks_by_cost_value()
+        block_list=[]
+        for block in self.block_pool:
+            trial_circuit = self.circuit.duplicate()
+            trial_circuit.add_block(block)
+            trial_circuit.set_only_last_block_active()
+            block_list.append(block)
+            task = GradientTask(trial_circuit, self.cost)
+            self.task_manager.add_task_to_buffer(task, task_series_id=self.id)
+        self.task_manager.flush(task_series_id=self.id)
+        res_list = self.task_manager.receive_task_result(
+            task_series_id=self.id)
+        res_list=numpy.array(res_list)
+        n_block_to_try=math.ceil(self.gradient_screening_rate*len(block_list))
+        rank_list=(-res_list).argsort()[:n_block_to_try]
+        good_block_list=[]
+        for i in rank_list:
+            good_block_list.append(block_list[i])
+        return self.do_trial_on_blocks_by_cost_value(block_pool=good_block_list)
 
     def get_block_by_trial_result(self, trial_result_list):
 
