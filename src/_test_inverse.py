@@ -1,10 +1,11 @@
 from Blocks import Block
 from Blocks import BlockCircuit
-from Blocks import HardwareEfficientEntangler,RotationEntangler,EfficientCoupledCluster
+from Blocks import HardwareEfficientEntangler,RotationEntangler,EfficientCoupledCluster,CompositiveBlock
 from Blocks._time_evolution_block import TimeEvolutionBlock
 from copy import copy
 from Utilities.Tools import random_list
 from Utilities.CircuitEvaluation import evaluate_ansatz_amplitudes
+import pickle
 
 def test_block_inverse(n_qubit,_block:Block):
     for _i in range(10):
@@ -35,9 +36,12 @@ if __name__ == "__main__":
     hamiltonian_obj = get_example_molecular_hamiltonian(
           "H2", basis="6-31g", fermi_qubit_transform=transform)
 
+    with open("src/H2_5_blocks.bc", "rb") as f:
+        circuit: BlockCircuit = pickle.load(f)
+    block=CompositiveBlock(circuit)
     #block=EfficientCoupledCluster((0,1,2,3))
     #block=MultiRotationEntangler(hamiltonian_obj.hamiltonian)
-    block=TimeEvolutionBlock(hamiltonian_obj.hamiltonian,init_angle=0)
+    #block=TimeEvolutionBlock(hamiltonian_obj.hamiltonian,init_angle=0)
     #block=RotationEntangler((1,2,3),(1,2,3))
     test_block_inverse(hamiltonian_obj.n_qubit,block)
 

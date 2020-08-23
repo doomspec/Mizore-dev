@@ -36,6 +36,8 @@ class FixedDepthSweepConstructor(GreedyConstructor):
         if self.position2update==self.n_max_block:
             self.position2update=self.sweep_start_position
     def update_one_block(self):
+        if len(self.circuit.block_list)>=self.n_max_block:
+            print("Updating "+str(self.position2update)+"th block as the maximal block number has been met.")
         is_success=GreedyConstructor.update_one_block(self)
         if len(self.circuit.block_list)>=self.n_max_block:
             if is_success:
