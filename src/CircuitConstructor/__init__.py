@@ -1,1 +1,2 @@
 from ._greedy_constructor import GreedyConstructor
+from ._fixed_depth_sweep_constructor import FixedDepthSweepConstructor

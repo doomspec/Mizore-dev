@@ -8,6 +8,11 @@ PauliY = np.array([[0, -1j], [1j, 0]], np.complex)
 PauliZ = np.array([[1, 0], [0, -1]], np.complex)
 PauliMat = [PauliI, PauliX, PauliY, PauliZ]
 PauliString = ['I', 'X', 'Y', 'Z']
+import scipy.linalg as la
+
+########################
+#   Density Matrices
+########################
 
 def get_one_DM(get_expectation_value, wavefunction):
     n_qubit = len(wavefunction)
@@ -56,6 +61,11 @@ def two_DM_to_one_DMs(two_DM):
     one_DM_2[1][1]=two_DM[1][1]+two_DM[3][3]
     return one_DM_1,one_DM_2
 
+
+#####################################
+#   Entropy and Mutual Information
+#####################################
+
 def entropy_one_DM(one_DM: np.array, test=0):
     eigv = np.linalg.eigvalsh(one_DM)
     #print(eigv)
@@ -95,3 +105,53 @@ def get_mutual_information_by_2DMs(two_DMs):
             mutual_information[i][j] = 0.5*(entropy_one_DM(one_DM_1)+entropy_one_DM(one_DM_2)-entropy_one_DM(two_DMs[i][j]))
             mutual_information[j][i] = mutual_information[i][j]
     return mutual_information
+
+#################################
+#   Entanglement of Formation
+#################################
+
+# Concurrence
+def Concurrence(rho):
+    sy = np.array([[0., -1j], [1j, 0.]])
+    sqrtRho = la.sqrtm(rho)
+    YY = np.kron(sy, sy)
+    matrixR = sqrtRho*YY*np.conjugate(rho)*YY*sqrtRho
+    eigvals, eigvecs = la.eigh(matrixR)
+    eigvals.sort()  # sort eigenvalues from smallest to largest
+    return max(0, 4*(eigvals[3]-eigvals[2]-eigvals[1]-eigvals[0]))
+
+# Entanglement of formation
+def EoF(rho):
+    # check that the input 'rho' is of 4-by-4 matrix and Hermitian
+    rows = len(rho)
+    columns = len(rho[0])
+    rhoC = np.conjugate(rho)
+    if (rows == 4 and columns == 4):
+        C = Concurrence(rho)
+        plus = 0.5*(1+np.sqrt(1 - C**2)) * \
+            np.lib.scimath.log2(0.5*(1+np.sqrt(1 - C**2)))
+        if (0.5*(1-np.sqrt(1 - C**2)) != 0):  # to avoid undefined when C = 0
+            minus = 0.5*(1-np.sqrt(1 - C**2)) * \
+                np.lib.scimath.log2(0.5*(1-np.sqrt(1 - C**2)))
+        else:
+            minus = 0.5*(1-np.sqrt(1 - C**2))
+        return -plus-minus
+    else:
+        print("The input density matrix is not two-qubit type or not Hermitian or both. \
+        Please enter the correct one.")
+
+def EoF_regularize(EoF):
+    if EoF<=0:
+        return 0
+    else:
+        EoF=1/(math.log2(EoF)**6)
+        return EoF
+        
+def get_EoF_by_2DMs(twodensity):
+    n_qubit = len(twodensity)
+    entanglement_of_formation = np.array([[0.0]*n_qubit]*n_qubit)
+    for i in range(0, n_qubit):
+        for j in range(0, i):
+            entanglement_of_formation[i][j] = EoF_regularize(EoF(twodensity[i][j]))
+            entanglement_of_formation[j][i] = entanglement_of_formation[i][j]
+    return entanglement_of_formation

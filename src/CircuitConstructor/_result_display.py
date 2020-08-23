@@ -23,6 +23,8 @@ def save_construction(constructor,project_name):
     save_path=CONSTRUCTION_PATH+project_name+'/'
     mkdir(save_path)
     log_dict={}
+    log_dict["project_name"]=constructor.project_name
+    log_dict["pool_size"]=len(constructor.block_pool.blocks)
     log_dict["cost_list"]=constructor.cost_list
     log_dict["run_time_list"]=constructor.run_time_list
     log_dict["important_log_list"]=constructor.important_log_list

@@ -22,10 +22,19 @@ class TaskRunner(Process):
             time.sleep(0.1)
             task_package = self.task_queue.get(True)
             result_package=[]
-            for task in task_package:
+            public_resource=task_package[0]
+            for i in range(1,len(task_package)):
+                task=task_package[i]
+                dress_by_public_resource(public_resource,task)
                 result = task.run()
                 result_package.append(TaskResult(task.id, result))
             self.result_queue.put(result_package)
+
+def dress_by_public_resource(public_resource:dict,obj):
+    if public_resource==None:
+        return
+    for key in public_resource.keys():
+        obj.__dict__[key]=public_resource[key]
 
 class TaskManager:
     """
@@ -61,13 +70,13 @@ class TaskManager:
             self.n_task_remain_by_series_id[task_series_id] = 1
             self.buffer_by_series_id[task_series_id]=[task]
 
-    def flush(self,task_series_id=0):
-        task_package=[]
+    def flush(self,task_series_id=0,public_resource=None):
+        task_package=[public_resource]
         for task in self.buffer_by_series_id[task_series_id]:
             task_package.append(task)
             if len(task_package)>=self.task_package_size:
                 self.task_queue.put(task_package)
-                task_package=[]
+                task_package=[public_resource]
         if len(task_package)!=0:
             self.task_queue.put(task_package)
         self.buffer_by_series_id[task_series_id]=[]

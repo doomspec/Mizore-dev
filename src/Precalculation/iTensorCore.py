@@ -3,7 +3,7 @@ import os ; import sys ; sys.path.append(os.getcwd()+'/../../src')
 import numpy as np
 from dmrgpy import spinchain,multioperator
 from openfermion.ops import QubitOperator
-from Utilities.WaveLocalProperties import get_mutual_information_by_2DMs,two_DM_to_one_DMs,entropy_one_DM
+from Utilities.WaveLocalProperties import two_DM_to_one_DMs,entropy_one_DM
 
 MAX_N_QUBIT=40
 PauliX_MO = [2*multioperator.obj2MO([["Sx",i]]) for i in range(MAX_N_QUBIT)]
@@ -62,9 +62,7 @@ def run_classcal_precalculation(n_qubit,hamiltonian:QubitOperator,calc_2DM=False
         res["2DM"]=two_DM
         res["1DM"]=one_DM
         entropy=[entropy_one_DM(one_DM[i]) for i in range(n_qubit)]
-        mi=get_mutual_information_by_2DMs(two_DM)
         res["entropy"]=entropy
-        res["mutual_information"]=mi
         return res
 
 def QubitOperator2DmrgpyOperator(n_qubit,hamiltonian:QubitOperator):
