@@ -15,6 +15,9 @@ setup(
         "multiprocess",
         "numpy",
         "scipy",
-        "networkx"
+        "networkx",
+        "matplotlib==2.2.3",
+        "minorminer",
+        "infomap"
     ]
 )
