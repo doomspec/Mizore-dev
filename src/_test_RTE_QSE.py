@@ -27,15 +27,15 @@ if __name__ == "__main__":
     pool = BlockPool(quasi_imaginary_evolution_rotation_pool(
         energy_obj.hamiltonian))
 
-    n_step=20
-    optimizer = ImaginaryTimeEvolutionOptimizer(get_best_result=False, inverse_evolution=False, random_adjust=0.001,
-        verbose=True, n_step=n_step, stepsize=2e-4, max_increase_n_step=n_step,fig_path="RTE")
+    n_step=10
+    optimizer = ImaginaryTimeEvolutionOptimizer(get_best_result=False, inverse_evolution=False, random_adjust=0.01,
+        verbose=True, n_step=n_step, stepsize=1e-2, max_increase_n_step=n_step,fig_path="ITE")
     
     with open("src/H2_5_blocks.bc", "rb") as f:
         circuit: BlockCircuit = pickle.load(f)
     print(circuit.active_position_list)
 
-    for i in range(2):
+    for i in range(3):
         op = OptimizationTask(circuit, optimizer, energy_obj.get_cost())
         cost,amp=op.run()
         circuit.adjust_parameter_on_active_position(amp)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     with open("src/H2_5_blocks.bc", "rb") as f:
         circuit: BlockCircuit = pickle.load(f)
     circuits=[circuit]
-    for i in range(2):
+    for i in range(3):
         with open("src/H2_5_blocks_"+str(i)+".bc", "rb") as f:
             circuits.append(pickle.load(f))
     for circuit in circuits:

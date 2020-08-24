@@ -1,3 +1,3 @@
-from .TestHamiltonian import get_example_molecular_hamiltonian
+from .TestHamiltonian import make_example_H2,make_example_H2O,make_example_LiH,make_example_N2
 from .TestHamiltonian import get_maxcut_hamiltonian, get_tsp_hamiltonian
 from ._stationary_qubit_reducer import get_reduced_energy_obj_with_HF_init

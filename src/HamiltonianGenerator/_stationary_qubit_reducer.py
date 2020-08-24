@@ -79,10 +79,7 @@ def evaluate_string_list(init_state_string,string_list):
     return res
 
 def get_reduced_energy_obj_with_HF_init(energy_obj:EnergyObjective,location2reduce):
-    """
-    location2reduce should be sorted
-    example: [0,2,3,4]
-    """
+    location2reduce.sort()
     init_X_qsubset=energy_obj.init_block.qsubset
     init_state_string=[0]*energy_obj.n_qubit
     for i in init_X_qsubset:

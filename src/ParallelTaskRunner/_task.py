@@ -1,6 +1,7 @@
 class Task:
     def __init__(self):
-        self.id = -1
+        self.index_of_in = -1
+        self.series_id = -1
         return
 
     def run(self):

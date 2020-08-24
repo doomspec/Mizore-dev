@@ -9,3 +9,9 @@ tmp*
 .vscode/
 .vscode/.ropeproject/objectdb
 Untitled.png
+src/H2_5_blocks_*.bc
+ITE.png
+.gitignore
+community.png
+RTE.png
+*.hdf5
