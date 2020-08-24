@@ -64,12 +64,17 @@ if __name__ == "__main__":
             zero_edge.append((u, v))
     for u, v in zero_edge:
         G.remove_edge(u, v)
-    pos = nx.spring_layout(G, k=0.05, scale=100)
+    pos = nx.spring_layout(G, k=0.5, scale=100)
     nx.draw_networkx_nodes(G, pos, node_color=detect_community(G))
     nx.draw_networkx_labels(G, pos, with_labels=True, font_color="white")
-    nx.draw_networkx_edges(G, pos)
+    nx.draw_networkx_edges(G, pos, edge_color="gray")
     edge_labels = {(u, v): np.round(d["weight"], 2) for u, v, d in G.edges(data=True)}
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color="black")
+    nx.draw_networkx_edge_labels(G, pos,  edge_labels=edge_labels, font_color="black", alpha=1,
+                                 bbox=dict(boxstyle='round',
+                                           ec=(1.0, 1.0, 1.0),
+                                           fc=(1.0, 1.0, 1.0),
+                                           alpha=0.0
+                                           ))
     # print(G)
     # detect_community(G)
     plt.show()
