@@ -16,15 +16,17 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
     Differing from the original paper, here we calculate the A and C matrix by finite difference rather than the swap test.
     """
 
-    def __init__(self, random_adjust=0.01, diff=1e-4, stepsize=1e-1, n_step=10, max_increase_n_step=3,
-                 task_manager=None, verbose=False, fig_path=None):
+    def __init__(self, get_best_result=True ,random_adjust=0.01, diff=1e-4, stepsize=1e-1, n_step=10, max_increase_n_step=3,
+                 inverse_evolution=False,task_manager=None, verbose=False, fig_path=None):
         ParameterOptimizer.__init__(self)
 
+        self.get_best_result=get_best_result
         self.random_adjust = random_adjust
         self.stepsize = stepsize
         self.diff = diff
         self.max_increase_n_step = max_increase_n_step
         self.n_step = n_step
+        self.inverse_evolution=inverse_evolution
         self.verbose = verbose
         self.fig_path = fig_path
 
@@ -128,6 +130,8 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
             mat_A = self.calc_A_mat(circuit, adjusted_circuits)
             mat_C = self.calc_C_mat(circuit, adjusted_circuits, hamiltonian)
             derivative = self.calc_derivative(mat_A, mat_C)
+            if self.inverse_evolution:
+                derivative=-1*derivative
             circuit.adjust_parameter_on_active_position(derivative)
 
             energy = get_circuit_energy(circuit, hamiltonian)
@@ -146,8 +150,14 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
             if increase_n_step >= self.max_increase_n_step:
                 break
 
-        optimal_parameter = lowest_energy_circuit.get_parameter_on_active_position()
+        if self.get_best_result:
+            optimal_parameter = lowest_energy_circuit.get_parameter_on_active_position()
+            res_energy=lowest_energy
+        else:
+            optimal_parameter = circuit.get_parameter_on_active_position()
+            res_energy=energy_list[len(energy_list)-1]
+
         amp = []
         for i in range(len(original_parameter)):
             amp.append(optimal_parameter[i] - original_parameter[i])
-        return lowest_energy, amp
+        return res_energy, amp

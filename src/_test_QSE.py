@@ -6,7 +6,7 @@ from HamiltonianGenerator.FermionTransform import make_transform_spin_separating
 from HamiltonianGenerator import get_reduced_energy_obj_with_HF_init
 from MoreMethods._Krylov_algorithm import *
 if __name__ == "__main__":
-    with open("mizore_results/contruction_runs/H2_6-31g_08-21-00h31m26s/circuit.bc", "rb") as f:
+    with open("src/H2_5_blocks_1.bc", "rb") as f:
         circuit:BlockCircuit = pickle.load(f)
 
     mole_name="H2"
@@ -18,8 +18,8 @@ if __name__ == "__main__":
             "H2", basis=basis, fermi_qubit_transform=transform)
     energy_obj=get_reduced_energy_obj_with_HF_init(energy_obj,[3,7])
 
-    circuits=get_growing_circuit_list(circuit)
-    #circuits=generate_Krylov_circuits(energy_obj.hamiltonian,0.01,2,CompositiveBlock(circuit))#energy_obj.init_block)
+    #circuits=get_growing_circuit_list(circuit)
+    circuits=generate_Krylov_circuits(energy_obj.hamiltonian,0.01,2,CompositiveBlock(circuit))#energy_obj.init_block)
     qse_solver=SubspaceExpansionSolver(circuits,energy_obj.hamiltonian)
     qse_solver.execute()
     

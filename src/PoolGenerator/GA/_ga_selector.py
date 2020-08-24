@@ -14,17 +14,18 @@ import itertools
 logger = logging.getLogger(__name__)
 
 
-class GAConstructor:
+class GACorrelationQsubsetSelector:
     """
     GA Constructor for the circuit
     """
 
-    def __init__(self, graph: nx.Graph, initial_gene_size=4, max_chromosome_size=10):
+    def __init__(self, graph: nx.Graph, initial_gene_size=4, max_chromosome_size=80,verbose=False):
         self._graph = graph
         # add identical block to gene bank
         self._gene_bank = list(self._build_gene_bank())
         self._chromosomes = self._init_chromosomes(max_chromosome_size, initial_gene_size)
         self._mutators = self._init_mutators()
+        self.verbose=verbose
         for c in self._chromosomes:
             self._fitness(c.genes)
         # note that result is a list of best individual in each iteration
@@ -86,8 +87,9 @@ class GAConstructor:
             self._chromosomes = self._evolve(self._chromosomes)
             for chromosome in self._chromosomes:
                 self.result.append(copy.deepcopy(chromosome))
-            print(
-                f'time: {time.time()}, round:{counter}, best result:{sorted(self._chromosomes, key=lambda x: x.fitness)[0].fitness}')
+            if self.verbose:
+                print(
+                    f'time: {time.time()}, round:{counter}, best result:{sorted(self._chromosomes, key=lambda x: x.fitness)[0].fitness}')
             counter += 1
         return self.result
 
