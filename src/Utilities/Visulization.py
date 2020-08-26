@@ -1,4 +1,4 @@
-def draw_x_y_line_relation(x_data,y_data,x_label,y_label,y_data2=None,y_label2=None,ylim=None,ylim2=None,red_line=None,filename=None):
+def draw_x_y_line_relation(x_data,y_data,x_label,y_label,y_data2=None,y_label2=None,ylim=None,ylim2=None,red_line=None,filename="Untitled"):
     
     import matplotlib
     import matplotlib.pyplot as plt
@@ -21,7 +21,7 @@ def draw_x_y_line_relation(x_data,y_data,x_label,y_label,y_data2=None,y_label2=N
         ax.hlines(red_line,0,x_data[len(x_data)-1],colors = "r", linestyles = "dashed")
     
     if filename==None:
-        plt.savefig("untitled.png")
+        plt.show()
     else:
         plt.savefig(filename+".png",bbox_inches = 'tight')
         

@@ -10,6 +10,11 @@ from projectq.cengines import (MainEngine,
                                DecompositionRuleSet)
 import projectq.setups.decompositions
 
+"""
+This file provides functions for common tasks that use the quantum simulation backend, including expectation value and amplitude
+The functions accept a function called *ansatz(parameter,wavefunction)* as input.
+"""
+
 # This part can easily change to use HiQ. 
 # We use projectq here because it can be easily installed by pip and thus easily for Mizore to be installed.
 

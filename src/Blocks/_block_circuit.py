@@ -142,7 +142,7 @@ class BlockCircuit:
         return 
     
     def get_gate_used(self):
-        gate_used={"CNOT":0,"SingleRotation":0}
+        gate_used={"CNOT":0,"SingleRotation":0,"TimeEvolution":0}
         for block in self.block_list:
             block_gate=block.get_gate_used()
             for key in block_gate.keys():

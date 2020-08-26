@@ -79,7 +79,7 @@ def make_molecular_energy_obj(molecule_name, basis="sto-3g", geometry_info=None,
     molecule.symmetry = True
     if not is_computed:
         molecule = run_pyscf(molecule, run_fci=1, n_frozen_orbital=n_frozen_orbital,
-                             n_cancel_orbital=n_cancel_orbital, cas_irrep_nocc=cas_irrep_nocc, cas_irrep_ncore=cas_irrep_ncore)
+                             n_cancel_orbital=n_cancel_orbital, cas_irrep_nocc=cas_irrep_nocc, cas_irrep_ncore=cas_irrep_ncore,verbose=False)
     molecule.load()
 
     active_space_start = n_frozen_orbital

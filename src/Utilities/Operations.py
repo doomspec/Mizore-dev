@@ -5,6 +5,10 @@ from openfermion.ops import QubitOperator
 
 PAULI_CHAR2OPERATION={"X":X,"Y":Y,"Z":Z}
 
+"""
+The common quantum operations that are used in Mizore
+"""
+
 def apply_time_evolution(hamiltonian:QubitOperator,time,wavefunction):
     projectq_qubit_operator = projectq.ops.QubitOperator()
     for term, coefficient in hamiltonian.terms.items():

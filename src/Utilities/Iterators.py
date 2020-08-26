@@ -1,5 +1,8 @@
 import itertools
 
+"""
+Common iterators that are used in Mizore
+"""
 
 def iter_qsubset_pauli_of_operator(operator):
     for pauli_and_coeff in operator.get_operators():

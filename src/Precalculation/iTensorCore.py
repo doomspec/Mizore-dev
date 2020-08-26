@@ -5,6 +5,13 @@ from dmrgpy import spinchain,multioperator
 from openfermion.ops import QubitOperator
 from Utilities.WaveLocalProperties import two_DM_to_one_DMs,entropy_one_DM
 
+"""
+The file provides functions for classical precalculation by dmrgpy
+Exact Diagonalization (ED) and Density Matrix Renormalization Group (DMRG) can be used
+The output is the ground state energy and a array of two-body reduced density matrices
+The main function is run_classcal_precalculation()
+"""
+
 MAX_N_QUBIT=40
 PauliX_MO = [2*multioperator.obj2MO([["Sx",i]]) for i in range(MAX_N_QUBIT)]
 PauliY_MO = [2*multioperator.obj2MO([["Sy",i]]) for i in range(MAX_N_QUBIT)]

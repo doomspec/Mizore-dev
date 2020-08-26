@@ -142,9 +142,16 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
         return derivative
 
     def save_fig(self, energy_list):
-        if self.fig_path != None:
+        if self.fig_path == None:
+            return
+        if self.fig_path == "screen":
+            
+            draw_x_y_line_relation(list(range(len(energy_list))), energy_list,
+                                   "Index of Iteration", "Energy", filename=None)
+        else:
             draw_x_y_line_relation(list(range(len(energy_list))), energy_list,
                                    "Index of Iteration", "Energy", filename=self.fig_path)
+            
 
     def run_optimization(self, _circuit: BlockCircuit, cost):
         """

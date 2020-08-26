@@ -10,6 +10,11 @@ PauliMat = [PauliI, PauliX, PauliY, PauliZ]
 PauliString = ['I', 'X', 'Y', 'Z']
 import scipy.linalg as la
 
+"""
+The functions for analyzing the wavefunction obtained from classical pre-calculations
+"""
+
+
 ########################
 #   Density Matrices
 ########################
