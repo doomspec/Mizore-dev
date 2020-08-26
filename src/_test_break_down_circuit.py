@@ -14,7 +14,7 @@ if __name__=="__main__":
     transform = make_transform_spin_separating(get_parity_transform(16),16)
     energy_obj =make_example_N2(is_computed=False)
     energy_obj=get_reduced_energy_obj_with_HF_init(energy_obj,[11,15])
-    community=[[12, 11, 10, 2, 4, 8, 9, 7, 6]]
+    community=[[13, 12, 11, 10, 5, 9]]
     broken_energy_objs=[]
     inverse_community=[]
     full_nodes=[]

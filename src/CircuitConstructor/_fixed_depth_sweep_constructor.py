@@ -10,10 +10,19 @@ class FixedDepthSweepConstructor(GreedyConstructor):
     In the construction, the constructor first grow the circuit like GreedyConstrutor.
     After achieving the limit of block number, the constructor starts to sweep the blocks in the circuit
     and optimize the blocks in each position. In each position, both the type of block and its parameters will be optimized.
+
+    Attributes:
+        n_max_block: The maximal number of blocks that can be hold in the circuit.
+        When the number is reached, the update of blocks will start from sweep_start_position.
+        sweep_start_position: The position of block where the sweep starts.
+        The default is 1 as the zero-th block is usually the HF initial block that should not by updated.
+
+        Please see GreedyConstrutor for other attributes
+
     """
 
-    def __init__(self,construct_obj: Objective, block_pool: BlockPool,n_max_block=5,sweep_start_position=1,**kwargs):
-        GreedyConstructor.__init__(self,construct_obj,block_pool,**kwargs)
+    def __init__(self,*arg,n_max_block=5,sweep_start_position=1,**kwargs):
+        GreedyConstructor.__init__(self,*arg,**kwargs)
         self.sweep_start_position=sweep_start_position
         self.position2update=sweep_start_position
         self.n_max_block=n_max_block
@@ -35,6 +44,7 @@ class FixedDepthSweepConstructor(GreedyConstructor):
         self.position2update+=1
         if self.position2update==self.n_max_block:
             self.position2update=self.sweep_start_position
+
     def update_one_block(self):
         if len(self.circuit.block_list)>=self.n_max_block:
             print("Updating "+str(self.position2update)+"th block as the maximal block number has been met.")

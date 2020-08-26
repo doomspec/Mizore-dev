@@ -19,10 +19,9 @@ if __name__ == "__main__":
     basis = "6-31g"
     transform = make_transform_spin_separating(get_parity_transform(8), 8)
     energy_obj = make_example_LiH()
-    #energy_obj = get_reduced_energy_obj_with_HF_init(energy_obj, [3, 7])
+    energy_obj = get_reduced_energy_obj_with_HF_init(energy_obj, [3, 7])
 
-    print(energy_obj.hamiltonian)
-    """
+
     pool = BlockPool(quasi_imaginary_evolution_rotation_pool(
         energy_obj.hamiltonian))
 
@@ -39,4 +38,4 @@ if __name__ == "__main__":
     op = OptimizationTask(circuit, optimizer, energy_obj.get_cost())
     
     op.run()
-    """
+    

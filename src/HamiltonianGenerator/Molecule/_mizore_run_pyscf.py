@@ -14,7 +14,6 @@
 
 
 # Modified by Zijian Zhang
-# Add attribute "fci_wfn"
 # This attribute can be saved and loaded
 
 

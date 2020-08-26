@@ -2,6 +2,11 @@ from openfermion.ops import FermionOperator, QubitOperator
 from openfermion.transforms import bravyi_kitaev, jordan_wigner
 from openfermion.utils import hermitian_conjugated
 
+"""
+The functions for generating the Hartree Fock initial operator based on the transformation and number of electrons
+See get_HF_operator()
+"""
+
 
 def get_dressed_operator(dress_operator, operator2dress):
     """ Return a QubitOperator modified as U^HU

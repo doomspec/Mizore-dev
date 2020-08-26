@@ -1,4 +1,4 @@
-import Networkx as nx
+import networkx as nx
 from openfermion.ops import QubitOperator
 
 def get_maxcut_hamiltonian_from_graph(graph):

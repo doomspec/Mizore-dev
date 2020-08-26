@@ -3,6 +3,16 @@ from Blocks import HartreeFockInitBlock
 from Blocks._utilities import get_circuit_energy
 
 class EnergyObjective(Objective):
+    """
+    Attributes:
+        Hamiltonian
+        init_block: the block usually used for initiate the wavefucntion for the Hamiltonian. 
+        A block that produce a state near the ground state should be adopted.
+        Usually, for the molecule, the Hartree Fock initialization is used
+        obj_info: The dict for additional information of the Hamiltonian, e.g. the HF energy and the ground state energy
+    Methods:
+        get_cost(): generate a EnergyCost object which can be used by optimizers
+    """
     def __init__(self, hamiltonian, n_qubit, init_block=None, obj_info={}):
         self.hamiltonian = hamiltonian
         self.n_qubit = n_qubit

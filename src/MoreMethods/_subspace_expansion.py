@@ -5,6 +5,21 @@ from Blocks._pauli_gates_block import PauliGatesBlock
 from scipy.linalg import eigh
 
 class SubspaceExpansionSolver:
+    """
+    The class for Quantum Subspace Expansion (QSE) method, which is also call Quantum Subspace Diagonalization (QSD),
+    as in "A non-orthogonal variational quantum eigensolver" (New Journal of Physics, Volume 22, July 2020)
+    This methods takes a set of quantum states Psi={|psi_i>} that can be produced by known quantum circuit and 
+    diagonalize the Hamiltonian in the space spanned by the set Psi.
+    The core procedure is to solve the generalized eigenvalue problem
+    Hc=ScE, where H_{ij}=<psi_i|H|psi_j>, S_{ij}=<psi_i|psi_j>, E is the eigenvalue and c is the eigenvector
+    The terms can be evaluated efficiently by quantum computers.
+    The main problem is how to construct the subspace.
+    Attributes:
+        circuit_list: the list of circuits produce the state set Psi
+        hamiltonian: the objective hamiltonian
+        S_mat, H_mat: will be generated after execute()
+        eigvals, eigvecs, ground_energy, ground_state will all be generated after execute
+    """
 
     def __init__(self,circuit_list,hamiltonian):
         self.circuit_list=circuit_list

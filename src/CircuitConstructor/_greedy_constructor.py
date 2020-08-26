@@ -17,21 +17,21 @@ NOT_DEFINED = 999999
 class GreedyConstructor(CircuitConstructor):
     """
     Greedy circuit constructor which try all the blocks in self.block_pool in each iteration 
-    and add the block that decrease the cost most to the self.circuit.
+    and add the block that decrease the cost most in the *end* of the self.circuit.
 
     This strategy is used in the following works
     J. Chem. Theory Comput. 2020, 16, 2
     Nat Commun 10, 3007 (2019)
 
     Attributes:
-        hamiltonian: a Hamiltonian that defines the problem
-        circuit: the circuit kept by the constructor, should be developed when running
+        construct_obj: a Objective that defines the problem (like EnergyObjective for ground state energy)
+        block_pool: The BlockPool used for contruct the circuit, will be gone over at each iteration
+        circuit: the circuit kept by the constructor, should be contructed when running
         max_n_iter: Max number of blocks to be added in the circuit
         terminate_cost: the cost where the construction stops
         optimizer: a ParameterOptimizer for parameter optimization
         task_manager: a TaskManager for parallel run of parameter optimization. 
         If left None, a new task manager uses 4 processes will be created and used 
-
     """
 
     gradiant_cutoff = 1e-9
@@ -61,7 +61,7 @@ class GreedyConstructor(CircuitConstructor):
         self.task_manager = task_manager
         self.task_manager_created = False
         if task_manager == None:
-            self.task_manager = TaskManager()
+            self.task_manager = TaskManager(n_processor=4)
             self.task_manager_created = True
         return
 
@@ -73,7 +73,6 @@ class GreedyConstructor(CircuitConstructor):
         self.current_cost = self.init_cost
         self.cost_list.append(self.current_cost)
         print("Initial Energy:", self.init_cost)
-        # print(self.block_pool)
         self.start_time_number = time.time()
         self.add_time_point()
         for i_iter in range(self.max_n_iter):
@@ -112,7 +111,6 @@ class GreedyConstructor(CircuitConstructor):
         self.circuit.adjust_parameter_on_active_position(parameter)
         self.cost_list.append(self.current_cost)
         save_construction(self, self.project_name)
-        
 
 
     def update_one_block(self):
@@ -157,14 +155,15 @@ class GreedyConstructor(CircuitConstructor):
     def do_trial_on_circuits_by_cost_value(self, trial_circuits=None):
         if trial_circuits == None:
             trial_circuits = self.trial_circuits
+        task_series_id="Single Block Optimize "+str(self.id%100000)
         trial_result_list = []
         for trial_circuit in trial_circuits:
             task = OptimizationTask(trial_circuit, self.optimizer, None)
-            self.task_manager.add_task_to_buffer(task, task_series_id=self.id)
-        self.task_manager.flush(task_series_id=self.id,
+            self.task_manager.add_task_to_buffer(task, task_series_id=task_series_id)
+        self.task_manager.flush(task_series_id=task_series_id,
                                 public_resource={"cost": self.cost})
         res_list = self.task_manager.receive_task_result(
-            task_series_id=self.id)
+            task_series_id=task_series_id)
         for i in range(len(trial_circuits)):
             cost, amp = res_list[i]
             cost_descent = self.current_cost - cost
@@ -180,12 +179,15 @@ class GreedyConstructor(CircuitConstructor):
         if abs(self.gradient_screening_rate-1) < 0.00001:
             return self.do_trial_on_circuits_by_cost_value()
 
+        task_series_id="Gradient "+str(self.id%100000)
+
         for trial_circuit in trial_circuits:
             task = GradientTask(trial_circuit, None)
-            self.task_manager.add_task_to_buffer(task, task_series_id=self.id)
-        self.task_manager.flush(task_series_id=self.id,
+            self.task_manager.add_task_to_buffer(task, task_series_id=task_series_id)
+        self.task_manager.flush(task_series_id=task_series_id,
                                 public_resource={"cost": self.cost})
-        res_list = self.task_manager.receive_task_result(task_series_id=self.id)
+        res_list = self.task_manager.receive_task_result(task_series_id=task_series_id)
+        res_list = [numpy.linalg.norm(res) for res in res_list]
         res_list = numpy.array(res_list)
         n_circuit_to_try = math.ceil(
             self.gradient_screening_rate*len(trial_circuits))

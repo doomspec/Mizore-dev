@@ -3,11 +3,22 @@ from Utilities.Tools import get_operator_n_qubit
 from Objective import EnergyObjective
 from Blocks import HartreeFockInitBlock
 from copy import deepcopy
+
+"""
+    This file provides the fucntions to divide or reduce a Hamiltonian
+    The main method is 
+    get_reduced_energy_obj_with_HF_init(energy_obj:EnergyObjective,location2reduce),
+    which can reduce a EnergyObjective by location2reduce. 
+    location2reduce is usually set to be the stationary qubits or inactive qubits.
+    
+    All string_pauli should be like:
+    ((0, 'X'), (1, 'X'), (3, 'Y'), (4, 'Y'), (5, 'X'), (6, 'Z'))
+"""
+
 def split_pauli_string(string_pauli,location):
     """
-    string_pauli should be like:
-    ((0, 'X'), (1, 'X'), (3, 'Y'), (4, 'Y'), (5, 'X'), (6, 'Z'))
-    return:
+    Split a pauli string into two parts
+    Return:
     part1_term: correspond to location
     part2_term: other terms
     """
@@ -79,6 +90,11 @@ def evaluate_string_list(init_state_string,string_list):
     return res
 
 def get_reduced_energy_obj_with_HF_init(energy_obj:EnergyObjective,location2reduce):
+    """
+    Args:
+        energy_obj: The energy objective to reduce 
+        location2reduce: a list like [2,4], which indicates the qubits to reduce 
+    """
     location2reduce.sort()
     init_X_qsubset=energy_obj.init_block.qsubset
     init_state_string=[0]*energy_obj.n_qubit

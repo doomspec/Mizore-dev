@@ -1,4 +1,4 @@
-import Networkx as nx
+import networkx as nx
 
 def IBM5QYorktown(weights=[1,1,1,1,1,1]):
     G = nx.Graph()

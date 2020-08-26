@@ -13,6 +13,13 @@ CHEMICAL_ACCURACY = 0.001
 
 """
 The methods for generating simple molecular and graph theory Hamiltonian for VQE to find ground state energy.
+
+make_example_H2, make_example_LiH, make_example_H2O and make_example_N2 are the main methods
+Use default parameter will produce a standard Hamiltonian for benchmarking
+
+make_molecular_energy_obj can be used to generate Hamiltonians in a more expert way
+Selecting active space based on *Irrep* is implemented in Mizore based on PySCF
+Please refer to the document of PySCF to see how to use the irrep symbols
 """
 
 

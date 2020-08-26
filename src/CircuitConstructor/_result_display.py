@@ -20,6 +20,9 @@ def save_circuit(circuit,circuit_name):
         pickle.dump(circuit, f)
 
 def save_construction(constructor,project_name):
+    """
+    Generate a log of circuit construction as a JSON file
+    """
     save_path=CONSTRUCTION_PATH+project_name+'/'
     mkdir(save_path)
     log_dict={}
@@ -37,6 +40,11 @@ def save_construction(constructor,project_name):
     draw_current_result(constructor,save_path)
 
 def draw_current_result(constructor:CircuitConstructor,path):
+    """
+    Draw the result of constrction. Two figures will be generated:
+    1. Cost vs. Iteration
+    2. Time vs. Iteration
+    """
     mkdir(path)
     start_cost=max(constructor.cost_list)
     end_cost=0

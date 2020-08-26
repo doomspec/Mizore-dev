@@ -4,6 +4,7 @@ import pickle
 import numpy
 from copy import deepcopy
 from ._task import Task
+from tqdm import tqdm
 
 class TaskResult:
 
@@ -13,7 +14,9 @@ class TaskResult:
         self.series_id = series_id
 
 class TaskRunner(Process):
-
+    """
+    See TaskManager
+    """
     def __init__(self, task_queue, result_queue):
         Process.__init__(self)
         self.task_queue = task_queue
@@ -42,6 +45,16 @@ class TaskManager:
     """
     The class for parallelly evaluate quantum circuits.
     Holds the task queue and result queue for TaskRunner to read the inputs and put the outputs.
+    Tasks are distributed to different TaskRunner running on different cores to implement parallel
+    Usage:
+        1. Add tasks to the buffer and attach a *task_series_id*: add_task_to_buffer(_task, task_series_id)
+        2. Use flush() to send the tasks in the buffer to the TaskRunners
+        3. Use receive_task_result(task_series_id) to receive the results of the tasks with *task_series_id*
+    Advanced Usage:
+        When flush(), a *public_resource* can be added to avoid including 
+        large and common resources (like a big Hamiltonian) in every tasks
+        public_resource should be a dict() with like {"hamiltonian":operator}
+        By doing so, the TaskRunner will replace the attribute named "hamiltonian" by operator in the tasks before run 
     """
     def __init__(self, n_processor=4,task_package_size=5):
 
@@ -103,16 +116,22 @@ class TaskManager:
             ranked_result_list.append(result_list[index_rank_list[i]])
         return ranked_result_list
 
-    def receive_task_result(self, task_series_id=0):
+    def receive_task_result(self, task_series_id=0, progress_bar=True):
 
         result_list = []
         index_list = []
+        n_total_tasks=self.n_task_remain_by_series_id[task_series_id]
         for task_result in self.recieve_buffer_by_series_id[task_series_id]: 
             result_list.append(task_result.result)
             index_list.append(task_result.index_of_in)
             self.n_task_remain_by_series_id[task_series_id] -= 1
         self.recieve_buffer_by_series_id[task_series_id]=[]
         
+        
+        if progress_bar:
+            pbar = tqdm(total=n_total_tasks)
+            pbar.set_description(str(task_series_id))
+            last_progress_value=n_total_tasks
 
         while (self.n_task_remain_by_series_id[task_series_id] != 0):
             result_package = self.result_queue.get(True)
@@ -123,7 +142,15 @@ class TaskManager:
                     self.n_task_remain_by_series_id[task_series_id] -= 1
                 else:
                     self.recieve_buffer_by_series_id[task_result.series_id].append(task_result)
+
+            if progress_bar: 
+                pbar.update(last_progress_value-self.n_task_remain_by_series_id[task_series_id])
+                last_progress_value=self.n_task_remain_by_series_id[task_series_id]
+
             time.sleep(TaskManager.RECEIVE_PERIOD)
+
+        if progress_bar:
+            pbar.close()
 
         index_rank_list = numpy.argsort(numpy.array(index_list))
         ranked_result_list = []

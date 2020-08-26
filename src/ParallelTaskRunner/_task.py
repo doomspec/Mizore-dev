@@ -1,4 +1,8 @@
 class Task:
+    """
+    The base class of tasks. Task should include information for a TaskRunner to process
+    By run(), a result should be returned
+    """
     def __init__(self):
         self.index_of_in = -1
         self.series_id = -1
