@@ -14,6 +14,7 @@ class Block():
     """
 
     IS_INVERSE_DEFINED = False
+    IS_LOCALIZE_AVAILABLE = False
 
     def __init__(self, is_inversed=False, n_parameter=-1,active_qubits=None):
         self.is_inversed = is_inversed
@@ -25,6 +26,9 @@ class Block():
             self.active_qubits = set()
         return
     
+    def get_localized_operator(self,qsubset):
+        return None
+
     def get_active_qubits(self):
         return self.active_qubits
 

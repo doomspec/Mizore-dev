@@ -15,7 +15,7 @@ class BlockCircuit:
     whose parameter should be adjustable.
 
     One can make use of duplicate() to duplicate a circuit
-    
+
     Attributes:
         block_list: The list of blocks contained in the circuit
         n_qubit: Number of qubits in the circuit
@@ -25,11 +25,13 @@ class BlockCircuit:
         self.block_list = []
         self.n_qubit = n_qubit
         self.active_position_list = []
+        self.qubit_index_mapping = []
         return
 
     def add_block(self, block: Block):
-        if block!=None:
+        if block != None:
             self.block_list.append(copy(block))
+            self.active_position_list.append(len(self.block_list)-1)
 
     def count_n_parameter_by_position_list(self, position_list):
         n_parameter = 0
@@ -54,6 +56,12 @@ class BlockCircuit:
         return self.get_parameter_on_position_list(self.active_position_list)
 
     def get_ansatz_by_position_list(self, position_list):
+        if len(self.qubit_index_mapping) == 0:
+            return self._get_ansatz_by_position_list_0(position_list)
+        else:
+            return self._get_ansatz_by_position_list_with_qubit_mapping(position_list, self.qubit_index_mapping)
+
+    def _get_ansatz_by_position_list_0(self, position_list):
         """Return a ParametrizedCircuit with certain parameter adjustable
         Args:
             position_list: contains the indices of the block_list where the block's parameter is adjustable
@@ -72,6 +80,27 @@ class BlockCircuit:
                         [0.0] * block.n_parameter, wavefunction)
 
         return ParametrizedCircuit(ansatz, self.n_qubit, self.count_n_parameter_by_position_list(position_list))
+
+    def _get_ansatz_by_position_list_with_qubit_mapping(self, position_list, qubit_index_mapping):
+        redundant_n_qubit = qubit_index_mapping[len(qubit_index_mapping)-1]+1
+
+        def ansatz(parameter, wavefunction):
+            mapped_wavefunction = [None]*redundant_n_qubit
+            for i in range(len(qubit_index_mapping)):
+                mapped_wavefunction[qubit_index_mapping[i]] = wavefunction[i]
+                # print(mapped_wavefunction)
+            para_index = 0
+            for i in range(len(self.block_list)):
+                block: Block = self.block_list[i]
+                if i in position_list:
+                    block.apply(
+                        parameter[para_index:para_index + block.n_parameter], mapped_wavefunction)
+                    para_index += block.n_parameter
+                else:
+                    block.apply(
+                        [0.0] * block.n_parameter, wavefunction)
+
+        return ParametrizedCircuit(ansatz, len(qubit_index_mapping), self.count_n_parameter_by_position_list(position_list))
 
     def get_ansatz_on_active_position(self):
         return self.get_ansatz_by_position_list(self.active_position_list)
@@ -104,7 +133,8 @@ class BlockCircuit:
             n_parameter += self.block_list[i].n_parameter
             if n_parameter > position:
                 block_postion = i
-                in_block_position = self.block_list[i].n_parameter - n_parameter + position
+                in_block_position = self.block_list[i].n_parameter - \
+                    n_parameter + position
                 break
         self.block_list[block_postion].parameter[in_block_position] += adjust_value
         return
@@ -126,7 +156,8 @@ class BlockCircuit:
         return
 
     def adjust_parameter_on_active_position(self, adjust_list):
-        self.adjust_parameter_by_block_postion_list(adjust_list, self.active_position_list)
+        self.adjust_parameter_by_block_postion_list(
+            adjust_list, self.active_position_list)
 
     def adjust_all_parameter_by_list(self, adjust_list):
 
@@ -139,16 +170,15 @@ class BlockCircuit:
             for in_block_position in range(n_block_para):
                 self.block_list[block_postion].parameter[in_block_position] += adjust_list[para_index]
                 para_index += 1
-        return 
-    
-    def get_gate_used(self):
-        gate_used={"CNOT":0,"SingleRotation":0,"TimeEvolution":0}
-        for block in self.block_list:
-            block_gate=block.get_gate_used()
-            for key in block_gate.keys():
-                gate_used[key]+=block_gate[key]
-        return gate_used
+        return
 
+    def get_gate_used(self):
+        gate_used = {"CNOT": 0, "SingleRotation": 0, "TimeEvolution": 0}
+        for block in self.block_list:
+            block_gate = block.get_gate_used()
+            for key in block_gate.keys():
+                gate_used[key] += block_gate[key]
+        return gate_used
 
     def duplicate(self):
         copy_circuit = BlockCircuit(self.n_qubit)
@@ -158,18 +188,35 @@ class BlockCircuit:
         return copy_circuit
 
     def get_active_qubits(self):
-        active_qubits=set()
+        active_qubits = set()
         for block in self.block_list:
             active_qubits.update(block.get_active_qubits())
         return active_qubits
 
+    def get_disjoint_active_sets(self):
+        from Utilities.UnionFind import UnionFind
+        uf = UnionFind(list(range(self.n_qubit)))
+        for block in self.block_list:
+            uf.union_list(block.get_active_qubits())
+        return uf.components()
+
+    def avoid_redundant_qubit(self):
+        active_qubits = list(self.get_active_qubits())
+        active_qubits.sort()
+        self.qubit_index_mapping = active_qubits
+        self.active_position_list = list(
+            set(self.active_position_list).intersection(list(range(len(self.block_list)))))
+        self.active_position_list.sort()
+
     def __str__(self):
-        info=""
-        if len(self.block_list)!=0:
-            info+="Block Num:"+str(len(self.block_list))+"; Qubit Num:"+str(self.n_qubit)+"\n"
-            info+="Block list:"
+        info = ""
+        if len(self.block_list) != 0:
+            info += "Block Num:"+str(len(self.block_list)) + \
+                "; Qubit Num:"+str(self.n_qubit)+"\n"
+            info += "Block list:"
             for block in self.block_list:
-                info+="\n"+str(block)
+                info += "\n"+str(block)
         else:
-            info+="\n"+"This is an Empty circuit. Qubit Num:"+str(self.n_qubit)
+            info += "\n"+"This is an Empty circuit. Qubit Num:" + \
+                str(self.n_qubit)
         return info

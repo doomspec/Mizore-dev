@@ -7,14 +7,28 @@ class PauliGatesBlock(Block):
 
     n_parameter = 0
     IS_INVERSE_DEFINED = True
+    IS_LOCALIZE_AVAILABLE = True
 
-    def __init__(self, paulistring, init_angle=0):
+
+    def __init__(self, paulistring):
         """
-        paulistring should be like [(0,"X"),(2,"Y")]
+        paulistring should be like [(0,'X'),(2,'Y')]
+        """
+        self.paulistring = paulistring
+        """
+        qsubset=[]
+        for index,_pauli in paulistring:
+            qsubset.append(index)
         """
         Block.__init__(self, n_parameter=0)
-        self.paulistring = paulistring
-        qsubset=[]
+
+    def get_localized_operator(self,_qsubset):
+        qsubset=set(_qsubset)
+        new_paulistring=[]
+        for term in self.paulistring:
+            if term[0] in qsubset:
+                new_paulistring.append(term)
+        return PauliGatesBlock(new_paulistring)
 
     def apply_forward_gate(self, parameter, wavefunction):
         apply_Pauli_gates(self.paulistring, wavefunction)

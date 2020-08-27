@@ -9,10 +9,15 @@ class HartreeFockInitBlock(Block):
     """
     n_parameter = 0
     IS_INVERSE_DEFINED = True
+    IS_LOCALIZE_AVAILABLE = True
 
     def __init__(self, qsubset, init_angle=0):
         Block.__init__(self, n_parameter=0)
         self.qsubset = qsubset
+
+    def get_localized_operator(self,qsubset):
+        intersect=list(self.active_qubits.intersection(qsubset))
+        return HartreeFockInitBlock(intersect)
 
     def apply_forward_gate(self, parameter, wavefunction):
         apply_X_gates(self.qsubset, wavefunction)
