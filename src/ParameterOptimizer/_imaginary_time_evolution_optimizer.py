@@ -74,36 +74,30 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
         n_parameter = len(adjusted_circuits)
         mat_A = [[0.0 for col in range(n_parameter)]
                  for row in range(n_parameter)]
+
+        task_id = id(self)%10000
+
         for i in range(n_parameter):
-            inner_product_list10 = []
-            inner_product_list20 = []
-            inner_product_list30 = []
             for j in range(i, n_parameter):
-                inner_product_list10.append(get_inner_two_circuit_product(
-                    adjusted_circuits[i], adjusted_circuits[j]))
-                inner_product_list20.append(get_inner_two_circuit_product(
-                    adjusted_circuits[i], circuit))
-                inner_product_list30.append(get_inner_two_circuit_product(
-                    circuit, adjusted_circuits[j]))
-
-            task_id = id(self)
-
-            for j in range(i, n_parameter):
+                task_id_i=str(task_id)+"i"+str(i)
                 self.task_manager.add_task_to_buffer(InnerProductTask(
-                    adjusted_circuits[i], adjusted_circuits[j]), task_series_id=task_id+10)
+                    adjusted_circuits[i], adjusted_circuits[j]), task_series_id=task_id_i+"c1")
                 self.task_manager.add_task_to_buffer(InnerProductTask(
-                    adjusted_circuits[i], circuit), task_series_id=task_id+20)
+                    adjusted_circuits[i], circuit), task_series_id=task_id_i+"c2")
                 self.task_manager.add_task_to_buffer(InnerProductTask(
-                    circuit, adjusted_circuits[j]), task_series_id=task_id+30)
+                    circuit, adjusted_circuits[j]), task_series_id=task_id_i+"c3")
 
-            self.task_manager.flush()
+        self.task_manager.flush()
 
+        for i in range(n_parameter):
+
+            task_id_i=str(task_id)+"i"+str(i)
             inner_product_list1 = self.task_manager.receive_task_result(
-                task_series_id=task_id+10)
+                task_series_id=task_id_i+"c1")
             inner_product_list2 = self.task_manager.receive_task_result(
-                task_series_id=task_id+20)
+                task_series_id=task_id_i+"c2")
             inner_product_list3 = self.task_manager.receive_task_result(
-                task_series_id=task_id+30)
+                task_series_id=task_id_i+"c3")
 
             for j in range(i, n_parameter):
                 term_value = inner_product_list1[j-i] - \
@@ -112,6 +106,7 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
                 term_value = term_value.real
                 mat_A[i][j] = term_value
                 mat_A[j][i] = term_value
+                
         return mat_A
 
     def calc_A_mat(self, circuit, adjusted_circuits):
