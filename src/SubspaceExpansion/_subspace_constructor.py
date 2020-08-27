@@ -3,7 +3,7 @@ from Blocks._time_evolution_block import TimeEvolutionBlock
 import itertools
 
 def generate_local_complete_space(circuit,qsubset):
-    res_circuits=[]
+    res_circuits=[circuit.duplicate()]
     n_qubit=len(qsubset)
     for l in range(1,n_qubit+1):
         for qset0 in itertools.combinations(qsubset,l):

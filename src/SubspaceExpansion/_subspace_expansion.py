@@ -51,7 +51,7 @@ class SubspaceExpansionSolver:
         self.eigvals, self.eigvecs = eigh(
             self.H_mat, self.S_mat, eigvals_only=False)
         self.ground_energy = self.eigvals[0]
-        self.ground_state = self.eigvecs[0]
+        self.ground_state = self.eigvecs[:,0]
         print("The ground state energy is", self.ground_energy)
         print("It's eigenvector is", self.ground_state)
 
@@ -68,7 +68,7 @@ class SubspaceExpansionSolver:
                         self.circuit_list[i], self.circuit_list[j], self.hamiltonian)
                 else:
                     h = get_hamiltonian_overlap(
-                        self.circuit_list[i], self.circuit_list[j], self.hamiltonian, self.task_manager)
+                        self.circuit_list[i], self.circuit_list[j], self.hamiltonian, self.task_manager,sparse_circuit=self.sparse_circuit)
                 # print(i,j,h)
                 self.H_mat[i][j] = h
                 self.H_mat[j][i] = np.conjugate(h)
@@ -104,7 +104,7 @@ def get_hamiltonian_overlap_0(first_circuit: BlockCircuit, second_circuit: Block
     return overlap
 
 
-def get_hamiltonian_overlap(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian, task_manager: TaskManager):
+def get_hamiltonian_overlap(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian, task_manager: TaskManager, sparse_circuit=False):
 
     coeff_list = []
     overlap = 0
@@ -115,7 +115,7 @@ def get_hamiltonian_overlap(first_circuit: BlockCircuit, second_circuit: BlockCi
             temp_circuit.add_block(PauliGatesBlock(string_pauli))
             coeff_list.append(pauli_and_ceoff.terms[string_pauli])
             task = InnerProductTask(
-                temp_circuit, second_circuit, is_sparse=True)
+                temp_circuit, second_circuit, is_sparse=sparse_circuit)
             task_manager.add_task_to_buffer(
                 task, task_series_id=task_series_id)
     task_manager.flush()
