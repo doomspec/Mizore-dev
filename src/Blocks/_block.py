@@ -20,6 +20,7 @@ class Block():
         self.is_inversed = is_inversed
         self.parameter = []
         self.n_parameter = n_parameter
+        self.active_qubits = None
         if active_qubits!=None:
             self.active_qubits = set(active_qubits)
         else:
@@ -30,7 +31,10 @@ class Block():
         return None
 
     def get_active_qubits(self):
-        return self.active_qubits
+        if self.IS_LOCALIZE_AVAILABLE:
+            return []
+        else:
+            return self.active_qubits
 
     def apply(self, parameter, wavefunction):
         """

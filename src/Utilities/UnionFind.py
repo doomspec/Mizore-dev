@@ -371,5 +371,4 @@ if __name__ == "__main__":
     uf=UnionFind(list(range(10)))
     uf.union(1,2)
     uf.union_list((2,3,4,5))
-    uf.union_list()
     print(uf.components())

@@ -11,7 +11,7 @@ class HartreeFockInitBlock(Block):
     IS_INVERSE_DEFINED = True
     IS_LOCALIZE_AVAILABLE = True
 
-    def __init__(self, qsubset, init_angle=0):
+    def __init__(self, qsubset):
         Block.__init__(self, n_parameter=0)
         self.qsubset = qsubset
 

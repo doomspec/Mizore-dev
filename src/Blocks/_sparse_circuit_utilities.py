@@ -17,7 +17,7 @@ def get_0000_amplitude_on_sparse_circuit(circuit):
     for circuit in localized_circuits:
         circuit.avoid_redundant_qubit()
         pcircuit=circuit.get_ansatz()
-        print(pcircuit.n_qubit)
+        #print(pcircuit.n_qubit)
         amp_0000*=evaluate_ansatz_0000_amplitudes(pcircuit.n_qubit,pcircuit.ansatz)
     return amp_0000
 
