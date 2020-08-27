@@ -16,7 +16,7 @@ class HartreeFockInitBlock(Block):
         self.qsubset = qsubset
 
     def get_localized_operator(self,qsubset):
-        intersect=list(self.active_qubits.intersection(qsubset))
+        intersect=list(set(self.qsubset).intersection(qsubset))
         return HartreeFockInitBlock(intersect)
 
     def apply_forward_gate(self, parameter, wavefunction):

@@ -14,12 +14,18 @@ def get_0000_amplitude_on_sparse_circuit(circuit):
     for qset in disjoint_sets:
         localized_circuits.append(get_localized_circuit(circuit,qset))
     amp_0000=1
-    for circuit in localized_circuits:
-        circuit.avoid_redundant_qubit()
-        pcircuit=circuit.get_ansatz()
-        #print(pcircuit.n_qubit)
-        amp_0000*=evaluate_ansatz_0000_amplitudes(pcircuit.n_qubit,pcircuit.ansatz)
-    return amp_0000
+    for localized_circuit in localized_circuits:
+        localized_circuit.avoid_redundant_qubit()
+        pcircuit=localized_circuit.get_fixed_parameter_ansatz()
+        if pcircuit.n_qubit==0:
+            part_amp=1
+        else:
+            part_amp=evaluate_ansatz_0000_amplitudes(pcircuit.n_qubit,pcircuit.ansatz)
+        amp_0000*=part_amp
+
+    pcircuit=circuit.get_fixed_parameter_ansatz()
+    amp=evaluate_ansatz_0000_amplitudes(pcircuit.n_qubit,pcircuit.ansatz)
+    return amp
 
 def get_localized_circuit(_circuit:BlockCircuit,qsubset):
     """
@@ -30,13 +36,14 @@ def get_localized_circuit(_circuit:BlockCircuit,qsubset):
     for i in range(len(circuit.block_list)):
         block=circuit.block_list[i]
         if block.IS_LOCALIZE_AVAILABLE:
+            #print(qsubset)
             circuit.block_list[i]=block.get_localized_operator(qsubset)
+            #print(circuit.block_list[i])
         else:
             for represent in block.active_qubits:
                 break
             if  represent not in qsubset:
                 remove_list.append(i)
-
     for i in reversed(remove_list):
         circuit.block_list.pop(i)
     return circuit

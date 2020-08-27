@@ -15,11 +15,12 @@ class PauliGatesBlock(Block):
         paulistring should be like [(0,'X'),(2,'Y')]
         """
         self.paulistring = paulistring
-        """
+        
         qsubset=[]
         for index,_pauli in paulistring:
             qsubset.append(index)
-        """
+        self.qsubset=qsubset
+        
         Block.__init__(self, n_parameter=0)
 
     def get_localized_operator(self,_qsubset):

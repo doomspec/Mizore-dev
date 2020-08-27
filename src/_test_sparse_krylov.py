@@ -27,14 +27,16 @@ if __name__ == "__main__":
     energy_obj = make_example_H2(basis=basis, fermi_qubit_transform=transform)
     #energy_obj=get_reduced_energy_obj_with_HF_init(energy_obj,[1,3])
     """ 
+    circuit=BlockCircuit(energy_obj.n_qubit)
+    circuit.add_block(energy_obj.init_block)
     community=[[5, 4], [3, 2, 1, 0]]
     task_manager=TaskManager(n_processor=5,task_package_size=10)
     local_hamiltonian=get_reduced_energy_obj_with_HF_init(energy_obj,[5,4],relabel_qubits=False).hamiltonian
-    circuits=generate_krylov_circuits(circuit,local_hamiltonian,0.01,3)#energy_obj.init_block)
-    #circuits=generate_local_complete_space(circuits,[4,5])
+    circuits=generate_krylov_circuits(circuit,local_hamiltonian,0.01,2)#energy_obj.init_block)
+    circuits=generate_local_complete_space(circuits,[4,5])
 
     
-    qse_solver=SubspaceExpansionSolver(circuits,energy_obj.hamiltonian,task_manager=task_manager,progress_bar=True)
+    qse_solver=SubspaceExpansionSolver(circuits,energy_obj.hamiltonian,task_manager=task_manager,sparse_circuit=False,progress_bar=True)
     qse_solver.execute()
 
     task_manager.close()

@@ -25,7 +25,7 @@ class BlockCircuit:
         self.block_list = []
         self.n_qubit = n_qubit
         self.active_position_list = []
-        self.qubit_index_mapping = []
+        self.qubit_index_mapping = None
         return
 
     def add_block(self, block: Block):
@@ -56,7 +56,7 @@ class BlockCircuit:
         return self.get_parameter_on_position_list(self.active_position_list)
 
     def get_ansatz_by_position_list(self, position_list):
-        if len(self.qubit_index_mapping) == 0:
+        if self.qubit_index_mapping == None:
             return self._get_ansatz_by_position_list_0(position_list)
         else:
             return self._get_ansatz_by_position_list_with_qubit_mapping(position_list, self.qubit_index_mapping)
@@ -82,6 +82,12 @@ class BlockCircuit:
         return ParametrizedCircuit(ansatz, self.n_qubit, self.count_n_parameter_by_position_list(position_list))
 
     def _get_ansatz_by_position_list_with_qubit_mapping(self, position_list, qubit_index_mapping):
+        #print(qubit_index_mapping)
+        if not qubit_index_mapping: #If no active qubit
+            def ansatz0(parameter, wavefunction):
+                pass
+            return ParametrizedCircuit(ansatz0,0,0)
+
         redundant_n_qubit = qubit_index_mapping[len(qubit_index_mapping)-1]+1
 
         def ansatz(parameter, wavefunction):
@@ -98,8 +104,7 @@ class BlockCircuit:
                     para_index += block.n_parameter
                 else:
                     block.apply(
-                        [0.0] * block.n_parameter, wavefunction)
-
+                        [0.0] * block.n_parameter, mapped_wavefunction)
         return ParametrizedCircuit(ansatz, len(qubit_index_mapping), self.count_n_parameter_by_position_list(position_list))
 
     def get_ansatz_on_active_position(self):
@@ -191,6 +196,9 @@ class BlockCircuit:
         active_qubits = set()
         for block in self.block_list:
             active_qubits.update(block.get_active_qubits())
+        if not active_qubits: # If active_qubits is empty
+            for block in self.block_list:
+                active_qubits.update(block.qsubset)
         return active_qubits
 
     def get_disjoint_active_sets(self):
@@ -207,6 +215,7 @@ class BlockCircuit:
         self.active_position_list = list(
             set(self.active_position_list).intersection(list(range(len(self.block_list)))))
         self.active_position_list.sort()
+        #print(self.qubit_index_mapping)
 
     def __str__(self):
         info = ""
