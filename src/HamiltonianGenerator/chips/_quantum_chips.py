@@ -37,3 +37,16 @@ def Rigetti_16Q_Aspen(weights=[0.975 for i in range(18)]):
     G.add_edge(0, 15, weight = weights[16])
     G.add_edge(1, 14, weight = weights[17])
     return G
+
+def Google_Bristlecone(weights=[0.975 for i in range(18)]):
+    G = nx.Graph()
+    n = 72
+    G.add_nodes_from(range(n))
+    for i in range(25):
+        G.add_edge(i, i+1, weight = weights[i])
+        G.add_edge(i+8, i+9, weight = weights[i+8])
+    G.add_edge(7, 0, weight = weights[7])
+    G.add_edge(15, 8, weight = weights[15])
+    G.add_edge(0, 15, weight = weights[16])
+    G.add_edge(1, 14, weight = weights[17])
+    return G
