@@ -54,24 +54,58 @@ class SubspaceExpansionSolver:
         self.ground_state = self.eigvecs[:,0]
         print("The ground state energy is", self.ground_energy)
         print("It's eigenvector is", self.ground_state)
-
+    
     def calc_H_mat(self):
+        if self.task_manager!=None:
+            self._calc_H_mat_parellel()
+        else:
+            self._calc_H_mat_0()
+
+    def _calc_H_mat_0(self):
 
         if self.progress_bar:
             pbar = tqdm(total=(self.n_basis+1)*self.n_basis//2)
             pbar.set_description(str("H matrix"))
+        for i in range(self.n_basis):
+            for j in range(i, self.n_basis):
+                h = get_hamiltonian_overlap_0(
+                    self.circuit_list[i], self.circuit_list[j], self.hamiltonian)
+                self.H_mat[i][j] = h
+                self.H_mat[j][i] = np.conjugate(h)
+                if self.progress_bar:
+                    pbar.update(1)
+        if self.progress_bar:
+            pbar.close()
+        return
+
+    def _calc_H_mat_parellel(self):
+        if self.progress_bar:
+            pbar = tqdm(total=(self.n_basis+1)*self.n_basis//2)
+            pbar.set_description(str("H matrix"))
+        for i in range(self.n_basis):
+            for j in range(i, self.n_basis):
+                task_series_id=str(id(self)%10000)+"i"+str(i)+"j"+str(j)
+                add_hamiltonian_overlap_tasks(
+                    self.circuit_list[i], self.circuit_list[j], self.hamiltonian, self.task_manager,task_series_id,sparse_circuit=self.sparse_circuit)
+        
+        self.task_manager.flush()
+
+        coeff_list=[]
+
+        for string_pauli in self.hamiltonian.terms:
+            coeff_list.append(self.hamiltonian.terms[string_pauli])
 
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
-                if self.task_manager == None:
-                    h = get_hamiltonian_overlap_0(
-                        self.circuit_list[i], self.circuit_list[j], self.hamiltonian)
-                else:
-                    h = get_hamiltonian_overlap(
-                        self.circuit_list[i], self.circuit_list[j], self.hamiltonian, self.task_manager,sparse_circuit=self.sparse_circuit)
-                # print(i,j,h)
+                task_series_id=str(id(self)%10000)+"i"+str(i)+"j"+str(j)
+                res=self.task_manager.receive_task_result(task_series_id=task_series_id)
+                h=0
+                for k in range(len(coeff_list)):
+                    h+=res[k]*coeff_list[k]
+
                 self.H_mat[i][j] = h
                 self.H_mat[j][i] = np.conjugate(h)
+
                 if self.progress_bar:
                     pbar.update(1)
         if self.progress_bar:
@@ -104,28 +138,14 @@ def get_hamiltonian_overlap_0(first_circuit: BlockCircuit, second_circuit: Block
     return overlap
 
 
-def get_hamiltonian_overlap(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian, task_manager: TaskManager, sparse_circuit=False):
-
-    coeff_list = []
-    overlap = 0
-    task_series_id = str((id(first_circuit)+id(second_circuit)*10) % 10000)+"H"
-    for pauli_and_ceoff in hamiltonian.get_operators():
-        for string_pauli in pauli_and_ceoff.terms:
+def add_hamiltonian_overlap_tasks(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian, task_manager: TaskManager, task_series_id ,sparse_circuit=False):
+    for string_pauli in hamiltonian.terms:
             temp_circuit = first_circuit.duplicate()
             temp_circuit.add_block(PauliGatesBlock(string_pauli))
-            coeff_list.append(pauli_and_ceoff.terms[string_pauli])
             task = InnerProductTask(
                 temp_circuit, second_circuit, is_sparse=sparse_circuit)
             task_manager.add_task_to_buffer(
                 task, task_series_id=task_series_id)
-    task_manager.flush()
-    inner_product_list = task_manager.receive_task_result(
-        task_series_id=task_series_id)
-
-    for i in range(len(inner_product_list)):
-        overlap += inner_product_list[i]*coeff_list[i]
-
-    return overlap
 
 
 def get_growing_circuit_list(circuit: BlockCircuit):

@@ -89,7 +89,7 @@ def evaluate_string_list(init_state_string,string_list):
         res.append(coeff)
     return res
 
-def get_reduced_energy_obj_with_HF_init(energy_obj:EnergyObjective,location2reduce):
+def get_reduced_energy_obj_with_HF_init(energy_obj:EnergyObjective,location2reduce,relabel_qubits=True):
     """
     Args:
         energy_obj: The energy objective to reduce 
@@ -101,7 +101,7 @@ def get_reduced_energy_obj_with_HF_init(energy_obj:EnergyObjective,location2redu
     for i in init_X_qsubset:
         init_state_string[i]=1
     new_n_qubit=energy_obj.n_qubit-len(location2reduce)
-    new_hamiltonian=get_reduced_operator(energy_obj.hamiltonian,location2reduce,init_state_string)
+    new_hamiltonian=get_reduced_operator(energy_obj.hamiltonian,location2reduce,init_state_string,relabel_qubits=relabel_qubits)
 
     mapping=get_mapping_by_reduced_location(energy_obj.n_qubit,location2reduce)
     new_init_X_qsubset=[]
@@ -112,7 +112,7 @@ def get_reduced_energy_obj_with_HF_init(energy_obj:EnergyObjective,location2redu
     return EnergyObjective(new_hamiltonian,new_n_qubit,HartreeFockInitBlock(new_init_X_qsubset),obj_info=energy_obj.obj_info)
     
 
-def get_reduced_operator(hamiltonian,location2reduce,init_state_string):
+def get_reduced_operator(hamiltonian,location2reduce,init_state_string, relabel_qubits=True):
     """
     location2reduce should be sorted
     example: [0,2,3,4]
@@ -134,8 +134,11 @@ def get_reduced_operator(hamiltonian,location2reduce,init_state_string):
     new_string_list=[]
     mapping=get_mapping_by_reduced_location(n_qubit,location2reduce)
 
-    for i in range(0,len(string_remain_list)):
-        new_string_list.append(map_string(string_remain_list[i],mapping))
+    if relabel_qubits:
+        for i in range(0,len(string_remain_list)):
+            new_string_list.append(map_string(string_remain_list[i],mapping))
+    else:
+        new_string_list=string_remain_list
 
     for i in range(0,len(coff_list)):
         coff_list[i]=coff_list[i]*list_reduced_coeff[i]

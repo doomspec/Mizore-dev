@@ -32,8 +32,11 @@ def get_localized_circuit(_circuit:BlockCircuit,qsubset):
         if block.IS_LOCALIZE_AVAILABLE:
             circuit.block_list[i]=block.get_localized_operator(qsubset)
         else:
-            if block.qsubset[0] not in qsubset:
+            for represent in block.active_qubits:
+                break
+            if  represent not in qsubset:
                 remove_list.append(i)
+
     for i in reversed(remove_list):
         circuit.block_list.pop(i)
     return circuit
