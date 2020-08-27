@@ -116,7 +116,7 @@ class TaskManager:
             ranked_result_list.append(result_list[index_rank_list[i]])
         return ranked_result_list
 
-    def receive_task_result(self, task_series_id=0, progress_bar=True):
+    def receive_task_result(self, task_series_id=0, progress_bar=False):
 
         result_list = []
         index_list = []

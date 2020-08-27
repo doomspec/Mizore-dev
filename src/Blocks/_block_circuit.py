@@ -157,6 +157,12 @@ class BlockCircuit:
         copy_circuit.active_position_list = self.active_position_list
         return copy_circuit
 
+    def get_active_qubits(self):
+        active_qubits=set()
+        for block in self.block_list:
+            active_qubits.update(block.get_active_qubits())
+        return active_qubits
+
     def __str__(self):
         info=""
         if len(self.block_list)!=0:

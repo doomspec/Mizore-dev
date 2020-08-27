@@ -12,7 +12,7 @@ class EfficientCoupledCluster(Block):
 
     def __init__(self, qsubset, init_angle=None):
         n_parameter = len(qsubset)*2+1
-        Block.__init__(self, n_parameter=n_parameter)
+        Block.__init__(self, n_parameter=n_parameter,active_qubits=qsubset)
         self.qsubset = qsubset
         if init_angle == None:
             self.parameter = [0.0]*n_parameter

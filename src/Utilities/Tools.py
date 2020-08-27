@@ -19,7 +19,7 @@ def random_list(start, stop, length):
     return random_list
 
 
-def get_operator_chain(operator: QubitOperator):
+def get_operator_qsubset(operator: QubitOperator):
     qubit_set = [False] * 200  # Assume there are at most 200 qubits
     for qsubset, _pauli in iter_qsubset_pauli_of_operator(operator):
         for i in qsubset:
@@ -49,4 +49,4 @@ def pauliword2string(pauli):
 
 
 if __name__ == "__main__":
-    print(get_operator_chain(QubitOperator("X0 X2")))
+    print(get_operator_qsubset(QubitOperator("X0 X2")))

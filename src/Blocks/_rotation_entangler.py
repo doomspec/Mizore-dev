@@ -14,7 +14,7 @@ class RotationEntangler(Block):
     IS_INVERSE_DEFINED = True
 
     def __init__(self, qsubset, pauliword, init_angle=0.0):
-        Block.__init__(self, n_parameter=1)
+        Block.__init__(self, n_parameter=1,active_qubits=qsubset)
         self.pauliword = pauliword
         self.parameter = [init_angle]
         self.qsubset = qsubset

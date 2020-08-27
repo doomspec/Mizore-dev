@@ -1,6 +1,6 @@
 from ._block import Block
 from Utilities.Operations import apply_time_evolution
-
+from Utilities.Tools import get_operator_qsubset
 
 class TimeEvolutionBlock(Block):
 
@@ -8,7 +8,8 @@ class TimeEvolutionBlock(Block):
     IS_INVERSE_DEFINED = True
 
     def __init__(self, hamiltonian, init_angle=0):
-        Block.__init__(self, n_parameter=1)
+        qsubset=get_operator_qsubset(hamiltonian)
+        Block.__init__(self, n_parameter=1,active_qubits=qsubset)
         self.hamiltonian = hamiltonian
         self.parameter = [init_angle]
 

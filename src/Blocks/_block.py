@@ -15,11 +15,18 @@ class Block():
 
     IS_INVERSE_DEFINED = False
 
-    def __init__(self, is_inversed=False, n_parameter=-1):
+    def __init__(self, is_inversed=False, n_parameter=-1,active_qubits=None):
         self.is_inversed = is_inversed
         self.parameter = []
         self.n_parameter = n_parameter
+        if active_qubits!=None:
+            self.active_qubits = set(active_qubits)
+        else:
+            self.active_qubits = set()
         return
+    
+    def get_active_qubits(self):
+        return self.active_qubits
 
     def apply(self, parameter, wavefunction):
         """

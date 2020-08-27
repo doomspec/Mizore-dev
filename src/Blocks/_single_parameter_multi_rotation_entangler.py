@@ -20,7 +20,8 @@ class SingleParameterMultiRotationEntangler(Block):
         for coeff,qsubset,pauli in iter_coeff_qsubset_pauli_of_operator(operator):
             self.qsubset_pauliword_list.append((qsubset,pauli))
             self.coeff_list.append(abs(coeff)) # TODO
-
+            self.active_qubits.update(qsubset)
+            
         if init_angle==None:
             init_angle=[0.0]
         self.parameter=init_angle

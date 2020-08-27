@@ -39,8 +39,8 @@ class BlockPool:
         self.blocks.add(block)
         return self
 
-    def __add__(self, pool):
-        self.merge_with_another_pool(pool)
+    def __add__(self, another_pool):
+        return BlockPool(set.union(another_pool.blocks, self.blocks))
 
     def generate_random_reduced_pool(self, n_block=0, percent=0):
         """

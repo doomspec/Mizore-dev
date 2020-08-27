@@ -9,8 +9,12 @@ class PauliGatesBlock(Block):
     IS_INVERSE_DEFINED = True
 
     def __init__(self, paulistring, init_angle=0):
+        """
+        paulistring should be like [(0,"X"),(2,"Y")]
+        """
         Block.__init__(self, n_parameter=0)
         self.paulistring = paulistring
+        qsubset=[]
 
     def apply_forward_gate(self, parameter, wavefunction):
         apply_Pauli_gates(self.paulistring, wavefunction)

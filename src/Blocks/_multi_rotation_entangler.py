@@ -20,6 +20,7 @@ class MultiRotationEntangler(Block):
         for qsubset, pauli in iter_qsubset_pauli_of_operator(operator):
             n_parameter += 1
             self.qsubset_pauliword_list.append((qsubset, pauli))
+            self.active_qubits.update(qsubset)
         if init_angle == None:
             init_angle = [0.0] * n_parameter
         self.n_parameter = n_parameter

@@ -6,7 +6,7 @@ class HardwareEfficientEntangler(Block):
     IS_INVERSE_DEFINED = True
 
     def __init__(self, qsubset, init_angle=None):
-        Block.__init__(self, n_parameter=3*len(qsubset))
+        Block.__init__(self, n_parameter=3*len(qsubset),active_qubits=qsubset)
         if init_angle==None:
             init_angle=[0.0]*self.n_parameter
         self.parameter = init_angle

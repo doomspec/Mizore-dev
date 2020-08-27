@@ -6,7 +6,7 @@ from .Molecule._geometry_generator import geometry_generator_dict, equilibrium_g
 from .Molecule._generate_HF_operation import get_dressed_operator, get_HF_operator, get_electron_fermion_operator
 from Objective._energy_obj import EnergyObjective
 from Blocks import HartreeFockInitBlock
-from Utilities.Tools import get_operator_chain
+from Utilities.Tools import get_operator_qsubset
 
 NOT_DEFINED = 999999
 CHEMICAL_ACCURACY = 0.001
@@ -110,7 +110,7 @@ def make_molecular_energy_obj(molecule_name, basis="sto-3g", geometry_info=None,
                 "terminate_cost": terminate_energy}
 
     init_operator = HartreeFockInitBlock(
-        get_operator_chain(qubit_electron_operator))
+        get_operator_qsubset(qubit_electron_operator))
 
 
     return EnergyObjective(qubit_hamiltonian, molecule.n_qubits, init_operator, obj_info)
