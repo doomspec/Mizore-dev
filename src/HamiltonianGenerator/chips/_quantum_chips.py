@@ -55,3 +55,14 @@ def Google_Bristlecone(weights=[0.975 for i in range(128)]):
         G.add_edge(66+i, 31+i, weight = weights[117+2*i])
     G.add_edge(71, 35, weight = weights[128])
     return G
+
+def IBM_20Q_Johannesburg(weights=[0.975 for i in range(25)]):
+    G = nx.Graph()
+    n = 20
+    G.add_nodes_from(range(n))
+    for i in range(n-1):
+        G.add_edge(i, i+1, weight = weights[i])
+    for i in range(3):
+        G.add_edge(5*i, 5*i+9, weight = weights[20+i])
+    G.add_edge(7, 12, weight = weights[24])
+    return G
