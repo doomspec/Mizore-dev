@@ -38,24 +38,6 @@ def Rigetti_16Q_Aspen(weights=[0.975 for i in range(18)]):
     G.add_edge(1, 14, weight = weights[17])
     return G
 
-def Google_Bristlecone(weights=[0.975 for i in range(128)]):
-    G = nx.Graph()
-    n = 72
-    G.add_nodes_from(range(n))
-    for i in range(25):
-        G.add_edge(36+i, i, weight = weights[4*i])
-        G.add_edge(36+i, i+1, weight = weights[4*i+1])
-        G.add_edge(36+i, i+6, weight = weights[4*i+2])
-        G.add_edge(36+i, i+7, weight = weights[4*i+3])
-    for i in range(5):
-        G.add_edge(61+i, 6*i+5, weight = weights[104+2*i])
-        G.add_edge(61+i, 6*i+11, weight = weights[105+2*i])
-    for i in range(5):
-        G.add_edge(66+i, 30+i, weight = weights[116+2*i])
-        G.add_edge(66+i, 31+i, weight = weights[117+2*i])
-    G.add_edge(71, 35, weight = weights[128])
-    return G
-
 def IBM_20Q_Johannesburg(weights=[0.975 for i in range(25)]):
     G = nx.Graph()
     n = 20
@@ -65,4 +47,23 @@ def IBM_20Q_Johannesburg(weights=[0.975 for i in range(25)]):
     for i in range(3):
         G.add_edge(5*i, 5*i+9, weight = weights[20+i])
     G.add_edge(7, 12, weight = weights[24])
+    return G
+
+def Google_Bristlecone(weights=[0.975 for i in range(123)]):
+    G = nx.Graph()
+    n = 72
+    G.add_nodes_from(range(n))
+    for j in range(5):
+        for i in range(5):
+            G.add_edge(36+(5*j+i), (6*j+i), weight = weights[4*(5*j+i)])
+            G.add_edge(36+(5*j+i), (6*j+i)+1, weight = weights[4*(5*j+i)+1])
+            G.add_edge(36+(5*j+i), (6*j+i)+6, weight = weights[4*(5*j+i)+2])
+            G.add_edge(36+(5*j+i), (6*j+i)+7, weight = weights[4*(5*j+i)+3])
+    for i in range(5):
+        G.add_edge(61+i, 6*i+5, weight = weights[100+2*i])
+        G.add_edge(61+i, 6*i+11, weight = weights[101+2*i])
+    for i in range(5):
+        G.add_edge(66+i, 30+i, weight = weights[110+2*i])
+        G.add_edge(66+i, 31+i, weight = weights[111+2*i])
+    G.add_edge(71, 35, weight = weights[122])
     return G
