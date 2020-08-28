@@ -140,7 +140,7 @@ def get_maxcut_hamiltonian(n_qubit):
         for j in range(i):
             hamiltonian += coeff * QubitOperator("Z" + str(i) + " Z" + str(j))
     obj_info = {"n_qubit": n_qubit}
-    return EnergyObjective(hamiltonian, n_qubit, None, obj_info)
+    return EnergyObjective(hamiltonian, n_qubit, None, obj_info) #TODO
 
 
 def get_tsp_hamiltonian(n_qubit):
@@ -157,4 +157,4 @@ def get_tsp_hamiltonian(n_qubit):
                     QubitOperator("Z" + str(i * n_qubit + s) +
                                   "Z" + str(j * n_qubit + s + 1))
     obj_info = {"n_qubit": n_qubit}
-    return EnergyObjective(hamiltonian, n_qubit, None, obj_info)
+    return EnergyObjective(hamiltonian, n_qubit, None, obj_info) #TODO

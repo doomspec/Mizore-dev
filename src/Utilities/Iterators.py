@@ -31,6 +31,21 @@ def iter_terms_in_qubit_operator(operator):
             for string_pauli in pauli_and_coeff.terms:
                     yield QubitOperator(string_pauli)
 
+def iter_partial_operators(hamiltonian,max_n_term_in_new_operators):
+    from openfermion.ops import QubitOperator
+    new_operator=QubitOperator()
+    n_terms_added=0
+    for string_pauli in hamiltonian.terms:
+        new_operator+=QubitOperator(string_pauli)*hamiltonian.terms[string_pauli]
+        n_terms_added+=1
+        if n_terms_added==max_n_term_in_new_operators:
+            yield new_operator
+            new_operator=QubitOperator()
+            n_terms_added=0
+    if n_terms_added!=0:
+        yield new_operator
+
+
 def string_pauli2qsubset_pauli(string_pauli, make_imaginary=False):
     qsubset = []
     pauli = []

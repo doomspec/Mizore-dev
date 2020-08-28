@@ -4,8 +4,9 @@ from Blocks._utilities import get_inner_two_circuit_product
 from Blocks._pauli_gates_block import PauliGatesBlock
 from scipy.linalg import eigh
 from ParallelTaskRunner import TaskManager
-from ParallelTaskRunner._inner_product_task import InnerProductTask
+from ParallelTaskRunner._mat_term_task import MatrixTermTask
 from tqdm import tqdm
+from Utilities.Iterators import iter_partial_operators
 
 
 class SubspaceExpansionSolver:
@@ -26,6 +27,7 @@ class SubspaceExpansionSolver:
     """
 
     def __init__(self, circuit_list, hamiltonian, task_manager=None, progress_bar=False, sparse_circuit=False):
+
         self.circuit_list = circuit_list
         self.task_manager = task_manager
         self.progress_bar = progress_bar
@@ -38,6 +40,12 @@ class SubspaceExpansionSolver:
         self.eigvecs = None
         self.ground_energy = None
         self.ground_state = None
+
+        n_qubit = circuit_list[0].n_qubit
+        n_complete_basis = 2**n_qubit
+        print(self.n_basis, "states used to construct the subspace, where the complete space is " +
+              str(n_complete_basis)+"-dimensional.")
+
         return
 
     def execute(self):
@@ -51,12 +59,12 @@ class SubspaceExpansionSolver:
         self.eigvals, self.eigvecs = eigh(
             self.H_mat, self.S_mat, eigvals_only=False)
         self.ground_energy = self.eigvals[0]
-        self.ground_state = self.eigvecs[:,0]
+        self.ground_state = self.eigvecs[:, 0]
         print("The ground state energy is", self.ground_energy)
         print("It's eigenvector is", self.ground_state)
-    
+
     def calc_H_mat(self):
-        if self.task_manager!=None:
+        if self.task_manager != None:
             self._calc_H_mat_parellel()
         else:
             self._calc_H_mat_0()
@@ -84,25 +92,20 @@ class SubspaceExpansionSolver:
             pbar.set_description(str("H matrix"))
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
-                task_series_id=str(id(self)%10000)+"i"+str(i)+"j"+str(j)
+                task_series_id = str(id(self) % 10000)+"i"+str(i)+"j"+str(j)
                 add_hamiltonian_overlap_tasks(
-                    self.circuit_list[i], self.circuit_list[j], self.hamiltonian, self.task_manager,task_series_id,sparse_circuit=self.sparse_circuit)
-        
-        self.task_manager.flush()
+                    self.circuit_list[i], self.circuit_list[j], self.hamiltonian, self.task_manager, task_series_id, sparse_circuit=self.sparse_circuit)
 
-        coeff_list=[]
-
-        for string_pauli in self.hamiltonian.terms:
-            coeff_list.append(self.hamiltonian.terms[string_pauli])
+        self.task_manager.flush(task_package_size=1)
 
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
-                task_series_id=str(id(self)%10000)+"i"+str(i)+"j"+str(j)
-                res=self.task_manager.receive_task_result(task_series_id=task_series_id)
-                h=0
-                for k in range(len(coeff_list)):
-                    h+=res[k]*coeff_list[k]
-
+                task_series_id = str(id(self) % 10000)+"i"+str(i)+"j"+str(j)
+                res = self.task_manager.receive_task_result(
+                    task_series_id=task_series_id)
+                h = 0
+                for k in range(len(res)):
+                    h += res[k]
                 self.H_mat[i][j] = h
                 self.H_mat[j][i] = np.conjugate(h)
 
@@ -126,6 +129,13 @@ class SubspaceExpansionSolver:
         return
 
 
+def add_hamiltonian_overlap_tasks(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian, task_manager: TaskManager, task_series_id, sparse_circuit=False):
+    for operator in iter_partial_operators(hamiltonian, task_manager.task_package_size):
+        task = MatrixTermTask(first_circuit, second_circuit,
+                              operator, is_sparse=sparse_circuit)
+        task_manager.add_task_to_buffer(task, task_series_id=task_series_id)
+
+
 def get_hamiltonian_overlap_0(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian):
     temp_circuit = first_circuit.duplicate()
     overlap = 0
@@ -136,16 +146,6 @@ def get_hamiltonian_overlap_0(first_circuit: BlockCircuit, second_circuit: Block
                 get_inner_two_circuit_product(temp_circuit, second_circuit)
             temp_circuit.block_list.pop(len(temp_circuit.block_list)-1)
     return overlap
-
-
-def add_hamiltonian_overlap_tasks(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian, task_manager: TaskManager, task_series_id ,sparse_circuit=False):
-    for string_pauli in hamiltonian.terms:
-            temp_circuit = first_circuit.duplicate()
-            temp_circuit.add_block(PauliGatesBlock(string_pauli))
-            task = InnerProductTask(
-                temp_circuit, second_circuit, is_sparse=sparse_circuit)
-            task_manager.add_task_to_buffer(
-                task, task_series_id=task_series_id)
 
 
 def get_growing_circuit_list(circuit: BlockCircuit):

@@ -19,7 +19,7 @@ The functions for analyzing the wavefunction obtained from classical pre-calcula
 #   Density Matrices
 ########################
 
-def get_one_DM(get_expectation_value, wavefunction):
+def get_one_DMs(get_expectation_value, wavefunction):
     n_qubit = len(wavefunction)
     one_DMs = np.array([PauliI]*n_qubit)
     for i in range(0, n_qubit):
@@ -66,18 +66,11 @@ def two_DM_to_one_DMs(two_DM):
     one_DM_2[1][1]=two_DM[1][1]+two_DM[3][3]
     return one_DM_1,one_DM_2
 
-
-#####################################
-#   Entropy and Mutual Information
-#####################################
-
-def entropy_one_DM(one_DM: np.array, test=0):
-    eigv = np.linalg.eigvalsh(one_DM)
-    #print(eigv)
-    realeigv = np.round(np.real(eigv), 7)  # Round
-    # print(eigv)
-    if test == 1:
-        print('eigv', realeigv)
+def get_processed_eigv_for_DM(density_mat):
+    eigv = np.linalg.eigvalsh(density_mat)
+    # Round the eigenvalues
+    realeigv = np.round(np.real(eigv), 7)
+    # Renormalize the eigenvalues
     norm = 0
     for i in range(0, len(one_DM[0])):
         norm += realeigv[i]
@@ -86,20 +79,29 @@ def entropy_one_DM(one_DM: np.array, test=0):
         return 0
     else:
         realeigv = realeigv/norm
-        if test == 1:
-            print('norm', norm)
+    return realeigv
 
+#####################################
+#   Entropy and Mutual Information
+#####################################
+def entropy_one_DMs(one_DMs):
+    return [entropy_one_DM(one_DMs[i]) for i in range(len(one_DMs))]
+
+def entropy_one_DM(one_DM: np.array):
+    realeigv=get_processed_eigv_for_DM(one_DM)
     entropy = 0
     for i in range(0, len(one_DM[0])):
         if realeigv[i] != 0 and realeigv[i] != 1:
-            if realeigv[i]>0:
-                entropy += -realeigv[i]*math.log2(realeigv[i])
-            else:
-                print("problem")
-                #print(one_DM)
-    if test == 1:
-        print('entropy', entropy)
+            assert realeigv[i]>0:
+            entropy += -realeigv[i]*math.log2(realeigv[i])
     return entropy
+
+def purity_one_DM(one_DM: np.array):
+    realeigv=get_processed_eigv_for_DM(one_DM)
+    purity = 0
+    for i in range(0, len(one_DM[0])):
+        purity += realeigv[i]*realeigv[i]
+    return purity
 
 def get_mutual_information_by_2DMs(two_DMs):
     n_qubit = len(two_DMs)

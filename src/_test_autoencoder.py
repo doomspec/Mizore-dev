@@ -7,6 +7,6 @@ from HamiltonianGenerator import get_reduced_energy_obj_with_HF_init
 
 if __name__ == "__main__":
     a=set([1,2,3,4,5])
-    import itertools
-    for comb in itertools.combinations(a,3):
-        print(comb)
+    b=[1321,352,123,534]
+    b.pop(1)
+    print(b)

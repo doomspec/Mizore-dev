@@ -86,11 +86,14 @@ class TaskManager:
             self.recieve_buffer_by_series_id[task_series_id]=[]
         self.buffer_to_send.append(task)
 
-    def flush(self,task_series_id=0,public_resource=None):
+    def flush(self,task_package_size=None,public_resource=None):
+        if task_package_size==None:
+            task_package_size=self.task_package_size
+
         task_package=[public_resource]
         for task in self.buffer_to_send:
             task_package.append(task)
-            if len(task_package)>=self.task_package_size:
+            if len(task_package)>=task_package_size:
                 self.task_queue.put(task_package)
                 task_package=[public_resource]
         if len(task_package)!=0:
