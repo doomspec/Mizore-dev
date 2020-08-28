@@ -72,7 +72,7 @@ def get_processed_eigv_for_DM(density_mat):
     realeigv = np.round(np.real(eigv), 7)
     # Renormalize the eigenvalues
     norm = 0
-    for i in range(0, len(one_DM[0])):
+    for i in range(0, len(density_mat[0])):
         norm += realeigv[i]
     if norm == 0:
         print('Density matrix not proper, eigenvalue sum to 0, 0 returned')
@@ -92,7 +92,7 @@ def entropy_one_DM(one_DM: np.array):
     entropy = 0
     for i in range(0, len(one_DM[0])):
         if realeigv[i] != 0 and realeigv[i] != 1:
-            assert realeigv[i]>0:
+            assert realeigv[i]>0
             entropy += -realeigv[i]*math.log2(realeigv[i])
     return entropy
 

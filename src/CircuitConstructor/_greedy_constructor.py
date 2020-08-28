@@ -124,7 +124,6 @@ class GreedyConstructor(CircuitConstructor):
                   self.current_cost, "Hartree")
             print("********New Circuit********")
             print(self.circuit)
-            print(self.circuit.get_active_qubits())
             print("Doing global optimization on the new circuit")
             self.do_global_optimization()
             print("Global Optimized Energy:", self.current_cost)
@@ -161,8 +160,7 @@ class GreedyConstructor(CircuitConstructor):
         for trial_circuit in trial_circuits:
             task = OptimizationTask(trial_circuit, self.optimizer, None)
             self.task_manager.add_task_to_buffer(task, task_series_id=task_series_id)
-        self.task_manager.flush(task_series_id=task_series_id,
-                                public_resource={"cost": self.cost})
+        self.task_manager.flush(public_resource={"cost": self.cost})
         res_list = self.task_manager.receive_task_result(
             task_series_id=task_series_id,progress_bar=True)
         for i in range(len(trial_circuits)):
@@ -185,8 +183,7 @@ class GreedyConstructor(CircuitConstructor):
         for trial_circuit in trial_circuits:
             task = GradientTask(trial_circuit, None)
             self.task_manager.add_task_to_buffer(task, task_series_id=task_series_id)
-        self.task_manager.flush(task_series_id=task_series_id,
-                                public_resource={"cost": self.cost})
+        self.task_manager.flush(public_resource={"cost": self.cost})
         res_list = self.task_manager.receive_task_result(task_series_id=task_series_id,progress_bar=True)
         res_list = [numpy.linalg.norm(res) for res in res_list]
         res_list = numpy.array(res_list)

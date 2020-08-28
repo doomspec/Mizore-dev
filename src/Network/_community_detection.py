@@ -54,7 +54,7 @@ def get_nx_graph_by_adjacent_mat(_adjacent_mat,weight_amplifier=100, weight_cuto
         G.remove_edge(u, v)
     return G
 
-def draw_community_graph(G:nx.Graph,node_module_map):
+def draw_community_graph(G:nx.Graph,node_module_map,path="Untitled"):
     pos = nx.spring_layout(G, k=1.5, scale=100)
     nx.draw_networkx_nodes(G, pos, node_color=assign_community_color(node_module_map))
     nx.draw_networkx_labels(G, pos, font_color="white")
@@ -66,7 +66,21 @@ def draw_community_graph(G:nx.Graph,node_module_map):
                                            fc=(1.0, 1.0, 1.0),
                                            alpha=0.0
                                            ))
-    plt.savefig("community.png")
+    plt.savefig(path+".png")
+
+def draw_graph(G:nx.Graph,path="Untitled"):
+    pos = nx.spring_layout(G, k=1.5, scale=100)
+    nx.draw_networkx_nodes(G, pos, node_color="blue")
+    nx.draw_networkx_labels(G, pos, font_color="white")
+    nx.draw_networkx_edges(G, pos, edge_color="gray")
+    edge_labels = {(u, v): np.round(d["weight"], 2) for u, v, d in G.edges(data=True)}
+    nx.draw_networkx_edge_labels(G, pos,  edge_labels=edge_labels, font_color="black", alpha=1,
+                                 bbox=dict(boxstyle='round',
+                                           ec=(1.0, 1.0, 1.0),
+                                           fc=(1.0, 1.0, 1.0),
+                                           alpha=0.0
+                                           ))
+    plt.savefig(path+".png")
 
 def convert_node_module_map_to_array(node_module_map):
     arr_dict={}
