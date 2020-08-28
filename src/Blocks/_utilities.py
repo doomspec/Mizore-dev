@@ -1,6 +1,6 @@
 from ._block_circuit import BlockCircuit
 from copy import copy
-
+from Utilities.CircuitEvaluation import evaluate_ansatz_0000_amplitudes
 
 def concatenate_circuit(first_circuit: BlockCircuit = None, second_circuit: BlockCircuit = None):
     return concatenate_circuit_list((first_circuit, second_circuit))
@@ -31,7 +31,7 @@ def get_inner_two_circuit_product(first_circuit: BlockCircuit, second_circuit: B
     """
     Return <0...00|circuit(second)^ circuit(first)|0...00>
     """
-    from Utilities.CircuitEvaluation import evaluate_ansatz_0000_amplitudes
+    
 
     circuit = concatenate_circuit(
         first_circuit, get_inverse_circuit(second_circuit))
@@ -46,3 +46,8 @@ def get_circuit_energy(circuit, hamiltonian):
     from ParameterOptimizer.ObjWrapper import evaluate_ansatz_expectation
     ansatz = circuit.get_fixed_parameter_ansatz().ansatz
     return evaluate_ansatz_expectation([], circuit.n_qubit, hamiltonian, ansatz)
+
+def get_0000_amplitude_on_circuit(circuit):
+    pcircuit=circuit.get_fixed_parameter_ansatz()
+    amp=evaluate_ansatz_0000_amplitudes(pcircuit.n_qubit,pcircuit.ansatz)
+    return amp

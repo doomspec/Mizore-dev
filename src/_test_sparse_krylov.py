@@ -31,9 +31,9 @@ if __name__ == "__main__":
     circuit.add_block(energy_obj.init_block)
     community=[[5, 4], [3, 2, 1, 0]]
     task_manager=TaskManager(n_processor=5,task_package_size=10)
-    local_hamiltonian=get_reduced_energy_obj_with_HF_init(energy_obj,[5,4],relabel_qubits=False).hamiltonian
+    local_hamiltonian=energy_obj.hamiltonian#get_reduced_energy_obj_with_HF_init(energy_obj,[5,4],relabel_qubits=False).hamiltonian
     circuits=generate_krylov_circuits(circuit,local_hamiltonian,0.01,2)#energy_obj.init_block)
-    circuits=generate_local_complete_space(circuits,[4,5])
+    #circuits=add_local_complete_basis(circuits,[4,5])
 
     
     qse_solver=SubspaceExpansionSolver(circuits,energy_obj.hamiltonian,task_manager=task_manager,sparse_circuit=False,progress_bar=True)

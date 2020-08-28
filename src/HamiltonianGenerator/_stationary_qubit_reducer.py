@@ -89,12 +89,15 @@ def evaluate_string_list(init_state_string,string_list):
         res.append(coeff)
     return res
 
-def get_reduced_energy_obj_with_HF_init(energy_obj:EnergyObjective,location2reduce,relabel_qubits=True):
+
+def get_reduced_energy_obj_with_HF_init(energy_obj:EnergyObjective,location2reduce,location2keep=None,relabel_qubits=True):
     """
     Args:
         energy_obj: The energy objective to reduce 
         location2reduce: a list like [2,4], which indicates the qubits to reduce 
     """
+    if location2keep!=None:
+        location2reduce=list(set(range(energy_obj.n_qubit)).difference(location2keep))
     location2reduce.sort()
     init_X_qsubset=energy_obj.init_block.qsubset
     init_state_string=[0]*energy_obj.n_qubit

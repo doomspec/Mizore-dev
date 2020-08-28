@@ -13,9 +13,9 @@ def generate_krylov_circuits(init_circuit:BlockCircuit,hamiltonian,delta_t,n_cir
 
     circuits=[0]*n_circuit
 
-    for i in range(n_circuit):
+    for i in range(1,n_circuit+1):
         circuit=init_circuit.duplicate()
         circuit.add_block(TimeEvolutionBlock(hamiltonian,init_angle=delta_t*i))
-        circuits[i]=circuit
+        circuits[i-1]=circuit
         #print(circuit)
     return circuits
