@@ -96,3 +96,13 @@ def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list):
 
 def evaluate_ansatz_0000_amplitudes(n_qubit, ansatz):
     return evaluate_ansatz_amplitudes(n_qubit, ansatz, [[False] * n_qubit])[0]
+
+
+
+def evaluate_ansatz_1DMs(parameter,n_qubit,ansatz):
+    from Utilities.WaveLocalProperties import get_one_DMs
+    compiler_engine = get_quantum_engine()
+    wavefunction = compiler_engine.allocate_qureg(n_qubit)
+    ansatz(parameter, wavefunction)
+    compiler_engine.flush()
+    return get_one_DMs(compiler_engine.backend.get_expectation_value,wavefunction)
