@@ -1,1 +1,2 @@
-from ._community_detection import get_nx_graph_by_adjacent_mat,detect_nx_graph_community,draw_community_graph,draw_graph
+from ._utilities import get_nx_graph_by_adjacent_mat,draw_graph
+from ._community_detection import detect_nx_graph_community,draw_community_graph

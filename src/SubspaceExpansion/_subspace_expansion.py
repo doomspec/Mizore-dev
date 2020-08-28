@@ -126,7 +126,17 @@ class SubspaceExpansionSolver:
                 # print(i,j,s)
                 self.S_mat[i][j] = s
                 self.S_mat[j][i] = np.conjugate(s)
+        revise_little_negative(self.S_mat)
         return
+
+VERY_SMALL_NUMBER=1e-13
+def revise_little_negative(S_mat:np.array):
+    eigv=np.linalg.eigvalsh(S_mat)
+    print(eigv)
+    assert eigv[0]>-VERY_SMALL_NUMBER
+    if eigv[0]<VERY_SMALL_NUMBER:
+        S_mat+=np.eye(len(S_mat))*VERY_SMALL_NUMBER
+
 
 
 def add_hamiltonian_overlap_tasks(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian, task_manager: TaskManager, task_series_id, sparse_circuit=False):

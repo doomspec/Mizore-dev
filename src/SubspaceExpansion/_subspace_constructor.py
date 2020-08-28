@@ -6,7 +6,7 @@ from ._krylov_algorithm import generate_krylov_circuits
 from HamiltonianGenerator import get_reduced_energy_obj_with_HF_init
 
 
-def init_res_circuit_list(circuits):
+def _init_res_circuit_list(circuits):
     if not isinstance(circuits, Iterable):
         res_circuits = [circuits.duplicate()]
     else:
@@ -15,7 +15,7 @@ def init_res_circuit_list(circuits):
 
 
 def add_local_krylov_basis(circuits, qsubset, energy_obj, delta_t, n_circuit):
-    res_circuits = init_res_circuit_list(circuits)
+    res_circuits = _init_res_circuit_list(circuits)
 
     local_hamiltonian = get_reduced_energy_obj_with_HF_init(
         energy_obj, None, location2keep=qsubset, relabel_qubits=False).hamiltonian
@@ -27,7 +27,7 @@ def add_local_krylov_basis(circuits, qsubset, energy_obj, delta_t, n_circuit):
 
 
 def add_local_complete_basis(circuits, qsubset):
-    res_circuits = init_res_circuit_list(circuits)
+    res_circuits = _init_res_circuit_list(circuits)
     
     n_qubit = len(qsubset)
     for circuit in circuits:

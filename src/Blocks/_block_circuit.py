@@ -21,11 +21,13 @@ class BlockCircuit:
         n_qubit: Number of qubits in the circuit
     """
 
-    def __init__(self, n_qubit):
+    def __init__(self, n_qubit, init_block=None):
         self.block_list = []
         self.n_qubit = n_qubit
         self.active_position_list = []
         self.qubit_index_mapping = None
+        self.add_block(init_block)
+        
         return
 
     def add_block(self, block: Block):
