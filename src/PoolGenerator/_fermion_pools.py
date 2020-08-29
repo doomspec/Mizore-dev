@@ -24,7 +24,7 @@ def fermion_SD_excitation_single_parameter_pool(n_qubit, fermi_qubit_transform=b
 
 def fermion_SD_excitation_multi_parameter_pool(n_qubit, fermi_qubit_transform=bravyi_kitaev):
     """
-    A modified version of the pool purposed in Nat Commun 10, 3007 (2019), 
+    A modified version of the pool proposed in Nat Commun 10, 3007 (2019), 
     where the parameter of every high-dimensional rotation in the ansatz is adjustable.
     """
     excitation_operators = general_single_generator(n_qubit)+uccgsd_double_generator(n_qubit)
