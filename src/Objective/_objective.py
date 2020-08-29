@@ -4,11 +4,11 @@ class Objective:
     A objective should include essential informations for a problem solver
     Usually, an objective should be able to generate a cost function for the solver to optimize
     """
-    def __init__(self):
+    def __init__(self,n_qubit=-1,init_block=None):
         self.obj_info = {}
         self.obj_type = ""
-        self.init_block = None
-        self.n_qubit = -1
+        self.init_block = init_block
+        self.n_qubit = n_qubit
         return
     def get_cost(self):
         return

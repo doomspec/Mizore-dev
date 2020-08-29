@@ -8,13 +8,19 @@ def concatenate_circuit(first_circuit: BlockCircuit = None, second_circuit: Bloc
 
 def concatenate_circuit_list(circuit_list=None):
     n_qubit = circuit_list[0].n_qubit
+    new_active_qubit_list=[]
     new_circuit = BlockCircuit(n_qubit)
     for circuit in circuit_list:
         if circuit.n_qubit != n_qubit:
             raise Exception(
                 "The number of qubit of the circuits is not unified!")
+        n_block_added=len(new_circuit.block_list)
+        for active in circuit.active_position_list:
+            #print(active,len(new_circuit.block_list))
+            new_active_qubit_list.append(active+n_block_added)
         for block in circuit.block_list:
             new_circuit.add_block(copy(block))
+        new_circuit.active_position_list=copy(new_active_qubit_list)
     return new_circuit
 
 

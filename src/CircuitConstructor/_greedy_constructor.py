@@ -36,7 +36,7 @@ class GreedyConstructor(CircuitConstructor):
 
     gradiant_cutoff = 1e-9
 
-    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100, gradient_screening_rate=0.1, terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), task_manager: TaskManager = None, init_circuit=None, project_name="Untitled"):
+    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100, gradient_screening_rate=0.05, terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), task_manager: TaskManager = None, init_circuit=None, project_name="Untitled"):
 
         CircuitConstructor.__init__(self)
         self.circuit = init_circuit
@@ -183,6 +183,7 @@ class GreedyConstructor(CircuitConstructor):
         for trial_circuit in trial_circuits:
             task = GradientTask(trial_circuit, None)
             self.task_manager.add_task_to_buffer(task, task_series_id=task_series_id)
+            
         self.task_manager.flush(public_resource={"cost": self.cost})
         res_list = self.task_manager.receive_task_result(task_series_id=task_series_id,progress_bar=True)
         res_list = [numpy.linalg.norm(res) for res in res_list]
