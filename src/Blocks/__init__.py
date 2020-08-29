@@ -9,3 +9,4 @@ from ._hardware_efficient_entangler import HardwareEfficientEntangler
 from ._single_parameter_multi_rotation_entangler import SingleParameterMultiRotationEntangler
 from ._efficient_coupled_cluster import EfficientCoupledCluster
 from ._pauli_gates_block import PauliGatesBlock
+from ._time_evolution_block import TimeEvolutionBlock
