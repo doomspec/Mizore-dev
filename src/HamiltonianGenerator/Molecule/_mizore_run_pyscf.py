@@ -104,10 +104,7 @@ def compute_integrals(pyscf_molecule, pyscf_scf):
     return one_electron_integrals, two_electron_integrals
 
 
-def run_pyscf(molecule, run_scf=True,
-              run_mp2=False,
-              run_cisd=False,
-              run_ccsd=False,
+def run_pyscf(molecule,
               run_fci=False,
               verbose=False,
               n_frozen_orbital=0, n_cancel_orbital=0, cas_irrep_nocc=None, cas_irrep_ncore=None):  # ZZJ CHANGE
@@ -159,43 +156,6 @@ def run_pyscf(molecule, run_scf=True,
     molecule.one_body_integrals = one_body_integrals
     molecule.two_body_integrals = two_body_integrals
     molecule.overlap_integrals = pyscf_scf.get_ovlp()
-
-    # Run MP2.
-    if run_mp2:
-        if molecule.multiplicity != 1:
-            print("WARNING: RO-MP2 is not available in PySCF.")
-        else:
-            pyscf_mp2 = mp.MP2(pyscf_scf)
-            pyscf_mp2.verbose = 0
-            pyscf_mp2.run()
-            # molecule.mp2_energy = pyscf_mp2.e_tot  # pyscf-1.4.4 or higher
-            molecule.mp2_energy = pyscf_scf.e_tot + pyscf_mp2.e_corr
-            pyscf_data['mp2'] = pyscf_mp2
-            if verbose:
-                print('MP2 energy for {} ({} electrons) is {}.'.format(
-                    molecule.name, molecule.n_electrons, molecule.mp2_energy))
-
-    # Run CISD.
-    if run_cisd:
-        pyscf_cisd = ci.CISD(pyscf_scf)
-        pyscf_cisd.verbose = 0
-        pyscf_cisd.run()
-        molecule.cisd_energy = pyscf_cisd.e_tot
-        pyscf_data['cisd'] = pyscf_cisd
-        if verbose:
-            print('CISD energy for {} ({} electrons) is {}.'.format(
-                molecule.name, molecule.n_electrons, molecule.cisd_energy))
-
-    # Run CCSD.
-    if run_ccsd:
-        pyscf_ccsd = cc.CCSD(pyscf_scf)
-        pyscf_ccsd.verbose = 0
-        pyscf_ccsd.run()
-        molecule.ccsd_energy = pyscf_ccsd.e_tot
-        pyscf_data['ccsd'] = pyscf_ccsd
-        if verbose:
-            print('CCSD energy for {} ({} electrons) is {}.'.format(
-                molecule.name, molecule.n_electrons, molecule.ccsd_energy))
 
     # Run FCI.
     if run_fci:
