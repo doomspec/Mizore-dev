@@ -36,7 +36,7 @@ class GreedyConstructor(CircuitConstructor):
 
     gradiant_cutoff = 1e-9
 
-    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100, gradient_screening_rate=0.1, terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), task_manager: TaskManager = None, init_circuit=None, project_name=None):
+    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100, gradient_screening_rate=0.1, terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), task_manager: TaskManager = None, init_circuit=None, project_name="Untitled"):
 
         CircuitConstructor.__init__(self)
         self.circuit = init_circuit
@@ -64,9 +64,9 @@ class GreedyConstructor(CircuitConstructor):
             self.task_manager = TaskManager(n_processor=4)
             self.task_manager_created = True
         return
-
+    CONSTRUCTOR_NAME="GreedyConstructor"
     def run(self):
-        print("Here is GreedyConstructor")
+        print("Here is "+self.CONSTRUCTOR_NAME)
         print("Project Name:", self.project_name)
         print("Block Pool Size:", len(self.block_pool.blocks))
         self.init_cost = self.cost.get_cost_value(self.circuit)

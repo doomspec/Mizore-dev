@@ -20,7 +20,8 @@ class FixedDepthSweepConstructor(GreedyConstructor):
         Please see GreedyConstrutor for other attributes
 
     """
-
+    CONSTRUCTOR_NAME="FixedDepthSweepConstructor"
+    
     def __init__(self,*arg,n_max_block=5,sweep_start_position=1,**kwargs):
         GreedyConstructor.__init__(self,*arg,**kwargs)
         self.sweep_start_position=sweep_start_position
