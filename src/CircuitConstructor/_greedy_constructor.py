@@ -52,7 +52,7 @@ class GreedyConstructor(CircuitConstructor):
         self.id = id(self)
         self.optimizer = optimizer
         if global_optimizer==None:
-            self.global_optimizer=optimizer
+            self.global_optimizer=BasinhoppingOptimizer(random_initial=0)
         else:
             self.global_optimizer=global_optimizer
         self.no_global_optimization=no_global_optimization
@@ -69,6 +69,7 @@ class GreedyConstructor(CircuitConstructor):
             self.task_manager = TaskManager(n_processor=4)
             self.task_manager_created = True
         return
+
     CONSTRUCTOR_NAME="GreedyConstructor"
     def run(self):
         print("Here is "+self.CONSTRUCTOR_NAME)
@@ -77,7 +78,7 @@ class GreedyConstructor(CircuitConstructor):
         self.init_cost = self.cost.get_cost_value(self.circuit)
         self.current_cost = self.init_cost
         self.cost_list.append(self.current_cost)
-        print("Initial Energy:", self.init_cost)
+        print("Initial Cost:", self.init_cost)
         self.start_time_number = time.time()
         self.add_time_point()
         for i_iter in range(self.max_n_iter):
@@ -95,7 +96,7 @@ class GreedyConstructor(CircuitConstructor):
                 # Fail to add new block
                 print("Circuit update failed")
                 print("Suggestion: 1.Use larger pool 2.Ground cost may have achieved")
-                print("Final Energy:", self.current_cost)
+                print("Final Cost:", self.current_cost)
                 print("********Final Circuit********")
                 print(self.circuit)
                 if self.task_manager_created:
@@ -105,6 +106,9 @@ class GreedyConstructor(CircuitConstructor):
             save_construction(self, self.project_name)
             if is_return:
                 return
+        print("Circuit Construction ended as it has iterated enough times!")
+        print("********Final Circuit********")
+        print(self.circuit)
         return
 
     def do_global_optimization(self):
@@ -131,11 +135,11 @@ class GreedyConstructor(CircuitConstructor):
             if not self.no_global_optimization:
                 print("Doing global optimization on the new circuit")
                 self.do_global_optimization()
-                print("Global Optimized Energy:", self.current_cost)
+                print("Global Optimized Cost:", self.current_cost)
             print("Distance to target cost:",
                   self.current_cost - self.terminate_cost)
             print("Gate Usage:", self.circuit.get_gate_used())
-            print("Energy list:", self.cost_list)
+            print("Cost list:", self.cost_list)
             if self.current_cost <= self.terminate_cost:
                 self.when_terminate_cost_achieved = len(
                     self.circuit.block_list)

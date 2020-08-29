@@ -18,5 +18,7 @@ start_time=time.time()
 for i in range(n_iter):
     evaluate_ansatz_1DMs(random_list(-1,1,n_para),pcircuit.n_qubit,pcircuit.ansatz)
 
+#pcircuit.ansatz(random_list(-1,1,n_para),wavefunction)
+
 time_each=(time.time()-start_time)/n_iter
 print("Time used for each run:",time_each)
