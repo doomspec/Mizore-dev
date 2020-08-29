@@ -4,6 +4,7 @@ from openfermion.ops import QubitOperator
 from .Molecule._mizore_run_pyscf import run_pyscf
 from .Molecule._geometry_generator import geometry_generator_dict, equilibrium_geometry_dict
 from .Molecule._generate_HF_operation import get_dressed_operator, get_HF_operator, get_electron_fermion_operator
+from .QAOA._QAOA_from_graph import get_random_maxcut_hamiltonian, get_random_tsp_hamiltonian
 from Objective._energy_obj import EnergyObjective
 from Blocks import HartreeFockInitBlock
 from Utilities.Tools import get_operator_qsubset
@@ -119,9 +120,9 @@ def make_molecular_energy_obj(molecule_name, basis="sto-3g", geometry_info=None,
 def _get_example_qaoa_hamiltonian(problem, n_qubit):
     # print('r = {} A'.format(bond_len))
     if problem == 'maxcut':
-        qubit_hamiltonian = get_maxcut_hamiltonian(n_qubit)
+        qubit_hamiltonian = get_random_maxcut_hamiltonian(n=n_qubit)
     elif problem == 'tsp':
-        qubit_hamiltonian = get_tsp_hamiltonian(n_qubit)
+        qubit_hamiltonian = get_random_tsp_hamiltonian(n=n_qubit)
     else:
         print(
             "Such example qaoa problem is not supported, using default maxcut hamiltonian.")
@@ -130,31 +131,17 @@ def _get_example_qaoa_hamiltonian(problem, n_qubit):
     return qubit_hamiltonian
 
 
-def get_maxcut_hamiltonian(n_qubit):
+def make_example_maxcut(n_qubit):
     '''
     Same with n qubit Ising model, qubit is site number.
     '''
-    hamiltonian = 0 * QubitOperator("")
-    coeff = 1
-    for i in range(n_qubit):
-        for j in range(i):
-            hamiltonian += coeff * QubitOperator("Z" + str(i) + " Z" + str(j))
+    hamiltonian = _get_example_qaoa_hamiltonian('maxcut', n_qubit)
     obj_info = {"n_qubit": n_qubit}
     return EnergyObjective(hamiltonian, n_qubit, None, obj_info) #TODO
 
 
-def get_tsp_hamiltonian(n_qubit):
+def make_example_tsp(n_qubit):
     # Here qubit means number of cities
-    hamiltonian = 0 * QubitOperator("")
-    coeff = 1 / 4
-    for s in range(n_qubit):
-        for i in range(n_qubit):
-            hamiltonian += -coeff * QubitOperator("Z" + str(i * n_qubit + s))
-            for j in range(n_qubit):
-                hamiltonian += -coeff * \
-                    QubitOperator("Z" + str(j * n_qubit + s + 1))
-                hamiltonian += coeff * \
-                    QubitOperator("Z" + str(i * n_qubit + s) +
-                                  "Z" + str(j * n_qubit + s + 1))
+    hamiltonian = _get_example_qaoa_hamiltonian('tsp', n_qubit)
     obj_info = {"n_qubit": n_qubit}
     return EnergyObjective(hamiltonian, n_qubit, None, obj_info) #TODO
