@@ -48,7 +48,7 @@ class GACorrelationQsubsetSelector:
         Initial  chromosomes
         Args:
             max_chromosome_size: max size of genes can be loaded into chromosome
-            size: size of chromosomes
+            initial_gene_size: size of chromosomes
 
         Returns: Generated chromosomes
 
@@ -115,7 +115,7 @@ class GACorrelationQsubsetSelector:
         """
         Fitness function for chromosomes
         Args:
-            chromosomes: current population
+            genes: current population
 
         Returns: calculated chromosomes
 

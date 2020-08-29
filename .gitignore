@@ -16,3 +16,5 @@ community.png
 RTE.png
 *.hdf5
 *checkpoint.ipynb
+/src/mizore.egg-info/
+/.vscode/

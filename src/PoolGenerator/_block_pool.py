@@ -1,5 +1,6 @@
-import math,numpy
+import math, numpy
 from collections import Iterable
+
 
 class BlockPool:
     """
@@ -22,7 +23,7 @@ class BlockPool:
             for block in block_iter_or_init_block:
                 self.blocks.add(block)
         else:
-            if block_iter_or_init_block!=None:
+            if block_iter_or_init_block != None:
                 self.blocks.add(block_iter_or_init_block)
         return
 
@@ -50,7 +51,7 @@ class BlockPool:
             percent: the relative size of the new pool with respect to the original pool
             Only one of the two arguments needs to be provided. If both provided, n_block will be used with priority 
         """
-        if (n_block <= 0 or n_block>=len(self.blocks)) and (percent >= 1 or percent <= 0):
+        if (n_block <= 0 or n_block >= len(self.blocks)) and (percent >= 1 or percent <= 0):
             print("Invalid parameter for random pool reduce! Self returned.")
             return self
         if n_block == 0:

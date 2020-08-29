@@ -17,7 +17,7 @@ def generate_graph(size=10):
 
 
 g = generate_graph(10)
-ga = GAConstructor(g,generate_graph(11))
+ga = GAConstructor(g, generate_graph(11))
 ga.run(time_budget=120)
 res = ga.get_result()
 # print(res)
