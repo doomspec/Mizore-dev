@@ -105,4 +105,7 @@ def evaluate_ansatz_1DMs(parameter,n_qubit,ansatz):
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
     ansatz(parameter, wavefunction)
     compiler_engine.flush()
-    return get_one_DMs(compiler_engine.backend.get_expectation_value,wavefunction)
+    one_DMs=get_one_DMs(compiler_engine.backend.get_expectation_value,wavefunction)
+    All(Measure) | wavefunction
+    compiler_engine.flush()
+    return one_DMs
