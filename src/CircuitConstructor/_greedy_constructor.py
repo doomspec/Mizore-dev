@@ -36,7 +36,7 @@ class GreedyConstructor(CircuitConstructor):
 
     gradiant_cutoff = 1e-9
 
-    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100, gradient_screening_rate=0.05, terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), task_manager: TaskManager = None, init_circuit=None, project_name="Untitled"):
+    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100, gradient_screening_rate=0.05, terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), global_optimizer=None, no_global_optimization=False,task_manager: TaskManager = None, init_circuit=None, project_name="Untitled"):
 
         CircuitConstructor.__init__(self)
         self.circuit = init_circuit
@@ -51,6 +51,11 @@ class GreedyConstructor(CircuitConstructor):
         self.cost = construct_obj.get_cost()
         self.id = id(self)
         self.optimizer = optimizer
+        if global_optimizer==None:
+            self.global_optimizer=optimizer
+        else:
+            self.global_optimizer=global_optimizer
+        self.no_global_optimization=no_global_optimization
         self.time_string = time.strftime(
             '%m-%d-%Hh%Mm%Ss', time.localtime(time.time()))
         self.project_name = project_name+"_"+self.time_string
@@ -105,8 +110,7 @@ class GreedyConstructor(CircuitConstructor):
     def do_global_optimization(self):
 
         self.circuit.set_all_block_active()
-        task = OptimizationTask(self.circuit, BasinhoppingOptimizer(
-            random_initial=0.0), self.cost)
+        task = OptimizationTask(self.circuit, self.global_optimizer, self.cost)
         self.current_cost, parameter = task.run()
         self.circuit.adjust_parameter_on_active_position(parameter)
         self.cost_list.append(self.current_cost)
@@ -124,9 +128,10 @@ class GreedyConstructor(CircuitConstructor):
                   self.current_cost, "Hartree")
             print("********New Circuit********")
             print(self.circuit)
-            print("Doing global optimization on the new circuit")
-            self.do_global_optimization()
-            print("Global Optimized Energy:", self.current_cost)
+            if not self.no_global_optimization:
+                print("Doing global optimization on the new circuit")
+                self.do_global_optimization()
+                print("Global Optimized Energy:", self.current_cost)
             print("Distance to target cost:",
                   self.current_cost - self.terminate_cost)
             print("Gate Usage:", self.circuit.get_gate_used())
