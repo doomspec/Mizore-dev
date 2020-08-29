@@ -83,7 +83,7 @@ def generalized_rotation(wavefunction, qsubset, pauliword, evolution_time):
     """Apply e^{iPt} on the wavefunction
     Args:
         qsubset: The subset of qubits in the wavefunction that the operation applies on
-        pauliword: The Pauli word P in e^{iPt}
+        pauliword: The Pauli word P in e^{iPt} 1:X,2:Y,3:Z
         evolution_time: t in e^{iPt}
     """
     HALF_PI = math.pi / 2

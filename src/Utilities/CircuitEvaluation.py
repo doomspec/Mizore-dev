@@ -101,11 +101,14 @@ def evaluate_ansatz_0000_amplitudes(n_qubit, ansatz):
 
 def evaluate_ansatz_1DMs(parameter,n_qubit,ansatz):
     from Utilities.WaveLocalProperties import get_one_DMs
+    import numpy as np
+    from openfermion.ops import QubitOperator
     compiler_engine = get_quantum_engine()
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
     ansatz(parameter, wavefunction)
     compiler_engine.flush()
     one_DMs=get_one_DMs(compiler_engine.backend.get_expectation_value,wavefunction)
+
     All(Measure) | wavefunction
     compiler_engine.flush()
     return one_DMs

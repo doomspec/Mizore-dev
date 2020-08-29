@@ -9,9 +9,9 @@ from tqdm import tqdm
 from Utilities.Iterators import iter_partial_operators
 
 
-class SubspaceExpansionSolver:
+class SubspaceSolver:
     """
-    The class for Quantum Subspace Expansion (QSE) method, which is also call Quantum Subspace Diagonalization (QSD),
+    The class for Quantum Subspace Diagonalization(QSD) method,
     as in "A non-orthogonal variational quantum eigensolver" (New Journal of Physics, Volume 22, July 2020)
     This methods takes a set of quantum states Psi={|psi_i>} that can be produced by known quantum circuit and 
     diagonalize the Hamiltonian in the space spanned by the set Psi.
