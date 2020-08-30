@@ -1,6 +1,7 @@
 from projectq import MainEngine
 from projectq.ops import X, All, Measure, CNOT, Z, Rz, Rx, C, TimeEvolution
-from projectq.backends import CommandPrinter, CircuitDrawer, Simulator
+from projectq.backends import CommandPrinter, CircuitDrawer
+from projectq.backends import Simulator as projectq_simulator
 from projectq.meta import Loop, Compute, Uncompute, Control
 
 from projectq.cengines import (MainEngine,
@@ -10,6 +11,8 @@ from projectq.cengines import (MainEngine,
                                DecompositionRuleSet)
 import projectq.setups.decompositions
 
+from GPUSimulator import Simulator as gpu_simulator
+from time import time
 """
 This file provides functions for common tasks that use the quantum simulation backend, including expectation value and amplitude
 The functions accept a function called *ansatz(parameter,wavefunction)* as input.
@@ -21,7 +24,7 @@ The functions accept a function called *ansatz(parameter,wavefunction)* as input
 
 def get_quantum_engine():
     # Create a main compiler engine with a simulator backend:
-    backend = Simulator(rnd_seed=1, gate_fusion=True)
+    backend = projectq_simulator(gate_fusion=True)
     cache_depth = 10
     rule_set = DecompositionRuleSet(modules=[projectq.setups.decompositions])
     engines = [TagRemover(),
@@ -31,6 +34,27 @@ def get_quantum_engine():
 
     return compiler_engine
 
+def get_gpu_quantum_engine():
+    backend = gpu_simulator(gate_fusion=True)
+    cache_depth = 10
+    rule_set = DecompositionRuleSet(modules=[projectq.setups.decompositions])
+    engines = [TagRemover(),
+               LocalOptimizer(cache_depth),
+               AutoReplacer(rule_set)]
+    compiler_engine = MainEngine(backend=backend, engine_list=engines)
+    return compiler_engine
+
+def get_hiq_quantum_engine():
+    from hiq.projectq.backends import SimulatorMPI
+    backend = SimulatorMPI(gate_fusion=True)
+    cache_depth = 10
+    rule_set = DecompositionRuleSet(modules=[projectq.setups.decompositions])
+    engines = [TagRemover(),
+               LocalOptimizer(cache_depth),
+               AutoReplacer(rule_set)]
+    compiler_engine = MainEngine(backend=backend, engine_list=engines)
+    return compiler_engine
+    return
 
 def evaluate_ansatz_expectation(parameter, n_qubit, hamiltonian, ansatz):
     """
