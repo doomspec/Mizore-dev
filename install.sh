@@ -18,4 +18,5 @@ cmake ../
 make
 
 # install mizore
+cd $PWD
 python3 setup.py install
