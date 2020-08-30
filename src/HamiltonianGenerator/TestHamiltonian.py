@@ -30,6 +30,12 @@ def make_example_H2(basis="sto-3g",
                     is_computed=False):
     return make_molecular_energy_obj(molecule_name="H2", basis=basis, geometry_info=geometry_info, fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
 
+def make_example_H6(basis="sto-3g",
+                    geometry_info=equilibrium_geometry_dict["H6"],
+                    fermi_qubit_transform=bravyi_kitaev,
+                    is_computed=False):
+    return make_molecular_energy_obj(molecule_name="H6", basis=basis, geometry_info=geometry_info, fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
+
 
 def make_example_LiH(basis="sto-3g",
                      geometry_info=equilibrium_geometry_dict["LiH"],

@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def IBM_5Q_Yorktown(weights=[1, 1, 1, 1, 1, 1]):
+def IBM_5Q_Yorktown(weights=[1.0 for i in range(6)]):
     G = nx.Graph()
     G.add_nodes_from(range(5))
     G.add_weighted_edges_from([(0, 1, weights[0]), (0, 2, weights[1]), (1, 2, weights[2])
@@ -19,7 +19,7 @@ def ionq_full_connected(weights=0.975):
     return G
 
 
-def Rigetti_8Q_Agave(weights=[0.975, 0.975, 0.975, 0.975, 0.975, 0.975, 0.975, 0.975]):
+def Rigetti_8Q_Agave(weights=[1.0 for i in range(8)]):
     G = nx.Graph()
     n = 8
     G.add_nodes_from(range(n))
@@ -29,7 +29,7 @@ def Rigetti_8Q_Agave(weights=[0.975, 0.975, 0.975, 0.975, 0.975, 0.975, 0.975, 0
     return G
 
 
-def Rigetti_16Q_Aspen(weights=[0.975 for i in range(18)]):
+def Rigetti_16Q_Aspen(weights=[1.0 for i in range(18)]):
     G = nx.Graph()
     n = 16
     G.add_nodes_from(range(n))
@@ -43,7 +43,7 @@ def Rigetti_16Q_Aspen(weights=[0.975 for i in range(18)]):
     return G
 
 
-def IBM_20Q_Johannesburg(weights=[0.975 for i in range(25)]):
+def IBM_20Q_Johannesburg(weights=[1.0 for i in range(25)]):
     G = nx.Graph()
     n = 20
     G.add_nodes_from(range(n))
@@ -55,7 +55,7 @@ def IBM_20Q_Johannesburg(weights=[0.975 for i in range(25)]):
     return G
 
 
-def Google_Bristlecone(weights=[0.975 for i in range(123)]):
+def Google_Bristlecone(weights=[1.0 for i in range(123)]):
     G = nx.Graph()
     n = 72
     G.add_nodes_from(range(n))
