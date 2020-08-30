@@ -16,3 +16,6 @@ mkdir build
 cd build
 cmake ../
 make
+
+# install mizore
+python3 setup.py install
