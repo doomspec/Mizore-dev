@@ -1,0 +1,12 @@
+pyscf
+multiprocess
+numpy
+scipy
+matplotlib
+projectq
+openfermion
+openfermionpyscf
+networkx
+infomap
+minorminer
+dmrgpy

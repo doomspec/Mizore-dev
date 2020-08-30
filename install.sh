@@ -20,4 +20,5 @@ make
 # install mizore
 cd $BASE_DIR
 echo $PWD
+pip3 install -r requirements.txt
 python3 setup.py install
