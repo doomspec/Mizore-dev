@@ -13,13 +13,15 @@ from minorminer import find_embedding
 logger = logging.getLogger(__name__)
 
 
-class GAConstructor:
+class GAGraphEmbeddingConstructor:
     """
-    GA Constructor for the circuit
+    MostCorrelation Constructor for the circuit
     """
 
-    def __init__(self, graph: nx.Graph, target_graph: nx.Graph, initial_gene_size=4, max_chromosome_size=10):
+    def __init__(self, graph: nx.Graph, target_graph: nx.Graph, initial_gene_size=4, max_chromosome_size=10,
+                 verbose=False):
         self._graph = graph
+        self.verbose = verbose
         self._target_graph = target_graph
         self._chromosomes = self._init_chromosomes(max_chromosome_size, initial_gene_size)
         self._mutators = self._init_mutators()
@@ -57,7 +59,7 @@ class GAConstructor:
 
     def run(self, time_budget=0, iteration=0):
         """
-        Main loop for GA
+        Main loop for MostCorrelation
         Args:
             time_budget: time for computation
             iteration: max iteration time
@@ -71,8 +73,10 @@ class GAConstructor:
             self._chromosomes = self._evolve(self._chromosomes)
             for chromosome in self._chromosomes:
                 self.result.append(copy.deepcopy(chromosome))
-            print(
-                f'time: {time.time()}, round:{counter}, best result:{sorted(self._chromosomes, key=lambda x: x.fitness)[0].fitness}')
+
+            if self.verbose:
+                print(
+                    f'time: {time.time()}, round:{counter}, best result:{sorted(self._chromosomes, key=lambda x: x.fitness)[0].fitness}')
             counter += 1
         return self.result
 
@@ -104,12 +108,16 @@ class GAConstructor:
 
         """
         embedding_map = {}
+        fitness = 0
         for item in genes:
             embedding_map[item[0]] = item[1]
-        value_list = [self._graph[edge[0]][edge[1]]["weight"] *
-                      self._target_graph[embedding_map[edge[0]]][embedding_map[edge[1]]]["weight"] for edge in
-                      self._graph.edges]
-        fitness = np.sum(value_list)
+
+        for edge in self._graph.edges:
+            try:
+                fitness += self._graph[edge[0]][edge[1]]["weight"] * \
+                           self._target_graph[embedding_map[edge[0]]][embedding_map[edge[1]]]["weight"]
+            except:
+                pass
         return fitness
 
     def _mutation(self, chromosomes=[]):
@@ -180,7 +188,7 @@ class GAConstructor:
     def get_result(self):
         """
 
-        Returns: rest of GA
+        Returns: rest of MostCorrelation
 
         """
         iter_set = set()

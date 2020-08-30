@@ -1,6 +1,6 @@
 class Chromosome:
     """
-    Chromosome for GA
+    Chromosome for MostCorrelation
     """
 
     def __init__(self, genes):

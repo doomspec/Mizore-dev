@@ -1,0 +1,1 @@
+from ._ga_constructor import GAGraphEmbeddingConstructor

@@ -1,6 +1,6 @@
 import numpy as np
 from ._mutator import Mutator
-from Network.GA._gene_bank import GeneBank
+from Network.MostCorrelation._gene_bank import GeneBank
 
 
 class AddMutator(Mutator):
@@ -12,7 +12,7 @@ class AddMutator(Mutator):
         """
         Check chromosome chould be mutate or not
         Args:
-            ga: GA entity
+            ga: MostCorrelation entity
             chromosome: target chromosome for mutation
 
         Returns: whether chromosome can be mutate
@@ -24,7 +24,7 @@ class AddMutator(Mutator):
         """
 
         Args:
-            ga: GA entity
+            ga: MostCorrelation entity
             chromosome: target chromosome
 
         Returns: Mutated Genes

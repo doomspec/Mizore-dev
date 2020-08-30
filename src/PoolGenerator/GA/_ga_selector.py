@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class GACorrelationQsubsetSelector:
     """
-    GA Constructor for the circuit
+    MostCorrelation Constructor for the circuit
     """
 
     def __init__(self, graph: nx.Graph, initial_gene_size=4, max_chromosome_size=80, verbose=False):
@@ -73,7 +73,7 @@ class GACorrelationQsubsetSelector:
 
     def run(self, time_budget=0, iteration=0):
         """
-        Main loop for GA
+        Main loop for MostCorrelation
         Args:
             time_budget: time for computation
             iteration: max iteration time
@@ -194,7 +194,7 @@ class GACorrelationQsubsetSelector:
     def get_result(self):
         """
 
-        Returns: rest of GA
+        Returns: rest of MostCorrelation
 
         """
         iter_set = set()

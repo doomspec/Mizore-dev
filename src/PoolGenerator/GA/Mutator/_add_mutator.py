@@ -12,7 +12,7 @@ class AddMutator(Mutator):
         """
         Check chromosome chould be mutate or not
         Args:
-            ga: GA entity
+            ga: MostCorrelation entity
             chromosome: target chromosome for mutation
 
         Returns: whether chromosome can be mutate
@@ -24,7 +24,7 @@ class AddMutator(Mutator):
         """
 
         Args:
-            ga: GA entity
+            ga: MostCorrelation entity
             chromosome: target chromosome
 
         Returns: Mutated Genes
