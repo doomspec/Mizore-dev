@@ -1,6 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+import itertools
 
 
 def draw_graph(G: nx.Graph, path="Untitled"):
@@ -29,3 +30,24 @@ def get_nx_graph_by_adjacent_mat(_adjacent_mat, weight_amplifier=100, weight_cut
     for u, v in zero_edge:
         G.remove_edge(u, v)
     return G
+
+
+def find_paths(g: nx.Graph):
+    nodes = g.nodes
+    combinations = itertools.combinations(nodes, 2)
+    path_sets = set()
+    paths = []
+    for item in combinations:
+        try:
+            simple_paths = nx.algorithms.all_simple_paths(g, item[0], item[1])
+            for path in simple_paths:
+                path_sets.add(tuple(path))
+                for i in range(len(path)):
+                    sub_path = path[:i]
+                    if len(sub_path) > 1:
+                        path_sets.add(tuple(sub_path))
+        except Exception as ex:
+            pass
+    for path in path_sets:
+        paths.append(list(path))
+    return paths

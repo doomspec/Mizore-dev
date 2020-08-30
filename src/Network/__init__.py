@@ -2,3 +2,4 @@ from ._utilities import get_nx_graph_by_adjacent_mat, draw_graph
 from ._community_detection import detect_nx_graph_community, draw_community_graph
 from .MostCorrelation import GACorrelationQsubsetSelector
 from .GraphEmbedding import GAGraphEmbeddingConstructor
+from ._utilities import find_paths
