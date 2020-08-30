@@ -11,4 +11,5 @@ embeding_selector.run(time_budget=5)
 
 # Show optimal mapping
 results = embeding_selector.get_result()
-print(results)
+best_result = results[0]
+print(f'fitness :{best_result.fitness}, mapping:{[gene for gene in best_result.genes]}')
