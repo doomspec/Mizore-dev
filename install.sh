@@ -4,8 +4,8 @@ PWD=$(pwd)
 echo "PWD :"$(pwd)
 
 # Initial submodules
-git submodules init
-git submodules update
+git submodule init
+git submodule update
 
 # install GPU Simulator
 cd $GPU_SIM_PATH
