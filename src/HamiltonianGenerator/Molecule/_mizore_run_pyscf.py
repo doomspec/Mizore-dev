@@ -12,7 +12,6 @@
 
 """Driver to initialize molecular object from pyscf program."""
 
-
 # Modified by Zijian Zhang
 # This attribute can be saved and loaded
 
@@ -28,6 +27,7 @@ from pyscf import mcscf  # ZZJ CHANGE
 
 from openfermion import MolecularData
 from openfermionpyscf import PyscfMolecularData
+
 
 def prepare_pyscf_molecule(molecule):
     """
@@ -159,37 +159,37 @@ def run_pyscf(molecule,
 
     # Run FCI.
     if run_fci:
-        #pyscf_fci = fci.FCI(pyscf_scf)
-        #pyscf_fci.verbose = 0
-        #molecule.fci_energy, molecule.fci_wfn = pyscf_fci.kernel()
-        #pyscf_data['fci'] = pyscf_fci
-        #pyscf_data['fci_wfn'] = molecule.fci_wfn
+        # pyscf_fci = fci.FCI(pyscf_scf)
+        # pyscf_fci.verbose = 0
+        # molecule.fci_energy, molecule.fci_wfn = pyscf_fci.kernel()
+        # pyscf_data['fci'] = pyscf_fci
+        # pyscf_data['fci_wfn'] = molecule.fci_wfn
 
-        nelec = molecule.n_electrons-n_frozen_orbital*2
-        norb = molecule.n_orbitals-n_cancel_orbital-n_frozen_orbital
+        nelec = molecule.n_electrons - n_frozen_orbital * 2
+        norb = molecule.n_orbitals - n_cancel_orbital - n_frozen_orbital
         pyscf_fci = mcscf.CASCI(pyscf_scf, norb, nelec)
         pyscf_fci.verbose = 0
         if cas_irrep_nocc != None:
             molecule.active_orbitals = mcscf.caslst_by_irrep(
                 pyscf_fci, pyscf_scf.mo_coeff, cas_irrep_nocc, cas_irrep_ncore)
             mo = pyscf_fci.sort_mo_by_irrep(cas_irrep_nocc, cas_irrep_ncore)
-            frozen_orbitals_0=[i for i in range(molecule.active_orbitals[norb-1]+1)]
+            frozen_orbitals_0 = [i for i in range(molecule.active_orbitals[norb - 1] + 1)]
             for i in range(len(molecule.active_orbitals)):
-                molecule.active_orbitals[i]-=1
-                frozen_orbitals_0[molecule.active_orbitals[i]]=-1
-            molecule.frozen_orbitals=[]
+                molecule.active_orbitals[i] -= 1
+                frozen_orbitals_0[molecule.active_orbitals[i]] = -1
+            molecule.frozen_orbitals = []
             for orb in frozen_orbitals_0:
-                if orb!=-1:
+                if orb != -1:
                     molecule.frozen_orbitals.append(orb)
-                if n_frozen_orbital==len(molecule.frozen_orbitals):
+                if n_frozen_orbital == len(molecule.frozen_orbitals):
                     break
-            
-            pyscf_data['active_orbitals']=molecule.active_orbitals
-            pyscf_data['frozen_orbitals']=molecule.frozen_orbitals
+
+            pyscf_data['active_orbitals'] = molecule.active_orbitals
+            pyscf_data['frozen_orbitals'] = molecule.frozen_orbitals
         else:
-            mo=None
+            mo = None
             molecule.active_orbitals = [i for i in range(
-                n_frozen_orbital, n_frozen_orbital+norb)]
+                n_frozen_orbital, n_frozen_orbital + norb)]
             molecule.frozen_orbitals = [i for i in range(n_frozen_orbital)]
 
         fci_result = pyscf_fci.kernel(mo)

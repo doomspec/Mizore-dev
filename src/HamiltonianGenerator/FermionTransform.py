@@ -7,19 +7,25 @@ from openfermion.ops import FermionOperator, QubitOperator
 Methods for generating usually used fermion-qubit transformation
 """
 
+
 def get_parity_transform(n_spinorbital):
     def parity_transform(FermionOperator):
-        return binary_code_transform(FermionOperator,parity_code(n_spinorbital))
+        return binary_code_transform(FermionOperator, parity_code(n_spinorbital))
+
     return parity_transform
 
-def make_transform_spin_separating(transform,n_spinorbital):
-    def new_transform(fermion_operator:FermionOperator):
-        separated_operator=separate_odd_even(fermion_operator,n_spinorbital)
+
+def make_transform_spin_separating(transform, n_spinorbital):
+    def new_transform(fermion_operator: FermionOperator):
+        separated_operator = separate_odd_even(fermion_operator, n_spinorbital)
         return transform(separated_operator)
+
     return new_transform
 
-def separate_odd_even(fermion_operator,n_spinorbital):
-    return rearrange_sites(fermion_operator,separate_odd_even_map(n_spinorbital))
+
+def separate_odd_even(fermion_operator, n_spinorbital):
+    return rearrange_sites(fermion_operator, separate_odd_even_map(n_spinorbital))
+
 
 def rearrange_sites(fermion_operator, change_rule):
     """
@@ -45,35 +51,37 @@ def rearrange_sites(fermion_operator, change_rule):
 
             if is_qubit_operator:
                 new_fermion_operator += pauli_and_coff.terms[string_pauli] * \
-                    QubitOperator(new_str)
+                                        QubitOperator(new_str)
             else:
                 new_fermion_operator += pauli_and_coff.terms[string_pauli] * \
-                    FermionOperator(new_str)
+                                        FermionOperator(new_str)
 
     if new_fermion_operator == None:
         raise Exception("Error, please check the type of the input fermion_operator!")
 
     return new_fermion_operator
 
+
 def separate_odd_even_map(n_spinorbital):
     """
     Put the spin orbital of odd index to the last, making the first half spin up and follows spin down
     """
-    if n_spinorbital%2 != 0:
+    if n_spinorbital % 2 != 0:
         print("n_spinorbitals is not even!")
         return
-    rule=[0]*n_spinorbital
-    for i in range(0,n_spinorbital):
-        if i%2==0:
-            rule[i]=i//2
+    rule = [0] * n_spinorbital
+    for i in range(0, n_spinorbital):
+        if i % 2 == 0:
+            rule[i] = i // 2
         else:
-            rule[i]=i//2+n_spinorbital//2
+            rule[i] = i // 2 + n_spinorbital // 2
     return rule
 
-if __name__=="__main__":
-    a=FermionOperator("0^ 1^ 2 3")
-    parity=get_parity_transform(4)
+
+if __name__ == "__main__":
+    a = FermionOperator("0^ 1^ 2 3")
+    parity = get_parity_transform(4)
     print(parity(a))
-    new_transform=make_transform_spin_separating(parity,4)
+    new_transform = make_transform_spin_separating(parity, 4)
     print()
     print(new_transform(a))

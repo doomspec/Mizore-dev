@@ -10,7 +10,7 @@ class ChangeMutator(Mutator):
 
     def can_mutate(self, ga, chromosome):
         """
-        Check chromosome chould be mutate or not
+        Check chromosome should be mutate or not
         Args:
             chromosome: target chromosome for mutation
 

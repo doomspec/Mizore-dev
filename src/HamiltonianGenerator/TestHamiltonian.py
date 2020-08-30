@@ -28,13 +28,16 @@ def make_example_H2(basis="sto-3g",
                     geometry_info=equilibrium_geometry_dict["H2"],
                     fermi_qubit_transform=bravyi_kitaev,
                     is_computed=False):
-    return make_molecular_energy_obj(molecule_name="H2", basis=basis, geometry_info=geometry_info, fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
+    return make_molecular_energy_obj(molecule_name="H2", basis=basis, geometry_info=geometry_info,
+                                     fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
+
 
 def make_example_H6(basis="sto-3g",
                     geometry_info=equilibrium_geometry_dict["H6"],
                     fermi_qubit_transform=bravyi_kitaev,
                     is_computed=False):
-    return make_molecular_energy_obj(molecule_name="H6", basis=basis, geometry_info=geometry_info, fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
+    return make_molecular_energy_obj(molecule_name="H6", basis=basis, geometry_info=geometry_info,
+                                     fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
 
 
 def make_example_LiH(basis="sto-3g",
@@ -44,8 +47,11 @@ def make_example_LiH(basis="sto-3g",
     n_cancel_orbital = 2
     n_frozen_orbital = 1
     cas_irrep_nocc = {'A1': 3}
-    cas_irrep_ncore = {'E1x': 0,'E1y': 0}
-    return make_molecular_energy_obj(molecule_name="LiH", basis=basis, geometry_info=geometry_info, n_cancel_orbital=n_cancel_orbital, n_frozen_orbital=n_frozen_orbital, cas_irrep_nocc=cas_irrep_nocc, cas_irrep_ncore=cas_irrep_ncore, fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
+    cas_irrep_ncore = {'E1x': 0, 'E1y': 0}
+    return make_molecular_energy_obj(molecule_name="LiH", basis=basis, geometry_info=geometry_info,
+                                     n_cancel_orbital=n_cancel_orbital, n_frozen_orbital=n_frozen_orbital,
+                                     cas_irrep_nocc=cas_irrep_nocc, cas_irrep_ncore=cas_irrep_ncore,
+                                     fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
 
 
 def make_example_H2O(basis="6-31g",
@@ -56,17 +62,24 @@ def make_example_H2O(basis="6-31g",
     n_frozen_orbital = 3
     cas_irrep_nocc = {'B1': 2, 'A1': 3}
     cas_irrep_ncore = {'B1': 0, 'A1': 2}
-    return make_molecular_energy_obj(molecule_name="H2O", basis=basis, geometry_info=geometry_info, n_cancel_orbital=n_cancel_orbital, n_frozen_orbital=n_frozen_orbital, cas_irrep_nocc=cas_irrep_nocc, cas_irrep_ncore=cas_irrep_ncore, fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
+    return make_molecular_energy_obj(molecule_name="H2O", basis=basis, geometry_info=geometry_info,
+                                     n_cancel_orbital=n_cancel_orbital, n_frozen_orbital=n_frozen_orbital,
+                                     cas_irrep_nocc=cas_irrep_nocc, cas_irrep_ncore=cas_irrep_ncore,
+                                     fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
 
 
-def make_example_N2(basis="cc-pvdz", geometry_info=equilibrium_geometry_dict["N2"], fermi_qubit_transform=bravyi_kitaev, is_computed=False):
+def make_example_N2(basis="cc-pvdz", geometry_info=equilibrium_geometry_dict["N2"], fermi_qubit_transform=bravyi_kitaev,
+                    is_computed=False):
     n_cancel_orbital = 18
     n_frozen_orbital = 2
-    return make_molecular_energy_obj(molecule_name="N2", basis=basis, geometry_info=geometry_info, n_cancel_orbital=n_cancel_orbital, n_frozen_orbital=n_frozen_orbital, fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
+    return make_molecular_energy_obj(molecule_name="N2", basis=basis, geometry_info=geometry_info,
+                                     n_cancel_orbital=n_cancel_orbital, n_frozen_orbital=n_frozen_orbital,
+                                     fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
 
 
-def make_molecular_energy_obj(molecule_name, basis="sto-3g", geometry_info=None, n_cancel_orbital=0, n_frozen_orbital=0, cas_irrep_nocc=None, cas_irrep_ncore=None, fermi_qubit_transform=bravyi_kitaev, is_computed=False):
-
+def make_molecular_energy_obj(molecule_name, basis="sto-3g", geometry_info=None, n_cancel_orbital=0, n_frozen_orbital=0,
+                              cas_irrep_nocc=None, cas_irrep_ncore=None, fermi_qubit_transform=bravyi_kitaev,
+                              is_computed=False):
     if geometry_info == None:
         geometry_info = equilibrium_geometry_dict[molecule_name]
 
@@ -86,19 +99,20 @@ def make_molecular_energy_obj(molecule_name, basis="sto-3g", geometry_info=None,
     molecule.symmetry = True
     if not is_computed:
         molecule = run_pyscf(molecule, run_fci=1, n_frozen_orbital=n_frozen_orbital,
-                             n_cancel_orbital=n_cancel_orbital, cas_irrep_nocc=cas_irrep_nocc, cas_irrep_ncore=cas_irrep_ncore,verbose=False)
+                             n_cancel_orbital=n_cancel_orbital, cas_irrep_nocc=cas_irrep_nocc,
+                             cas_irrep_ncore=cas_irrep_ncore, verbose=False)
     molecule.load()
 
     active_space_start = n_frozen_orbital
-    active_space_stop = molecule.n_orbitals-n_cancel_orbital
-    n_active_orb = active_space_stop-active_space_start
+    active_space_stop = molecule.n_orbitals - n_cancel_orbital
+    n_active_orb = active_space_stop - active_space_start
     molecule.n_orbitals = n_active_orb
-    molecule.n_qubits = n_active_orb*2
-    molecule.n_electrons = molecule.n_electrons-active_space_start*2
-
+    molecule.n_qubits = n_active_orb * 2
+    molecule.n_electrons = molecule.n_electrons - active_space_start * 2
 
     fermion_hamiltonian = get_fermion_operator(
-        molecule.get_molecular_hamiltonian(occupied_indices=molecule.frozen_orbitals, active_indices=molecule.active_orbitals))
+        molecule.get_molecular_hamiltonian(occupied_indices=molecule.frozen_orbitals,
+                                           active_indices=molecule.active_orbitals))
 
     # Map ferimon Hamiltonian to qubit Hamiltonian
     qubit_hamiltonian = fermi_qubit_transform(fermion_hamiltonian)
@@ -118,7 +132,6 @@ def make_molecular_energy_obj(molecule_name, basis="sto-3g", geometry_info=None,
 
     init_operator = HartreeFockInitBlock(
         get_operator_qsubset(qubit_electron_operator))
-
 
     return EnergyObjective(qubit_hamiltonian, molecule.n_qubits, init_operator, obj_info)
 
@@ -143,11 +156,11 @@ def make_example_maxcut(n_qubit):
     '''
     hamiltonian = _get_example_qaoa_hamiltonian('maxcut', n_qubit)
     obj_info = {"n_qubit": n_qubit}
-    return EnergyObjective(hamiltonian, n_qubit, None, obj_info) #TODO
+    return EnergyObjective(hamiltonian, n_qubit, None, obj_info)  # TODO
 
 
 def make_example_tsp(n_city):
     # Here qubit means number of cities
     hamiltonian = _get_example_qaoa_hamiltonian('tsp', n_city)
-    obj_info = {"n_qubit": n_city*n_city}
-    return EnergyObjective(hamiltonian, n_city*n_city, None, obj_info) #TODO
+    obj_info = {"n_qubit": n_city * n_city}
+    return EnergyObjective(hamiltonian, n_city * n_city, None, obj_info)  # TODO
