@@ -11,7 +11,7 @@ setup(
         "openfermion",
         "projectq",
         "openfermionpyscf",
-        "pyscf",
+        # "pyscf",
         "multiprocess",
         "numpy",
         "scipy",

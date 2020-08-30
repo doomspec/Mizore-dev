@@ -1,4 +1,4 @@
-pyscf
+# pyscf
 multiprocess
 numpy
 scipy
