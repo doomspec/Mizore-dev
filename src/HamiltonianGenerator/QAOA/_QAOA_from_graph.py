@@ -13,12 +13,8 @@ def random_graph(d=3, n=8, seed=None):
     '''
     graph = nx.random_regular_graph(d, n, seed)
     graph.edges.data("weight", default=1)
-    for u,v,d in graph.edges(data=True):
+    for _u,_v,d in graph.edges(data=True):
         d['weight'] = 1.0
-    pos=nx.kamada_kawai_layout(graph)
-    plt.figure(figsize=(4, 4))
-    nx.draw(graph, pos, with_labels=True, font_weight='bold')
-    plt.show()
     return graph
 
 def get_maxcut_hamiltonian_from_graph(graph):

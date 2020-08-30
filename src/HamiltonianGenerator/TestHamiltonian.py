@@ -123,12 +123,12 @@ def make_molecular_energy_obj(molecule_name, basis="sto-3g", geometry_info=None,
     return EnergyObjective(qubit_hamiltonian, molecule.n_qubits, init_operator, obj_info)
 
 
-def _get_example_qaoa_hamiltonian(problem, n_qubit):
+def _get_example_qaoa_hamiltonian(problem, n_city):
     # print('r = {} A'.format(bond_len))
     if problem == 'maxcut':
-        qubit_hamiltonian = get_random_maxcut_hamiltonian(n=n_qubit)
+        qubit_hamiltonian = get_random_maxcut_hamiltonian(n=n_city)
     elif problem == 'tsp':
-        qubit_hamiltonian = get_random_tsp_hamiltonian(n=n_qubit)
+        qubit_hamiltonian = get_random_tsp_hamiltonian(n=n_city)
     else:
         print(
             "Such example qaoa problem is not supported, using default maxcut hamiltonian.")
@@ -146,8 +146,8 @@ def make_example_maxcut(n_qubit):
     return EnergyObjective(hamiltonian, n_qubit, None, obj_info) #TODO
 
 
-def make_example_tsp(n_qubit):
+def make_example_tsp(n_city):
     # Here qubit means number of cities
-    hamiltonian = _get_example_qaoa_hamiltonian('tsp', n_qubit)
-    obj_info = {"n_qubit": n_qubit*n_qubit}
-    return EnergyObjective(hamiltonian, n_qubit*n_qubit, None, obj_info) #TODO
+    hamiltonian = _get_example_qaoa_hamiltonian('tsp', n_city)
+    obj_info = {"n_qubit": n_city*n_city}
+    return EnergyObjective(hamiltonian, n_city*n_city, None, obj_info) #TODO

@@ -1,6 +1,6 @@
 import numpy as np
 from ._mutator import Mutator
-from GA._gene_bank import GeneBank
+from Network.GA._gene_bank import GeneBank
 
 
 class AddMutator(Mutator):
