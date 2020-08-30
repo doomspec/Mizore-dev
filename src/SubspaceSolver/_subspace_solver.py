@@ -33,8 +33,8 @@ class SubspaceSolver:
         self.progress_bar = progress_bar
         self.sparse_circuit = sparse_circuit
         self.n_basis = len(self.circuit_list)
-        self.S_mat = np.array([[0.0]*self.n_basis]*self.n_basis, dtype=complex)
-        self.H_mat = np.array([[0.0]*self.n_basis]*self.n_basis, dtype=complex)
+        self.S_mat = np.array([[0.0] * self.n_basis] * self.n_basis, dtype=complex)
+        self.H_mat = np.array([[0.0] * self.n_basis] * self.n_basis, dtype=complex)
         self.hamiltonian = hamiltonian
         self.eigvals = None
         self.eigvecs = None
@@ -42,9 +42,9 @@ class SubspaceSolver:
         self.ground_state = None
 
         n_qubit = circuit_list[0].n_qubit
-        n_complete_basis = 2**n_qubit
+        n_complete_basis = 2 ** n_qubit
         print(self.n_basis, "states used to construct the subspace, where the complete space is " +
-              str(n_complete_basis)+"-dimensional.")
+              str(n_complete_basis) + "-dimensional.")
 
         return
 
@@ -72,7 +72,7 @@ class SubspaceSolver:
     def _calc_H_mat_0(self):
 
         if self.progress_bar:
-            pbar = tqdm(total=(self.n_basis+1)*self.n_basis//2)
+            pbar = tqdm(total=(self.n_basis + 1) * self.n_basis // 2)
             pbar.set_description(str("H matrix"))
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
@@ -88,19 +88,20 @@ class SubspaceSolver:
 
     def _calc_H_mat_parellel(self):
         if self.progress_bar:
-            pbar = tqdm(total=(self.n_basis+1)*self.n_basis//2)
+            pbar = tqdm(total=(self.n_basis + 1) * self.n_basis // 2)
             pbar.set_description(str("H matrix"))
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
-                task_series_id = str(id(self) % 10000)+"i"+str(i)+"j"+str(j)
+                task_series_id = str(id(self) % 10000) + "i" + str(i) + "j" + str(j)
                 add_hamiltonian_overlap_tasks(
-                    self.circuit_list[i], self.circuit_list[j], self.hamiltonian, self.task_manager, task_series_id, sparse_circuit=self.sparse_circuit)
+                    self.circuit_list[i], self.circuit_list[j], self.hamiltonian, self.task_manager, task_series_id,
+                    sparse_circuit=self.sparse_circuit)
 
         self.task_manager.flush(task_package_size=1)
 
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
-                task_series_id = str(id(self) % 10000)+"i"+str(i)+"j"+str(j)
+                task_series_id = str(id(self) % 10000) + "i" + str(i) + "j" + str(j)
                 res = self.task_manager.receive_task_result(
                     task_series_id=task_series_id)
                 h = 0
@@ -129,17 +130,20 @@ class SubspaceSolver:
         revise_little_negative(self.S_mat)
         return
 
-VERY_SMALL_NUMBER=1e-13
-def revise_little_negative(S_mat:np.array):
-    eigv=np.linalg.eigvalsh(S_mat)
+
+VERY_SMALL_NUMBER = 1e-13
+
+
+def revise_little_negative(S_mat: np.array):
+    eigv = np.linalg.eigvalsh(S_mat)
     print(eigv)
-    assert eigv[0]>-VERY_SMALL_NUMBER
-    if eigv[0]<VERY_SMALL_NUMBER:
-        S_mat+=np.eye(len(S_mat))*VERY_SMALL_NUMBER
+    assert eigv[0] > -VERY_SMALL_NUMBER
+    if eigv[0] < VERY_SMALL_NUMBER:
+        S_mat += np.eye(len(S_mat)) * VERY_SMALL_NUMBER
 
 
-
-def add_hamiltonian_overlap_tasks(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian, task_manager: TaskManager, task_series_id, sparse_circuit=False):
+def add_hamiltonian_overlap_tasks(first_circuit: BlockCircuit, second_circuit: BlockCircuit, hamiltonian,
+                                  task_manager: TaskManager, task_series_id, sparse_circuit=False):
     for operator in iter_partial_operators(hamiltonian, task_manager.task_package_size):
         task = MatrixTermTask(first_circuit, second_circuit,
                               operator, is_sparse=sparse_circuit)
@@ -153,8 +157,8 @@ def get_hamiltonian_overlap_0(first_circuit: BlockCircuit, second_circuit: Block
         for string_pauli in pauli_and_coff.terms:
             temp_circuit.add_block(PauliGatesBlock(string_pauli))
             overlap += pauli_and_coff.terms[string_pauli] * \
-                get_inner_two_circuit_product(temp_circuit, second_circuit)
-            temp_circuit.block_list.pop(len(temp_circuit.block_list)-1)
+                       get_inner_two_circuit_product(temp_circuit, second_circuit)
+            temp_circuit.block_list.pop(len(temp_circuit.block_list) - 1)
     return overlap
 
 
@@ -164,6 +168,6 @@ def get_growing_circuit_list(circuit: BlockCircuit):
     n_blocks = len(new_circuit.block_list)
     for i in range(n_blocks):
         new_circuit = new_circuit.duplicate()
-        new_circuit.block_list.pop(n_blocks-1-i)
+        new_circuit.block_list.pop(n_blocks - 1 - i)
         circuits.append(new_circuit)
     return circuits

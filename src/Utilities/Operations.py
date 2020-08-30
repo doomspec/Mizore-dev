@@ -1,40 +1,43 @@
-from projectq.ops import H, X,Y,Z, All, Measure, CNOT, Z, Rz, Ry, Rx, C,TimeEvolution
+from projectq.ops import H, X, Y, Z, All, Measure, CNOT, Z, Rz, Ry, Rx, C, TimeEvolution
 import math
 import projectq
 from openfermion.ops import QubitOperator
 
-PAULI_CHAR2OPERATION={"X":X,"Y":Y,"Z":Z}
+PAULI_CHAR2OPERATION = {"X": X, "Y": Y, "Z": Z}
 
 """
 The common quantum operations that are used in Mizore
 """
 
-def apply_time_evolution(hamiltonian:QubitOperator,time,wavefunction):
+
+def apply_time_evolution(hamiltonian: QubitOperator, time, wavefunction):
     projectq_qubit_operator = projectq.ops.QubitOperator()
     for term, coefficient in hamiltonian.terms.items():
         projectq_qubit_operator.terms[term] = coefficient
-    #print(time)
-    TimeEvolution(time,projectq_qubit_operator) | wavefunction
+    # print(time)
+    TimeEvolution(time, projectq_qubit_operator) | wavefunction
+
 
 def apply_X_gates(qsubset, wavefunction):
     for i in qsubset:
         X | wavefunction[i]
 
+
 def apply_Pauli_gates(paulistring, wavefunction):
     for term in paulistring:
         PAULI_CHAR2OPERATION[term[1]] | wavefunction[term[0]]
 
+
 def CNOT_entangler(wavefunction, qsubset):
-    for i in range(len(qsubset)-1):
-        CNOT | (wavefunction[qsubset[i]], wavefunction[qsubset[i+1]])
-    CNOT | (wavefunction[qsubset[i+1]], wavefunction[qsubset[0]])
+    for i in range(len(qsubset) - 1):
+        CNOT | (wavefunction[qsubset[i]], wavefunction[qsubset[i + 1]])
+    CNOT | (wavefunction[qsubset[i + 1]], wavefunction[qsubset[0]])
 
 
 def inversed_CNOT_entangler(wavefunction, qsubset):
-
-    CNOT | (wavefunction[qsubset[len(qsubset)-1]], wavefunction[qsubset[0]])
-    for i in reversed(range(len(qsubset)-1)):
-        CNOT | (wavefunction[qsubset[i]], wavefunction[qsubset[i+1]])
+    CNOT | (wavefunction[qsubset[len(qsubset) - 1]], wavefunction[qsubset[0]])
+    for i in reversed(range(len(qsubset) - 1)):
+        CNOT | (wavefunction[qsubset[i]], wavefunction[qsubset[i + 1]])
 
 
 def XY_full_rotation(wavefunction, qsubset, parameter):
@@ -44,7 +47,7 @@ def XY_full_rotation(wavefunction, qsubset, parameter):
     n_qubit = len(qsubset)
     for i in range(len(qsubset)):
         Rx(parameter[i]) | wavefunction[qsubset[i]]
-        Ry(parameter[n_qubit+i]) | wavefunction[qsubset[i]]
+        Ry(parameter[n_qubit + i]) | wavefunction[qsubset[i]]
 
 
 def inversed_XY_full_rotation(wavefunction, qsubset, parameter):
@@ -53,7 +56,7 @@ def inversed_XY_full_rotation(wavefunction, qsubset, parameter):
     """
     n_qubit = len(qsubset)
     for i in range(len(qsubset)):
-        Ry(-parameter[n_qubit+i]) | wavefunction[qsubset[i]]
+        Ry(-parameter[n_qubit + i]) | wavefunction[qsubset[i]]
         Rx(-parameter[i]) | wavefunction[qsubset[i]]
 
 
@@ -64,8 +67,8 @@ def full_rotation(wavefunction, qsubset, parameter):
     n_qubit = len(qsubset)
     for i in range(len(qsubset)):
         Rx(parameter[i]) | wavefunction[qsubset[i]]
-        Rz(parameter[n_qubit+i]) | wavefunction[qsubset[i]]
-        Rx(parameter[2*n_qubit+i]) | wavefunction[qsubset[i]]
+        Rz(parameter[n_qubit + i]) | wavefunction[qsubset[i]]
+        Rx(parameter[2 * n_qubit + i]) | wavefunction[qsubset[i]]
 
 
 def inversed_full_rotation(wavefunction, qsubset, parameter):
@@ -74,8 +77,8 @@ def inversed_full_rotation(wavefunction, qsubset, parameter):
     """
     n_qubit = len(qsubset)
     for i in range(len(qsubset)):
-        Rx(-parameter[2*n_qubit+i]) | wavefunction[qsubset[i]]
-        Rz(-parameter[n_qubit+i]) | wavefunction[qsubset[i]]
+        Rx(-parameter[2 * n_qubit + i]) | wavefunction[qsubset[i]]
+        Rz(-parameter[n_qubit + i]) | wavefunction[qsubset[i]]
         Rx(-parameter[i]) | wavefunction[qsubset[i]]
 
 

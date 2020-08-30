@@ -1,3 +1,3 @@
 from ._subspace_solver import SubspaceSolver
-from ._subspace_constructor import add_local_krylov_basis,add_local_complete_basis
+from ._subspace_constructor import add_local_krylov_basis, add_local_complete_basis
 from ._krylov_algorithm import generate_krylov_circuits

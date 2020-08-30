@@ -1,6 +1,7 @@
 import setuptools
 import os
 from setuptools import setup, find_packages
+
 setup(
     name="mizore",
     version="0.1.0",

@@ -33,7 +33,6 @@ Copied from https://github.com/deehzee/unionfind.git
 Modified by Zi-Jian Zhang: Add a method to union a list of elements
 """
 
-
 # Third-party libraries
 import numpy as np
 
@@ -117,7 +116,7 @@ class UnionFind(object):
         self.n_comps = 0  # the number of disjoint sets or components
         self._next = 0  # next available id
         self._elts = []  # the elements
-        self._indx = {}  #  dict mapping elt -> index in _elts
+        self._indx = {}  # dict mapping elt -> index in _elts
         self._par = []  # parent: for the internal tree structure
         self._siz = []  # size of the component - correct only for roots
 
@@ -126,11 +125,10 @@ class UnionFind(object):
         for elt in elements:
             self.add(elt)
 
-
     def __repr__(self):
-        return  (
+        return (
             '<UnionFind:\n\telts={},\n\tsiz={},\n\tpar={},\nn_elts={},n_comps={}>'
-            .format(
+                .format(
                 self._elts,
                 self._siz,
                 self._par,
@@ -235,7 +233,7 @@ class UnionFind(object):
 
         """
 
-        if x==None or y==None:
+        if x == None or y == None:
             return
 
         # Initialize if they are not already in the collection
@@ -256,10 +254,10 @@ class UnionFind(object):
         self.n_comps -= 1
 
     def union_list(self, arr):
-        x=None
+        x = None
         for y in arr:
-            self.union(x,y)
-            x=y
+            self.union(x, y)
+            x = y
 
     def component(self, x):
         """Find the connected component containing the given element.
@@ -365,10 +363,11 @@ class UnionFind(object):
             # comps.update({x: set(comp) for x in comp})
         return comps
 
+
 if __name__ == "__main__":
-    a=set([1,2,3,4,5])
-    b=set([3,4,5])
-    uf=UnionFind(list(range(10)))
-    uf.union(1,2)
-    uf.union_list((2,3,4,5))
+    a = set([1, 2, 3, 4, 5])
+    b = set([3, 4, 5])
+    uf = UnionFind(list(range(10)))
+    uf.union(1, 2)
+    uf.union_list((2, 3, 4, 5))
     print(uf.components())

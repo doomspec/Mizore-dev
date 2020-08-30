@@ -30,16 +30,18 @@ def get_operator_qsubset(operator: QubitOperator):
             qsubset.append(i)
     return qsubset
 
+
 def get_operator_n_qubit(operator: QubitOperator):
-    n_qubit=-1
+    n_qubit = -1
     for pauli_and_coff in operator.get_operators():
         for string_pauli in pauli_and_coff.terms:
-            if len(string_pauli)==0:
+            if len(string_pauli) == 0:
                 continue
-            highest_index=string_pauli[len(string_pauli)-1][0]
-            if highest_index>n_qubit:
-                n_qubit=highest_index
-    return n_qubit+1
+            highest_index = string_pauli[len(string_pauli) - 1][0]
+            if highest_index > n_qubit:
+                n_qubit = highest_index
+    return n_qubit + 1
+
 
 def pauliword2string(pauli):
     string = ""

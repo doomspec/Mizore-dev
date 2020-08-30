@@ -1,2 +1,0 @@
-class GeneBank:
-    genes = set()
