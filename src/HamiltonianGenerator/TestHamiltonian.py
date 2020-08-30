@@ -149,5 +149,5 @@ def make_example_maxcut(n_qubit):
 def make_example_tsp(n_qubit):
     # Here qubit means number of cities
     hamiltonian = _get_example_qaoa_hamiltonian('tsp', n_qubit)
-    obj_info = {"n_qubit": n_qubit}
-    return EnergyObjective(hamiltonian, n_qubit, None, obj_info) #TODO
+    obj_info = {"n_qubit": n_qubit*n_qubit}
+    return EnergyObjective(hamiltonian, n_qubit*n_qubit, None, obj_info) #TODO
