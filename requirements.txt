@@ -10,3 +10,4 @@ networkx
 infomap
 minorminer
 dmrgpy
+minorminer
