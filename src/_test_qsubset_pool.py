@@ -1,6 +1,6 @@
 from PoolGenerator._qsubset_pools import get_qsubset_pool_reduced_block_pool, get_operator_qsubset_pool, number2qsubset, qsubset2number, iter_entangler_by_qsubsets
 from openfermion.transforms import bravyi_kitaev
-from HamiltonianGenerator import get_example_molecular_hamiltonian
+from HamiltonianGenerator import make_example_N2
 from Blocks import MultiRotationEntangler, BlockCircuit, HardwareEfficientEntangler
 from Blocks._efficient_coupled_cluster import EfficientCoupledCluster
 from PoolGenerator._rotation_pools import all_rotation_pool

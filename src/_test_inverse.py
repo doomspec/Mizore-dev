@@ -27,14 +27,13 @@ def test_block_inverse(n_qubit,_block:Block):
 if __name__ == "__main__":
 
     from openfermion.transforms import bravyi_kitaev,jordan_wigner
-    from HamiltonianGenerator import get_example_molecular_hamiltonian
+    from HamiltonianGenerator import make_example_H2
     from Blocks import MultiRotationEntangler,BlockCircuit,HardwareEfficientEntangler
 
     transform = jordan_wigner
 
     # Generate the Hamiltonian
-    hamiltonian_obj = get_example_molecular_hamiltonian(
-          "H2", basis="6-31g", fermi_qubit_transform=transform)
+    hamiltonian_obj = make_example_H2(basis="6-31g", fermi_qubit_transform=transform)
 
     with open("src/H2_5_blocks.bc", "rb") as f:
         circuit: BlockCircuit = pickle.load(f)
