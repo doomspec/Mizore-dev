@@ -1,5 +1,5 @@
 GPU_SIM_PATH="src/GPUSimulator/"
-PWD=`pwd`
+BASE_DIR=$(pwd)
 
 echo "PWD :"$(pwd)
 
@@ -18,6 +18,6 @@ cmake ../
 make
 
 # install mizore
-cd $PWD
+cd $BASE_DIR
 echo $PWD
 python3 setup.py install
