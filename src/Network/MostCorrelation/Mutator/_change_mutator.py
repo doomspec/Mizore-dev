@@ -1,6 +1,6 @@
 import numpy as np
 from ._mutator import Mutator
-from Network.GA._gene_bank import GeneBank
+from Network.MostCorrelation._gene_bank import GeneBank
 
 
 class ChangeMutator(Mutator):
@@ -32,7 +32,10 @@ class ChangeMutator(Mutator):
         original_genes = set()
         [original_genes.add(gene) for gene in genes]
         position = np.random.randint(0, len(genes))
-        genes[position] = np.random.choice(list(set.difference(GeneBank.genes, original_genes)))
+        diff_set = set.difference(GeneBank.genes, original_genes)
+        if len(diff_set) == 0:
+            return genes
+        genes[position] = np.random.choice(list(diff_set))
         mutate_prob = 0.2
         if ga._fitness(genes) > chromosome.fitness and np.random.random() > mutate_prob:
             return genes
