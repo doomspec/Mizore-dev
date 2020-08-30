@@ -19,4 +19,5 @@ make
 
 # install mizore
 cd $PWD
+echo $PWD
 python3 setup.py install
