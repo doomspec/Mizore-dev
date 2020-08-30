@@ -1,5 +1,5 @@
 GPU_SIM_PATH="src/GPUSimulator/"
-PWD=$(pwd)
+PWD=`pwd`
 
 echo "PWD :"$(pwd)
 
