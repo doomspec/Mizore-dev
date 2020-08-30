@@ -52,7 +52,7 @@ class MultiRotationEntangler(Block):
     def __str__(self):
         info = self.basic_info_string()
         info += "; N Rotation:" + str(len(self.qsubset_pauliword_list))
-        info += "; " + str(self.parameter)
+        #info += "; " + str(self.parameter)
 
         # info+="; Qsubset:"+str(self.qsubset)
         # info+="; Pauli:"+pauliword2string(self.pauliword)
