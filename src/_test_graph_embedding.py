@@ -1,5 +1,5 @@
-from Network import GAGraphEmbeddingConstructor
-from Network._quantum_chips import *
+from CorrelationNetwork import GAGraphEmbeddingConstructor
+from CorrelationNetwork._quantum_chips import *
 
 # Initial quantum chips
 rigetti_16Q_Aspen = Rigetti_16Q_Aspen()

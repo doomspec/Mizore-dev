@@ -1,5 +1,5 @@
-from Network.MostCorrelation._ga_selector import GACorrelationQsubsetSelector
-from Network._quantum_chips import *
+from CorrelationNetwork.MostCorrelation._ga_selector import GACorrelationQsubsetSelector
+from CorrelationNetwork._quantum_chips import *
 
 selector = GACorrelationQsubsetSelector(IBM_5Q_Yorktown())
 
