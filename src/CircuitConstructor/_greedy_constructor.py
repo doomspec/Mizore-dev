@@ -11,6 +11,7 @@ from ._result_display import save_construction
 import time
 import numpy
 import math
+
 NOT_DEFINED = 999999
 
 
@@ -25,8 +26,8 @@ class GreedyConstructor(CircuitConstructor):
 
     Attributes:
         construct_obj: a Objective that defines the problem (like EnergyObjective for ground state energy)
-        block_pool: The BlockPool used for contruct the circuit, will be gone over at each iteration
-        circuit: the circuit kept by the constructor, should be contructed when running
+        block_pool: The BlockPool used for constructing the circuit, will be gone over at each iteration
+        circuit: the circuit kept by the constructor, should be constructed when running
         max_n_iter: Max number of blocks to be added in the circuit
         terminate_cost: the cost where the construction stops
         optimizer: a ParameterOptimizer for parameter optimization
@@ -36,7 +37,10 @@ class GreedyConstructor(CircuitConstructor):
 
     gradiant_cutoff = 1e-9
 
-    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100, gradient_screening_rate=0.05, terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), global_optimizer=None, no_global_optimization=False,task_manager: TaskManager = None, init_circuit=None, project_name="Untitled"):
+    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100, gradient_screening_rate=0.05,
+                 terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), global_optimizer=None,
+                 no_global_optimization=False, task_manager: TaskManager = None, init_circuit=None,
+                 project_name="Untitled"):
 
         CircuitConstructor.__init__(self)
         self.circuit = init_circuit
@@ -51,14 +55,14 @@ class GreedyConstructor(CircuitConstructor):
         self.cost = construct_obj.get_cost()
         self.id = id(self)
         self.optimizer = optimizer
-        if global_optimizer==None:
-            self.global_optimizer=BasinhoppingOptimizer(random_initial=0)
+        if global_optimizer == None:
+            self.global_optimizer = BasinhoppingOptimizer(random_initial=0)
         else:
-            self.global_optimizer=global_optimizer
-        self.no_global_optimization=no_global_optimization
+            self.global_optimizer = global_optimizer
+        self.no_global_optimization = no_global_optimization
         self.time_string = time.strftime(
             '%m-%d-%Hh%Mm%Ss', time.localtime(time.time()))
-        self.project_name = project_name+"_"+self.time_string
+        self.project_name = project_name + "_" + self.time_string
         self.trial_circuits = []
         if "terminate_cost" in construct_obj.obj_info.keys():
             self.terminate_cost = construct_obj.obj_info["terminate_cost"]
@@ -70,9 +74,10 @@ class GreedyConstructor(CircuitConstructor):
             self.task_manager_created = True
         return
 
-    CONSTRUCTOR_NAME="GreedyConstructor"
+    CONSTRUCTOR_NAME = "GreedyConstructor"
+
     def run(self):
-        print("Here is "+self.CONSTRUCTOR_NAME)
+        print("Here is " + self.CONSTRUCTOR_NAME)
         print("Project Name:", self.project_name)
         print("Block Pool Size:", len(self.block_pool.blocks))
         self.init_cost = self.cost.get_cost_value(self.circuit)
@@ -82,7 +87,7 @@ class GreedyConstructor(CircuitConstructor):
         self.start_time_number = time.time()
         self.add_time_point()
         for i_iter in range(self.max_n_iter):
-            print("********The "+str(i_iter+1)+"th Iteration*********")
+            print("********The " + str(i_iter + 1) + "th Iteration*********")
             self.update_trial_circuits()
             is_succeed = self.update_one_block()
             is_return = False
@@ -120,7 +125,6 @@ class GreedyConstructor(CircuitConstructor):
         self.cost_list.append(self.current_cost)
         save_construction(self, self.project_name)
 
-
     def update_one_block(self):
         """Try to add a new block
         Return True is succeed, return False otherwise
@@ -144,7 +148,7 @@ class GreedyConstructor(CircuitConstructor):
                 self.when_terminate_cost_achieved = len(
                     self.circuit.block_list)
                 print("Target cost achieved by",
-                          self.when_terminate_cost_achieved, " blocks!")
+                      self.when_terminate_cost_achieved, " blocks!")
                 print("Construction process ends!")
             return True
         else:
@@ -164,14 +168,14 @@ class GreedyConstructor(CircuitConstructor):
     def do_trial_on_circuits_by_cost_value(self, trial_circuits=None):
         if trial_circuits == None:
             trial_circuits = self.trial_circuits
-        task_series_id="Single Block Optimize "+str(self.id%100000)
+        task_series_id = "Single Block Optimize " + str(self.id % 100000)
         trial_result_list = []
         for trial_circuit in trial_circuits:
             task = OptimizationTask(trial_circuit, self.optimizer, None)
             self.task_manager.add_task_to_buffer(task, task_series_id=task_series_id)
         self.task_manager.flush(public_resource={"cost": self.cost})
         res_list = self.task_manager.receive_task_result(
-            task_series_id=task_series_id,progress_bar=True)
+            task_series_id=task_series_id, progress_bar=True)
         for i in range(len(trial_circuits)):
             cost, amp = res_list[i]
             cost_descent = self.current_cost - cost
@@ -184,22 +188,22 @@ class GreedyConstructor(CircuitConstructor):
     def do_trial_on_circuits_by_cost_gradient(self, trial_circuits=None):
         if trial_circuits == None:
             trial_circuits = self.trial_circuits
-        if abs(self.gradient_screening_rate-1) < 0.00001:
+        if abs(self.gradient_screening_rate - 1) < 0.00001:
             return self.do_trial_on_circuits_by_cost_value()
 
-        task_series_id="Gradient "+str(self.id%100000)
+        task_series_id = "Gradient " + str(self.id % 100000)
 
         for trial_circuit in trial_circuits:
             task = GradientTask(trial_circuit, None)
             self.task_manager.add_task_to_buffer(task, task_series_id=task_series_id)
-            
+
         self.task_manager.flush(public_resource={"cost": self.cost})
-        res_list = self.task_manager.receive_task_result(task_series_id=task_series_id,progress_bar=True)
+        res_list = self.task_manager.receive_task_result(task_series_id=task_series_id, progress_bar=True)
         res_list = [numpy.linalg.norm(res) for res in res_list]
         res_list = numpy.array(res_list)
         n_circuit_to_try = math.ceil(
-            self.gradient_screening_rate*len(trial_circuits))
-        rank_list = (-1*res_list).argsort()[:n_circuit_to_try]
+            self.gradient_screening_rate * len(trial_circuits))
+        rank_list = (-1 * res_list).argsort()[:n_circuit_to_try]
         good_circuits = []
         for i in rank_list:
             good_circuits.append(trial_circuits[i])

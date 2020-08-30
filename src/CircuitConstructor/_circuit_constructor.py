@@ -1,13 +1,15 @@
 from multiprocessing import Process
 import time
+
 NOT_DEFINED = 999999
 
 
 class CircuitConstructor(Process):
     """
-    The base class of all circuit construtor
+    The base class of all circuit constructor
     See GreedyConstructor to learn how to use
     """
+
     def __init__(self):
         Process.__init__(self)
 
@@ -20,13 +22,13 @@ class CircuitConstructor(Process):
         self.current_cost = NOT_DEFINED
         self.init_operator = None
         self.start_time_number = NOT_DEFINED
-        self.important_log_list=[]
+        self.important_log_list = []
         self.run_time_list = []
         self.cost_list = []
         return
 
     def add_time_point(self):
-        self.run_time_list.append(time.time()-self.start_time_number)
+        self.run_time_list.append(time.time() - self.start_time_number)
 
     def execute_construction(self):
         self.start()
