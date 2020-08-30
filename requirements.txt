@@ -9,5 +9,4 @@ openfermionpyscf
 networkx
 infomap
 minorminer
-dmrgpy
-minorminer
+# dmrgpy
