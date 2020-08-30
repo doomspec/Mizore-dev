@@ -5,6 +5,7 @@ from openfermion.ops import QubitOperator
 from Utilities.Iterators import iter_qsubset_pauli_of_operator
 from ._rotation_entangler import count_single_gate_for_pauliword
 
+
 class MultiRotationEntangler(Block):
     """Entangler of the form: e^{iP_1 t_1} e^{iP_2 t_2} .. e^{iP_n t_n}
     There are n adjustable parameters
@@ -41,18 +42,18 @@ class MultiRotationEntangler(Block):
         return
 
     def get_gate_used(self):
-        n_rotation=0
-        n_CNOT=0
+        n_rotation = 0
+        n_CNOT = 0
         for qsubset, pauliword in self.qsubset_pauliword_list:
-            n_rotation+=count_single_gate_for_pauliword(pauliword)
-            n_CNOT+=2*(len(qsubset)-1)
-        n_rotation+=1
-        return {"CNOT":n_CNOT,"SingleRotation":n_rotation}
+            n_rotation += count_single_gate_for_pauliword(pauliword)
+            n_CNOT += 2 * (len(qsubset) - 1)
+        n_rotation += 1
+        return {"CNOT": n_CNOT, "SingleRotation": n_rotation}
 
     def __str__(self):
         info = self.basic_info_string()
         info += "; N Rotation:" + str(len(self.qsubset_pauliword_list))
-        #info += "; " + str(self.parameter)
+        # info += "; " + str(self.parameter)
 
         # info+="; Qsubset:"+str(self.qsubset)
         # info+="; Pauli:"+pauliword2string(self.pauliword)

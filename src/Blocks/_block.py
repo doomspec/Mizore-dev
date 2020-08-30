@@ -8,7 +8,7 @@ class Block():
     Blocks may be used in a BlockCircuit or a BlockPool.
 
     Attributes:
-        parameter: The list of parameters of the parametried block
+        parameter: The list of parameters of the parametric block
         is_inversed: If true, the function apply() will apply apply_inverse_gate() when called
         IS_INVERSE_DEFINED: Set to be true when apply_inverse_gate() is implemented
     """
@@ -38,7 +38,7 @@ class Block():
 
     def apply(self, parameter, wavefunction):
         """
-        Apply gates parametrized by parameter on the wavefunction
+        Apply gates parametrized by parameter on the wave function
         """
         if not self.is_inversed:
             self.apply_forward_gate(parameter, wavefunction)
