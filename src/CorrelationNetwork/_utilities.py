@@ -16,7 +16,7 @@ def draw_graph(G: nx.Graph, path="Untitled"):
                                            fc=(1.0, 1.0, 1.0),
                                            alpha=0.0
                                            ))
-    plt.savefig(path + ".png")
+    plt.savefig(path)
 
 
 def get_nx_graph_by_adjacent_mat(_adjacent_mat, weight_amplifier=100, weight_cutoff=0.1):

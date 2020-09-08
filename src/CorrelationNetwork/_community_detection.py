@@ -58,7 +58,7 @@ def draw_community_graph(G: nx.Graph, node_module_map, path="Untitled"):
                                            fc=(1.0, 1.0, 1.0),
                                            alpha=0.0
                                            ))
-    plt.savefig(path + ".png")
+    plt.savefig(path)
 
 
 def convert_node_module_map_to_array(node_module_map):

@@ -23,15 +23,14 @@ def get_operator_qsubset_pool(operator):
     return qsubsets
 
 def get_qsubset_pool_reduced_block_pool(block_pool,qsubset_pool):
+    subset_number_pool=[qsubset2number(subset) for subset in qsubset_pool]
     reduced_pool=BlockPool()
     for block in block_pool:
-        if qsubset2number(block.qsubset) in qsubset_pool:
+        if qsubset2number(block.qsubset) in subset_number_pool:
             reduced_pool+=block
     return reduced_pool
 
 def iter_entangler_by_qsubsets(qsubsets,constructor):
-    from PoolGenerator._qsubset_pools import number2qsubset
-    for num in qsubsets:
-        qsubset=number2qsubset(num)
+    for qsubset in qsubsets:
         if len(qsubset)>=2:
             yield constructor(qsubset)

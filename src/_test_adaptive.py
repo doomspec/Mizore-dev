@@ -18,7 +18,7 @@ if __name__=="__main__":
 
     basis="6-31g"
     transform = make_transform_spin_separating(get_parity_transform(8),8)
-    energy_obj = make_example_H2O(basis=basis,fermi_qubit_transform=transform,is_computed=False)
+    energy_obj = make_example_H2(basis="6-31g",fermi_qubit_transform=transform,is_computed=False)
     energy_obj=get_reduced_energy_obj_with_HF_init(energy_obj,[3,7])
 
 
@@ -28,7 +28,7 @@ if __name__=="__main__":
 
     #print(pool)
     # Generate the circuit constructor
-    constructor=FixedDepthSweepConstructor(energy_obj,pool,n_max_block=,project_name="_".join([mole_name,basis]))
+    constructor=FixedDepthSweepConstructor(energy_obj,pool,n_max_block=15,project_name="_".join([mole_name,basis]))
 
     # Run the constructor
     constructor.execute_construction()

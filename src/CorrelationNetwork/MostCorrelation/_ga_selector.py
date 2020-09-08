@@ -212,4 +212,4 @@ class GACorrelationQsubsetSelector:
             res.append(chromosome)
             iter_set.add(elem)
         res = sorted(res, key=lambda x: -x.fitness)
-        return res
+        return [[gene for gene in item.genes] for item in res]
