@@ -4,45 +4,50 @@ import itertools
 Common iterators that are used in Mizore
 """
 
+
 def iter_qsubset_pauli_of_operator(operator):
     for pauli_and_coeff in operator.get_operators():
-            for string_pauli in pauli_and_coeff.terms:
-                if string_pauli!=():
-                    yield string_pauli2qsubset_pauli(string_pauli)
+        for string_pauli in pauli_and_coeff.terms:
+            if string_pauli != ():
+                yield string_pauli2qsubset_pauli(string_pauli)
+
 
 def iter_coeff_qsubset_pauli_of_operator(operator):
     for pauli_and_coeff in operator.get_operators():
-            for string_pauli in pauli_and_coeff.terms:
-                if string_pauli!=():
-                    coeff=pauli_and_coeff.terms[string_pauli]
-                    res=[coeff]
-                    res.extend(string_pauli2qsubset_pauli(string_pauli))
-                    yield res
+        for string_pauli in pauli_and_coeff.terms:
+            if string_pauli != ():
+                coeff = pauli_and_coeff.terms[string_pauli]
+                res = [coeff]
+                res.extend(string_pauli2qsubset_pauli(string_pauli))
+                yield res
+
 
 def iter_terms_in_fermion_operator(operator):
     from openfermion.ops import FermionOperator
     for pauli_and_coeff in operator.get_operators():
-            for string_pauli in pauli_and_coeff.terms:
-                    yield FermionOperator(string_pauli)
+        for string_pauli in pauli_and_coeff.terms:
+            yield FermionOperator(string_pauli)
+
 
 def iter_terms_in_qubit_operator(operator):
     from openfermion.ops import QubitOperator
     for pauli_and_coeff in operator.get_operators():
-            for string_pauli in pauli_and_coeff.terms:
-                    yield QubitOperator(string_pauli)
+        for string_pauli in pauli_and_coeff.terms:
+            yield QubitOperator(string_pauli)
 
-def iter_partial_operators(hamiltonian,max_n_term_in_new_operators):
+
+def iter_partial_operators(hamiltonian, max_n_term_in_new_operators):
     from openfermion.ops import QubitOperator
-    new_operator=QubitOperator()
-    n_terms_added=0
+    new_operator = QubitOperator()
+    n_terms_added = 0
     for string_pauli in hamiltonian.terms:
-        new_operator+=QubitOperator(string_pauli)*hamiltonian.terms[string_pauli]
-        n_terms_added+=1
-        if n_terms_added==max_n_term_in_new_operators:
+        new_operator += QubitOperator(string_pauli) * hamiltonian.terms[string_pauli]
+        n_terms_added += 1
+        if n_terms_added == max_n_term_in_new_operators:
             yield new_operator
-            new_operator=QubitOperator()
-            n_terms_added=0
-    if n_terms_added!=0:
+            new_operator = QubitOperator()
+            n_terms_added = 0
+    if n_terms_added != 0:
         yield new_operator
 
 

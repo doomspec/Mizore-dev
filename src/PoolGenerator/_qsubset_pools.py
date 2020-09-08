@@ -2,22 +2,25 @@ from Utilities.Iterators import iter_qsubset_pauli_of_operator
 from ._block_pool import BlockPool
 import math
 
+
 def qsubset2number(qsubset):
-    value=0
+    value = 0
     for i in qsubset:
-        value+=1<<i
+        value += 1 << i
     return value
 
+
 def number2qsubset(number):
-    highest=int(math.log2(number))+1
-    qsubset=[]
-    for i in range(0,highest):
-        if int((number%(1<<(i+1)))/(1<<i))==1:
+    highest = int(math.log2(number)) + 1
+    qsubset = []
+    for i in range(0, highest):
+        if int((number % (1 << (i + 1))) / (1 << i)) == 1:
             qsubset.append(i)
     return qsubset
 
+
 def get_operator_qsubset_pool(operator):
-    qsubsets=set()
+    qsubsets = set()
     for qsubset, _pauli in iter_qsubset_pauli_of_operator(operator):
         qsubsets.add(qsubset2number(qsubset))
     return qsubsets

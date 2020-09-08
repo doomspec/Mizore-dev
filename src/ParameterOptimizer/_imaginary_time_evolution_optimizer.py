@@ -9,6 +9,7 @@ import numpy
 from ParallelTaskRunner import TaskManager
 from ParallelTaskRunner._inner_product_task import InnerProductTask
 from Utilities.Visulization import draw_x_y_line_relation
+
 NOT_DEFINED = 999999
 
 
@@ -18,7 +19,8 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
     Differing from the original paper, here we calculate the A and C matrix by finite difference rather than the swap test.
     """
 
-    def __init__(self, get_best_result=True, random_adjust=0.01, diff=1e-4, stepsize=1e-1, n_step=10, max_increase_n_step=3,
+    def __init__(self, get_best_result=True, random_adjust=0.01, diff=1e-4, stepsize=1e-1, n_step=10,
+                 max_increase_n_step=3,
                  inverse_evolution=False, task_manager: TaskManager = None, verbose=False, fig_path=None):
         ParameterOptimizer.__init__(self)
 
@@ -47,7 +49,6 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
                 adjusted_circuits.append(adjusted_circuit)
         return adjusted_circuits
 
-
     def calc_complex_A_mat_0(self, circuit, adjusted_circuits):
         n_parameter = len(adjusted_circuits)
         mat_A = [[0.0 for col in range(n_parameter)]
@@ -68,45 +69,45 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
         return mat_A
 
     def calc_complex_A_mat(self, circuit, adjusted_circuits):
-        if self.task_manager==None:
-            return self.calc_complex_A_mat_0(circuit,adjusted_circuits)
+        if self.task_manager == None:
+            return self.calc_complex_A_mat_0(circuit, adjusted_circuits)
 
         n_parameter = len(adjusted_circuits)
         mat_A = [[0.0 for col in range(n_parameter)]
                  for row in range(n_parameter)]
 
-        task_id = id(self)%10000
+        task_id = id(self) % 10000
 
         for i in range(n_parameter):
             for j in range(i, n_parameter):
-                task_id_i=str(task_id)+"i"+str(i)
+                task_id_i = str(task_id) + "i" + str(i)
                 self.task_manager.add_task_to_buffer(InnerProductTask(
-                    adjusted_circuits[i], adjusted_circuits[j]), task_series_id=task_id_i+"c1")
+                    adjusted_circuits[i], adjusted_circuits[j]), task_series_id=task_id_i + "c1")
                 self.task_manager.add_task_to_buffer(InnerProductTask(
-                    adjusted_circuits[i], circuit), task_series_id=task_id_i+"c2")
+                    adjusted_circuits[i], circuit), task_series_id=task_id_i + "c2")
                 self.task_manager.add_task_to_buffer(InnerProductTask(
-                    circuit, adjusted_circuits[j]), task_series_id=task_id_i+"c3")
+                    circuit, adjusted_circuits[j]), task_series_id=task_id_i + "c3")
 
         self.task_manager.flush()
 
         for i in range(n_parameter):
 
-            task_id_i=str(task_id)+"i"+str(i)
+            task_id_i = str(task_id) + "i" + str(i)
             inner_product_list1 = self.task_manager.receive_task_result(
-                task_series_id=task_id_i+"c1")
+                task_series_id=task_id_i + "c1")
             inner_product_list2 = self.task_manager.receive_task_result(
-                task_series_id=task_id_i+"c2")
+                task_series_id=task_id_i + "c2")
             inner_product_list3 = self.task_manager.receive_task_result(
-                task_series_id=task_id_i+"c3")
+                task_series_id=task_id_i + "c3")
 
             for j in range(i, n_parameter):
-                term_value = inner_product_list1[j-i] - \
-                    inner_product_list2[j-i] - inner_product_list3[j-i] + 1
+                term_value = inner_product_list1[j - i] - \
+                             inner_product_list2[j - i] - inner_product_list3[j - i] + 1
                 term_value /= (self.diff * self.diff)
                 term_value = term_value.real
                 mat_A[i][j] = term_value
                 mat_A[j][i] = term_value
-                
+
         return mat_A
 
     def calc_A_mat(self, circuit, adjusted_circuits):
@@ -140,13 +141,12 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
         if self.fig_path == None:
             return
         if self.fig_path == "screen":
-            
+
             draw_x_y_line_relation(list(range(len(energy_list))), energy_list,
                                    "Index of Iteration", "Energy", filename=None)
         else:
             draw_x_y_line_relation(list(range(len(energy_list))), energy_list,
                                    "Index of Iteration", "Energy", filename=self.fig_path)
-            
 
     def run_optimization(self, _circuit: BlockCircuit, cost):
         """
@@ -180,14 +180,14 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
         for i in range(0, self.n_step):
 
             adjusted_circuits = self.get_adjusted_circuit(circuit)
-            #print("Evaluating C")
+            # print("Evaluating C")
             mat_C = self.calc_C_mat(circuit, adjusted_circuits, hamiltonian)
-            #print("Evaluating A")
+            # print("Evaluating A")
             mat_A = self.calc_A_mat(circuit, adjusted_circuits)
 
             derivative = self.calc_derivative(mat_A, mat_C)
             if self.inverse_evolution:
-                derivative = -1*derivative
+                derivative = -1 * derivative
             circuit.adjust_parameter_on_active_position(derivative)
 
             energy = get_circuit_energy(circuit, hamiltonian)
@@ -211,7 +211,7 @@ class ImaginaryTimeEvolutionOptimizer(ParameterOptimizer):
             res_energy = lowest_energy
         else:
             optimal_parameter = circuit.get_parameter_on_active_position()
-            res_energy = energy_list[len(energy_list)-1]
+            res_energy = energy_list[len(energy_list) - 1]
 
         amp = []
         for i in range(len(original_parameter)):

@@ -10,7 +10,7 @@ def all_rotation_pool(n_qubit, max_length=-1, only_odd_Y_operators=True):
     Block pool contains all the possible RotationEntangler.
     Args:
         only_odd_Y_operators: If true, only RotationEntangler whose Pauli word only has odd number of Y operators will be added.
-        Even Y entanglers are exclueded because they commute with Hamiltonian without imaginary terms (usually because of the absense of magnetic field), which means 
+        Even Y entanglers are excluded because they commute with Hamiltonian without imaginary terms (usually because of the absense of magnetic field), which means
         d/dt <psi|e^{-iPt}He^{iPt}|psi> = 0,
         for all the state |psi>
     """
@@ -18,11 +18,11 @@ def all_rotation_pool(n_qubit, max_length=-1, only_odd_Y_operators=True):
         max_length = n_qubit
 
     if only_odd_Y_operators:
-        for length in [i+1 for i in range(max_length)]:
+        for length in [i + 1 for i in range(max_length)]:
             for qsubset, pauli in iter_qsubset_odd_Y_pauli_by_length(length, range(n_qubit)):
                 yield RotationEntangler(qsubset, pauli)
     else:
-        for length in [i+1 for i in range(max_length)]:
+        for length in [i + 1 for i in range(max_length)]:
             for qsubset, pauli in iter_all_qsubset_pauli_by_length(length, range(n_qubit)):
                 yield RotationEntangler(qsubset, pauli)
 

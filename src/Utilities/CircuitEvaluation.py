@@ -13,12 +13,14 @@ import projectq.setups.decompositions
 
 from GPUSimulator import Simulator as gpu_simulator
 from time import time
+
 """
 This file provides functions for common tasks that use the quantum simulation backend, including expectation value and amplitude
 The functions accept a function called *ansatz(parameter,wavefunction)* as input.
 """
 
-# This part can easily change to use HiQ. 
+
+# This part can easily change to use HiQ.
 # We use projectq here because it can be easily installed by pip and thus easily for Mizore to be installed.
 
 
@@ -34,6 +36,7 @@ def get_quantum_engine():
 
     return compiler_engine
 
+
 def get_gpu_quantum_engine():
     backend = gpu_simulator(gate_fusion=True)
     cache_depth = 10
@@ -43,6 +46,7 @@ def get_gpu_quantum_engine():
                AutoReplacer(rule_set)]
     compiler_engine = MainEngine(backend=backend, engine_list=engines)
     return compiler_engine
+
 
 def get_hiq_quantum_engine():
     from hiq.projectq.backends import SimulatorMPI
@@ -55,6 +59,7 @@ def get_hiq_quantum_engine():
     compiler_engine = MainEngine(backend=backend, engine_list=engines)
     return compiler_engine
     return
+
 
 def evaluate_ansatz_expectation(parameter, n_qubit, hamiltonian, ansatz):
     """
@@ -83,7 +88,7 @@ def evaluate_ansatz_expectation(parameter, n_qubit, hamiltonian, ansatz):
     All(Measure) | wavefunction
     compiler_engine.flush()
 
-    #print(energy,parameter)
+    # print(energy,parameter)
 
     return energy
 
@@ -100,7 +105,7 @@ def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list):
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
 
     # Apply the circuit
-    ansatz([0]*100, wavefunction)
+    ansatz([0] * 100, wavefunction)
 
     # Use the engine to implement the gates
     compiler_engine.flush()
@@ -122,8 +127,7 @@ def evaluate_ansatz_0000_amplitudes(n_qubit, ansatz):
     return evaluate_ansatz_amplitudes(n_qubit, ansatz, [[False] * n_qubit])[0]
 
 
-
-def evaluate_ansatz_1DMs(parameter,n_qubit,ansatz):
+def evaluate_ansatz_1DMs(parameter, n_qubit, ansatz):
     from Utilities.WaveLocalProperties import get_one_DMs
     import numpy as np
     from openfermion.ops import QubitOperator
@@ -131,7 +135,7 @@ def evaluate_ansatz_1DMs(parameter,n_qubit,ansatz):
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
     ansatz(parameter, wavefunction)
     compiler_engine.flush()
-    one_DMs=get_one_DMs(compiler_engine.backend.get_expectation_value,wavefunction)
+    one_DMs = get_one_DMs(compiler_engine.backend.get_expectation_value, wavefunction)
 
     All(Measure) | wavefunction
     compiler_engine.flush()
