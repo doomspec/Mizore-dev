@@ -1,6 +1,6 @@
 # Disclaimer
 
-This project is still under intensive development and 
+This project is still under intensive development and should be used carefully.
 
 # Mizore
 <img src="docs/mizore_icon.png" width="40%" align="left" />
@@ -10,7 +10,6 @@ Mizore is an open source effort for providing a *programmer-efficient, *highly-m
 - [Quantum Subspace Diagonalization](src/SubspaceSolver&Sparse.ipynb)
 - [Adaptive Circuit Construction](src/AdaptiveCircuitConstruction.ipynb)
 - [Correlation Network Analysis](src/CorrelationNetwork.ipynb)
-
 
 
 ## Basic ideas
@@ -33,7 +32,7 @@ print(energy) #Output: -1.1372838344885012
 
 Mizore provides intrinsic support to parameterized circuit by `Block` and `BlockCircuit`. The users can easily produce highly flexible parameterized quantum circuit with Mizore. We believe that a detailed introduction note is vital for interdisciplinary researchers. One can start learning Mizore by our interactive notes [BasicConcepts](src/BasicConcepts.ipynb).
 
-To facilitate the designing and test of near-term quantum algorithms, we designed Mizore, in which
+Besides, Mizore also
 
 - includes module `CircuitConstructor` for adaptively generating circuits for achieving same objective with much fewer quantum gates;
 - includes module `SubspaceSolver` for QSD, with support to QSD with sparse-correlated basis states.;
@@ -57,7 +56,11 @@ It is very simple to download Mizore in your computer.
 ```shell
 # clone mizore into your local computer
 git clone https://github.com/doomspec/Mizore.git
+cd Mizore
+pip3 install -r requirements.txt
 ```
+After installing the dependency, one can directly work under the `Mizore\src` folder.
+
 Here, we list the package required by Mizore. 
 ```shell
 multiprocess,numpy,scipy,matplotlib # Commonly used
@@ -70,7 +73,9 @@ minorminer # Graph Embedding
 dmrgpy # Classical Pre-calculation (Manual install required)
 ```
 
-Notice: Mizore does not support Windows now because PySCF is used for Hamiltonian generating.
+Notice: 
+1. Mizore does not support Windows now because PySCF is used for Hamiltonian generating.
+2. `install.sh` is for compile the code for a GPU backend. Mizore can be used without running it.
 
 
 ## Authors
