@@ -14,7 +14,17 @@ if __name__ == "__main__":
     arXiv:1908.09533v1
     """
 
+<<<<<<< HEAD
+    mole_name="H2"
+    
+
+    basis="6-31g"
+    transform = make_transform_spin_separating(get_parity_transform(8),8)
+    energy_obj = make_example_H2(basis="6-31g",fermi_qubit_transform=transform,is_computed=False)
+    energy_obj=get_reduced_energy_obj_with_HF_init(energy_obj,[3,7])
+=======
     mole_name = "H2"
+>>>>>>> bea98ac259b1c6050bae9d98f55982906cf3aa72
 
     basis = "6-31g"
     transform = make_transform_spin_separating(get_parity_transform(8), 8)
@@ -27,7 +37,11 @@ if __name__ == "__main__":
 
     # print(pool)
     # Generate the circuit constructor
+<<<<<<< HEAD
+    constructor=FixedDepthSweepConstructor(energy_obj,pool,n_max_block=15,project_name="_".join([mole_name,basis]))
+=======
     constructor = FixedDepthSweepConstructor(energy_obj, pool, n_max_block=, project_name="_".join([mole_name, basis]))
+>>>>>>> bea98ac259b1c6050bae9d98f55982906cf3aa72
 
     # Run the constructor
     constructor.execute_construction()
