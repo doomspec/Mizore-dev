@@ -1,4 +1,4 @@
-from projectq.ops import H, X, Y, Z, All, Measure, CNOT, Z, Rz, Ry, Rx, C, TimeEvolution
+from projectq.ops import CZ,H, X, Y, Z, All, Measure, CNOT, Z, Rz, Ry, Rx, C, TimeEvolution
 import math
 import projectq
 from openfermion.ops import QubitOperator
@@ -21,6 +21,16 @@ def apply_time_evolution(hamiltonian: QubitOperator, time, wavefunction):
 def apply_X_gates(qsubset, wavefunction):
     for i in qsubset:
         X | wavefunction[i]
+
+
+def apply_H_gates(qsubset, wavefunction):
+    for i in qsubset:
+        H | wavefunction[i]
+
+
+def apply_CZ_gates(pairset,wavefunction):
+    for pair in pairset:
+        CZ | (wavefunction[pair[0]],wavefunction[pair[1]])
 
 
 def apply_Pauli_gates(paulistring, wavefunction):
