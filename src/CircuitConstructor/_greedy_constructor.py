@@ -90,6 +90,7 @@ class GreedyConstructor(CircuitConstructor):
             print("********The " + str(i_iter + 1) + "th Iteration*********")
             self.update_trial_circuits()
             is_succeed = self.update_one_block()
+            
             is_return = False
             if is_succeed:
                 # Succeed to add new block
@@ -122,8 +123,7 @@ class GreedyConstructor(CircuitConstructor):
         task = OptimizationTask(self.circuit, self.global_optimizer, self.cost)
         self.current_cost, parameter = task.run()
         self.circuit.adjust_parameter_on_active_position(parameter)
-        self.cost_list.append(self.current_cost)
-        save_construction(self, self.project_name)
+        
 
     def update_one_block(self):
         """Try to add a new block
@@ -140,6 +140,10 @@ class GreedyConstructor(CircuitConstructor):
                 print("Doing global optimization on the new circuit")
                 self.do_global_optimization()
                 print("Global Optimized Cost:", self.current_cost)
+                
+            self.cost_list.append(self.current_cost)
+            save_construction(self, self.project_name)
+
             print("Distance to target cost:",
                   self.current_cost - self.terminate_cost)
             print("Gate Usage:", self.circuit.get_gate_used())
