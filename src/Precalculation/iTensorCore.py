@@ -57,7 +57,7 @@ def get_one_two_density_matrix(n_qubit, spinchain):
     return onedensity, twodensity
 
 
-def run_classcal_precalculation(n_qubit, hamiltonian: QubitOperator, calc_2DM=False):
+def run_classcal_precalculation(n_qubit, hamiltonian: QubitOperator, calc_2DM=False, get_amps=False):
     spins = ["S=1/2" for i in range(n_qubit)]
     sc = spinchain.Spin_Chain(spins)
     dmrgpy_hamiltonian = QubitOperator2DmrgpyOperator(n_qubit, hamiltonian)
@@ -66,17 +66,18 @@ def run_classcal_precalculation(n_qubit, hamiltonian: QubitOperator, calc_2DM=Fa
     gs_energy = sc.gs_energy(mode="ED")
     ed_obj = sc.get_ED_obj()
 
-    if not calc_2DM:
-        return gs_energy
-    else:
-        res = {}
-        res["energy"] = gs_energy
+    res = {}
+    res["energy"] = gs_energy
+    if calc_2DM:
         one_DM, two_DM = get_one_two_density_matrix(n_qubit, ed_obj)
         res["2DM"] = two_DM
         res["1DM"] = one_DM
         entropy = [entropy_one_DM(one_DM[i]) for i in range(n_qubit)]
         res["entropy"] = entropy
-        return res
+    if get_amps:
+        res["amplitudes"]=ed_obj.get_gs()
+        
+    return res
 
 
 def QubitOperator2DmrgpyOperator(n_qubit, hamiltonian: QubitOperator):
