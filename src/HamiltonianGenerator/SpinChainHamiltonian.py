@@ -53,3 +53,30 @@ def haldane_chain_s_1(n_qubit,h1,h2,J=1):
     from .SpinChainInitBlock import AD_HOC_haldane_chain_s_1_InitBlock
     energy_obj=EnergyObjective(hamiltonian,n_qubit,init_block=AD_HOC_haldane_chain_s_1_InitBlock(n_qubit))
     return energy_obj
+
+# DQCP see arXiv:1904.00010 "Deconfined quantum critical point in one dimension"
+def DQCP_chain(n_qubit,jx,jz,k2x,k2z,periodic=True):
+    hamiltonian=QubitOperator()
+    for i in range(n_qubit-1):
+        hamiltonian+=(-jx)*QubitOperator("X"+str(i)+" X"+str(i+1))
+        hamiltonian+=(-jz)*QubitOperator("Z"+str(i)+" Z"+str(i+1))
+    if periodic:
+        hamiltonian+=(-jx)*QubitOperator("X"+str(n_qubit-1)+" X"+str(0))
+        hamiltonian+=(-jz)*QubitOperator("Z"+str(n_qubit-1)+" Z"+str(0))
+    for i in range(n_qubit-2):
+        hamiltonian+=k2x*QubitOperator("X"+str(i)+" X"+str(i+2))
+        hamiltonian+=k2z*QubitOperator("Z"+str(i)+" Z"+str(i+2))
+    if periodic:
+        hamiltonian+=k2x*QubitOperator("X"+str(n_qubit-2)+" X"+str(0))
+        hamiltonian+=k2z*QubitOperator("Z"+str(n_qubit-2)+" Z"+str(0))
+        hamiltonian+=k2x*QubitOperator("X"+str(n_qubit-1)+" X"+str(1))
+        hamiltonian+=k2z*QubitOperator("Z"+str(n_qubit-1)+" Z"+str(1))
+    return EnergyObjective(hamiltonian,n_qubit)
+
+
+def DQCP_chain_reparameterized(n_qubit,delta,k2,periodic=True):
+    jx=1+delta
+    jz=1-delta
+    k2x=k2
+    k2z=k2
+    return DQCP_chain(n_qubit,jx,jz,k2x,k2z,periodic=periodic)
