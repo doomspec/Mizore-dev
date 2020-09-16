@@ -1,7 +1,7 @@
 from ._block_circuit import BlockCircuit
 from copy import copy
 from Utilities.CircuitEvaluation import evaluate_ansatz_0000_amplitudes
-
+from Utilities.CircuitEvaluation import get_ansatz_complete_amplitudes
 
 def concatenate_circuit(first_circuit: BlockCircuit = None, second_circuit: BlockCircuit = None):
     return concatenate_circuit_list((first_circuit, second_circuit))
@@ -58,3 +58,14 @@ def get_0000_amplitude_on_circuit(circuit):
     pcircuit = circuit.get_fixed_parameter_ansatz()
     amp = evaluate_ansatz_0000_amplitudes(pcircuit.n_qubit, pcircuit.ansatz)
     return amp
+
+
+def get_circuit_complete_amplitudes(circuit):
+    pcircuit = circuit.get_fixed_parameter_ansatz()
+    amps = get_ansatz_complete_amplitudes(pcircuit.n_qubit, pcircuit.ansatz)
+    return amps
+
+def evaluate_off_diagonal_term_by_amps(amp1,amp2,ops_mat):
+    import numpy as np
+    amp3=np.dot(ops_mat,amp1)
+    return np.dot(np.conjugate(amp2),amp3)

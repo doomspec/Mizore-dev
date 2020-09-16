@@ -111,11 +111,11 @@ class GreedyConstructor(CircuitConstructor):
             self.add_time_point()
             save_construction(self, self.project_name)
             if is_return:
-                return
+                return self.circuit
         print("Circuit Construction ended as it has iterated enough times!")
         print("********Final Circuit********")
         print(self.circuit)
-        return
+        return self.circuit
 
     def do_global_optimization(self):
 
@@ -133,7 +133,7 @@ class GreedyConstructor(CircuitConstructor):
         if len(trial_result_list) != 0:
             self.update_circuit_by_trial_result(trial_result_list)
             print("Block added and shown below, cost now is:",
-                  self.current_cost, "Hartree")
+                  self.current_cost)
             print("********New Circuit********")
             print(self.circuit)
             if not self.no_global_optimization:

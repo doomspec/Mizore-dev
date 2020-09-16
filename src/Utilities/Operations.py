@@ -91,6 +91,9 @@ def inversed_full_rotation(wavefunction, qsubset, parameter):
         Rz(-parameter[n_qubit + i]) | wavefunction[qsubset[i]]
         Rx(-parameter[i]) | wavefunction[qsubset[i]]
 
+def apply_global_phase(wavefunction,angle):
+    from projectq.ops import Ph
+    Ph(angle) | wavefunction[0]
 
 def generalized_rotation(wavefunction, qsubset, pauliword, evolution_time):
     """Apply e^{iPt} on the wavefunction

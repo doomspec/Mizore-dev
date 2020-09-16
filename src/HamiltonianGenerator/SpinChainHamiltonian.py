@@ -9,12 +9,10 @@ def transverse_field_ising(n_qubit,field,spin_coupling=1,periodic=True):
         spin_coupling_hamiltonian+=QubitOperator("Z"+str(i))*QubitOperator("Z"+str(i+1))
     if periodic:
         spin_coupling_hamiltonian+=QubitOperator("Z"+str(n_qubit-1))*QubitOperator("Z"+str(0))
-    spin_coupling_hamiltonian*=spin_coupling
     field_hamitonian=QubitOperator()
     for i in range(n_qubit):
         field_hamitonian+=QubitOperator("X"+str(i))
-    field_hamitonian*=field
-    hamiltonian=spin_coupling_hamiltonian+field_hamitonian
+    hamiltonian=spin_coupling*spin_coupling_hamiltonian+field*field_hamitonian
     init_list=[2*i for i in range(n_qubit//2)]
     energy_obj=EnergyObjective(hamiltonian,n_qubit,init_block=HartreeFockInitBlock(init_list))
     return energy_obj
@@ -75,8 +73,8 @@ def DQCP_chain(n_qubit,jx,jz,k2x,k2z,periodic=True):
 
 
 def DQCP_chain_reparameterized(n_qubit,delta,k2,periodic=True):
-    jx=1+delta
-    jz=1-delta
+    jx=1-delta
+    jz=1+delta
     k2x=k2
     k2z=k2
     return DQCP_chain(n_qubit,jx,jz,k2x,k2z,periodic=periodic)

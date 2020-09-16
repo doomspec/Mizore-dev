@@ -1,5 +1,6 @@
 from .Iterators import iter_qsubset_pauli_of_operator
 from openfermion.ops import QubitOperator
+import numpy as np
 
 number2pauli_name = ["I", "X", "Y", "Z"]
 
@@ -42,6 +43,38 @@ def get_operator_n_qubit(operator: QubitOperator):
                 n_qubit = highest_index
     return n_qubit + 1
 
+PauliI = np.array([[1, 0], [0, 1]], np.complex)
+PauliX = np.array([[0, 1], [1, 0]], np.complex)
+PauliY = np.array([[0, -1j], [1j, 0]], np.complex)
+PauliZ = np.array([[1, 0], [0, -1]], np.complex)
+pauli_dict = {"I":PauliI,"X":PauliX,"Y":PauliY, "Z":PauliZ}
+
+def qubit_operator2matrix(n_qubit,hamiltonian: QubitOperator):
+    n_dim = 2**n_qubit
+    mat = np.zeros((n_dim, n_dim), complex)
+    for pauli_and_coff in hamiltonian.get_operators():
+        for string_pauli in pauli_and_coff.terms:
+            if not string_pauli:
+                mat += pauli_and_coff.terms[string_pauli]*np.eye(n_dim)
+                continue
+            string_pauli_i=0
+            if string_pauli[0][0]==0:
+                pauli0 = pauli_dict[string_pauli[0][1]]
+                string_pauli_i+=1
+            else:
+                pauli0 = PauliI
+            for i in range(1,n_qubit):
+                if string_pauli_i==len(string_pauli):
+                    pauli0 = np.kron(PauliI,pauli0)
+                    continue
+                if i == string_pauli[string_pauli_i][0]:
+                    pauli0 = np.kron(pauli_dict[string_pauli[string_pauli_i][1]],pauli0)
+                    string_pauli_i+=1
+                else:
+                    pauli0 = np.kron(PauliI,pauli0)
+            
+            mat += pauli_and_coff.terms[string_pauli]*pauli0
+    return mat
 
 def pauliword2string(pauli):
     string = ""

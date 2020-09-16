@@ -55,3 +55,8 @@ def quasi_imaginary_evolution_rotation_pool(hamiltonian):
         pauli = make_pauli_imaginary(pauli)
         if pauli != None:
             yield RotationEntangler(qsubset, pauli)
+
+
+def hamiltonian_rotations_pool(hamiltonian):
+    for qsubset, pauli in iter_qsubset_pauli_of_operator(hamiltonian):
+        yield RotationEntangler(qsubset, pauli)

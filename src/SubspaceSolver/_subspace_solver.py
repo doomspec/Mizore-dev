@@ -131,7 +131,7 @@ class SubspaceSolver:
         return
 
 
-VERY_SMALL_NUMBER = 1e-13
+VERY_SMALL_NUMBER = 1e-7
 
 
 def revise_little_negative(S_mat: np.array):

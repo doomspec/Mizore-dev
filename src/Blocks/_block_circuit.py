@@ -223,6 +223,11 @@ class BlockCircuit:
         self.active_position_list.sort()
         # print(self.qubit_index_mapping)
 
+    
+    def apply(self,wavefunction):
+        for block in self.block_list:
+            block.apply([0]*block.n_parameter,wavefunction)
+
     def __str__(self):
         info = ""
         if len(self.block_list) != 0:

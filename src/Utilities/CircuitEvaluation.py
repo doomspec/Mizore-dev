@@ -1,5 +1,5 @@
 from projectq import MainEngine
-from projectq.ops import X, All, Measure, CNOT, Z, Rz, Rx, C, TimeEvolution
+from projectq.ops import X, All, Measure, CNOT, Z, Rz, Rx, C, TimeEvolution,Ph
 from projectq.backends import CommandPrinter, CircuitDrawer
 from projectq.backends import Simulator as projectq_simulator
 from projectq.meta import Loop, Compute, Uncompute, Control
@@ -92,6 +92,27 @@ def evaluate_ansatz_expectation(parameter, n_qubit, hamiltonian, ansatz):
 
     return energy
 
+def number2bitstring(n_qubit,number):
+    bitstring = [False]*n_qubit
+    for i in range(0, n_qubit):
+        if int((number % (1 << (i + 1))) / (1 << i)) == 1:
+            bitstring[i]=True
+    return bitstring
+
+def get_ansatz_complete_amplitudes(n_qubit, ansatz):
+    compiler_engine = get_quantum_engine()
+    wavefunction = compiler_engine.allocate_qureg(n_qubit)
+    ansatz([0] * 100, wavefunction)
+    compiler_engine.flush()
+    n_amp = 2**n_qubit
+    raw_amps = [0]*n_amp
+    for i in range(0, n_amp):
+        raw_amps[i] = compiler_engine.backend.get_amplitude(
+            number2bitstring(n_qubit, i), wavefunction)
+    All(Measure) | wavefunction
+    compiler_engine.flush()
+    return raw_amps
+
 
 def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list):
     """
@@ -135,7 +156,8 @@ def evaluate_ansatz_1DMs(parameter, n_qubit, ansatz):
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
     ansatz(parameter, wavefunction)
     compiler_engine.flush()
-    one_DMs = get_one_DMs(compiler_engine.backend.get_expectation_value, wavefunction)
+    one_DMs = get_one_DMs(
+        compiler_engine.backend.get_expectation_value, wavefunction)
 
     All(Measure) | wavefunction
     compiler_engine.flush()
