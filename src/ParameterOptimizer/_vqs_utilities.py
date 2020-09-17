@@ -2,12 +2,10 @@ from Blocks._utilities import get_circuit_complete_amplitudes, evaluate_off_diag
 import numpy as np
 import time
 from ParallelTaskRunner._inner_product_task import InnerProductTask
-
-
+LARGE_NUMBER = 99999
 
 def calc_RTE_quality_by_circuit(circuit, hamiltonian_mat, hamiltonian_square, diff):
-    
-    LARGE_NUMBER=99999
+
     adjusted_circuits = get_adjusted_circuit(diff, circuit)
     mat_B = calc_B_mat(circuit, adjusted_circuits)
     mat_C = np.imag(calc_C_mat_by_hamiltonian_mat(
@@ -19,8 +17,37 @@ def calc_RTE_quality_by_circuit(circuit, hamiltonian_mat, hamiltonian_square, di
     except np.linalg.LinAlgError:
         return LARGE_NUMBER
     quality = calc_RTE_quality(
-        hamiltonian_mat, mat_A, mat_C, derivative, circuit)
-    return quality
+        hamiltonian_square, mat_A, mat_C, derivative, circuit)
+    return abs(quality)
+
+
+def calc_RTE_quality_by_circuit_analytical(circuit, hamiltonian_mat, hamiltonian_square):
+
+    derivative_circuits = get_derivative_circuit(circuit)
+    mat_C = np.imag(calc_C_mat_by_hamiltonian_mat_analytical(
+        hamiltonian_mat, circuit, derivative_circuits))
+    mat_A = np.real(calc_A_mat_analytical_0(circuit, derivative_circuits))
+    try:
+        derivative = np.linalg.solve(mat_A, mat_C)
+    except np.linalg.LinAlgError:
+        return LARGE_NUMBER
+    quality = calc_RTE_quality(
+        hamiltonian_square, mat_A, mat_C, derivative, circuit)
+    return abs(quality)
+
+
+def get_derivative_circuit(circuit):
+    derivative_circuits = []
+    for position in circuit.active_position_list:
+        active_block = circuit.block_list[position]
+        block_n_para = active_block.n_parameter
+        for in_block_position in range(block_n_para):
+            derivative_block = active_block.get_derivative_block(
+                in_block_position)
+            derivative_circuit = circuit.duplicate()
+            derivative_circuit.block_list[position] = derivative_block
+            derivative_circuits.append(derivative_circuit)
+    return derivative_circuits
 
 
 def get_adjusted_circuit(diff, circuit):
@@ -36,28 +63,6 @@ def get_adjusted_circuit(diff, circuit):
             adjusted_circuits.append(adjusted_circuit)
     return adjusted_circuits
 
-def calc_RTE_quality1(hamiltonian_mat, mat_A, mat_C, derivative, circuit):
-    n_parameter = len(mat_C)
-    
-    part1=0
-    for i in range(n_parameter):
-        for j in range(n_parameter):
-            part1 += mat_A[i][j]*derivative[i]*derivative[j]
-    part2=0
-    for i in range(n_parameter):
-        part2 -= 2*mat_C[i]*derivative[i]
-    circuit_amp = get_circuit_complete_amplitudes(circuit)
-    amp3 = np.dot(hamiltonian_mat,circuit_amp)
-    part3= np.real(np.dot(np.conjugate(amp3),amp3))
-    quality = part1+part2+part3
-    if quality<-1e-4:
-        print(quality)
-        print(derivative)
-        print(part1,part2,part3)
-    if quality<0:
-        return quality
-    return quality
-
 
 def calc_RTE_quality(hamiltonian_square, mat_A, mat_C, derivative, circuit):
     n_parameter = len(mat_C)
@@ -68,11 +73,10 @@ def calc_RTE_quality(hamiltonian_square, mat_A, mat_C, derivative, circuit):
     for i in range(n_parameter):
         quality -= 2*mat_C[i]*derivative[i]
     quality += get_circuit_energy(circuit, hamiltonian_square)
-    if quality<-1e-1:
+    if quality < -1e-1:
         print(quality)
         print(derivative)
-    return quality
-
+    return abs(quality)
 
 def calc_real_C_mat(diff, circuit, adjusted_circuits, hamiltonian):
     n_parameter = len(adjusted_circuits)
@@ -83,6 +87,19 @@ def calc_real_C_mat(diff, circuit, adjusted_circuits, hamiltonian):
             adjusted_circuits[i], hamiltonian) - origin_energy
         term_value /= diff
         term_value *= 0.5
+        mat_C[i] = term_value
+    return mat_C
+
+
+def calc_C_mat_by_hamiltonian_mat_analytical(hamiltonian_mat, circuit, derivative_circuits):
+    n_parameter = len(derivative_circuits)
+    derivative_circuit_amps = [get_circuit_complete_amplitudes(
+        derivative_circuit) for derivative_circuit in derivative_circuits]
+    circuit_amp = get_circuit_complete_amplitudes(circuit)
+    mat_C = np.array([0.0 for col in range(n_parameter)], dtype=complex)
+    for i in range(n_parameter):
+        term_value = evaluate_off_diagonal_term_by_amps(
+            circuit_amp, derivative_circuit_amps[i], hamiltonian_mat)
         mat_C[i] = term_value
     return mat_C
 
@@ -101,6 +118,42 @@ def calc_C_mat_by_hamiltonian_mat(hamiltonian_mat, diff, circuit, adjusted_circu
         term_value /= diff
         mat_C[i] = term_value
     return mat_C
+
+
+def calc_A_mat_analytical_0(circuit, derivative_circuits):
+    n_parameter = len(derivative_circuits)
+    mat_A = np.array([[0.0 for col in range(n_parameter)]
+                      for row in range(n_parameter)], dtype=complex)
+    for i in range(n_parameter):
+        for j in range(i, n_parameter):
+            inner_product1 = get_inner_two_circuit_product(
+                derivative_circuits[j], derivative_circuits[i])
+            mat_A[i][j] = inner_product1
+            mat_A[j][i] = np.conjugate(inner_product1)
+    return mat_A
+    
+def calc_A_mat_analytical_parallel(task_manager, circuit, derivative_circuits):
+
+    n_parameter = len(derivative_circuits)
+    mat_A = np.array([[0.0 for col in range(n_parameter)]
+                      for row in range(n_parameter)], dtype=complex)
+    
+    task_id_i = "mat_A_calc"+ str(time.time() % 10000)
+
+    for i in range(n_parameter):
+        for j in range(i, n_parameter):
+            task_manager.add_task_to_buffer(InnerProductTask(
+                derivative_circuits[j], derivative_circuits[i]), task_series_id=task_id_i)
+    task_manager.flush()
+    inner_product_list = task_manager.receive_task_result(task_series_id=task_id_i)
+    inner_index=0
+    for i in range(n_parameter):
+        for j in range(i, n_parameter):
+            inner_product=inner_product_list[inner_index]
+            inner_index+=1
+            mat_A[i][j] = inner_product
+            mat_A[j][i] = np.conjugate(inner_product)
+    return mat_A
 
 
 def calc_A_mat_0(diff, circuit, adjusted_circuits, mat_B):
@@ -122,19 +175,20 @@ def calc_A_mat_parallel(task_manager, diff, circuit, adjusted_circuits, mat_B):
     n_parameter = len(adjusted_circuits)
     mat_A = np.array([[0.0 for col in range(n_parameter)]
                       for row in range(n_parameter)], dtype=complex)
-    task_id = id(time.time()) % 10000
+    task_id_i = "mat_A_calc"+ str(time.time() % 10000)
+
     for i in range(n_parameter):
         for j in range(i, n_parameter):
-            task_id_i = str(task_id) + "i" + str(i)
             task_manager.add_task_to_buffer(InnerProductTask(
-                adjusted_circuits[i], adjusted_circuits[j]), task_series_id=task_id_i + "inner")
+                adjusted_circuits[i], adjusted_circuits[j]), task_series_id=task_id_i)
     task_manager.flush()
+    inner_product_list = task_manager.receive_task_result(task_series_id=task_id_i)
+    inner_index=0
     for i in range(n_parameter):
-        task_id_i = str(task_id) + "i" + str(i)
-        inner_product_list1 = task_manager.receive_task_result(
-            task_series_id=task_id_i + "inner")
         for j in range(i, n_parameter):
-            term_value = inner_product_list1[j - i] - \
+            inner_product=inner_product_list[inner_index]
+            inner_index+=1
+            term_value = inner_product - \
                 np.conjugate(mat_B[i]) - mat_B[j] + 1
             term_value /= (diff * diff)
             mat_A[i][j] = term_value

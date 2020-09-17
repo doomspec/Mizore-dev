@@ -15,6 +15,7 @@ class Block():
 
     IS_INVERSE_DEFINED = False
     IS_LOCALIZE_AVAILABLE = False
+    IS_DERIVATIVE_DEFINE=False
 
     def __init__(self, is_inversed=False, n_parameter=-1,active_qubits=None):
         self.is_inversed = is_inversed
@@ -71,6 +72,10 @@ class Block():
 
     def get_gate_used(self):
         return dict()
+    
+    def get_derivative_block(self,para_position):
+        assert self.IS_DERIVATIVE_DEFINE
+        return
 
     def __str__(self):
         return self.basic_info_string()

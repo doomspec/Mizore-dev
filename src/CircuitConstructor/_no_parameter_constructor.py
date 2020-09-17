@@ -18,13 +18,17 @@ class NoParameterConstructor(GreedyConstructor):
 
     CONSTRUCTOR_NAME = "NoParameterConstructor"
 
-    def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100,
+    def __init__(self, construct_obj: Objective, block_pool: BlockPool, n_block_per_iter=1,max_n_iter=100,
                  terminate_cost=0, task_manager: TaskManager = None, init_circuit=None,
-                 project_name="Untitled"):
+                 project_name="Untitled",not_save=False):
 
         GreedyConstructor.__init__(self, construct_obj, block_pool, max_n_iter=max_n_iter, terminate_cost=terminate_cost,optimizer=None,
-                                   no_global_optimization=True, task_manager=task_manager, init_circuit=init_circuit, project_name=project_name)
+                                   no_global_optimization=True, task_manager=task_manager, init_circuit=init_circuit, project_name=project_name,not_save=not_save)
         self.terminate_cost=terminate_cost
+        if n_block_per_iter>0:
+            self.n_block_per_iter=n_block_per_iter
+        else:
+            self.n_block_per_iter=len(block_pool.blocks)+n_block_per_iter
         return
     def do_trial_on_circuits_by_cost_value(self, trial_circuits=None):
         assert False
@@ -45,7 +49,7 @@ class NoParameterConstructor(GreedyConstructor):
             cost = res_list[i]
             cost_descent = self.current_cost - cost
             # See whether the new entangler decreases the cost
-            if cost_descent > 1e-7:
+            if cost_descent > 1e-5:
                 trial_result_list.append((cost, trial_circuits[i]))
         return trial_result_list
 
@@ -55,7 +59,7 @@ class NoParameterConstructor(GreedyConstructor):
         block_pool=list(block_pool)
         self.trial_circuits = []
         pool_size=len(block_pool)
-        for subset in iter_qsubset(1,list(range(pool_size))):
+        for subset in iter_qsubset(self.n_block_per_iter,list(range(pool_size))):
             trial_circuit = self.circuit.duplicate()
             for index in subset:
                 trial_circuit.add_block(block_pool[index])

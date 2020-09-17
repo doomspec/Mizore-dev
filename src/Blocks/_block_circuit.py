@@ -240,3 +240,30 @@ class BlockCircuit:
             info += "\n" + "This is an Empty circuit. Qubit Num:" + \
                     str(self.n_qubit)
         return info
+
+    def save_self_file(self,path,name):
+        save_circuit(self,path,name)
+
+    def read_from_file(self,path):
+        self=read_circuit(path)
+
+import pickle,os
+
+def mkdir(path):
+    is_dir_exists = os.path.exists(path)
+    if not is_dir_exists:
+        os.makedirs(path)
+        return True
+    else:
+        return False
+
+def read_circuit(path):
+    with open(path, "rb") as f:
+        bc: BlockCircuit = pickle.load(f)
+    return bc
+
+def save_circuit(circuit,path,name):
+    mkdir(path)
+    full_path=path+"/"+name+".bc"
+    with open(full_path, "wb") as f:
+        pickle.dump(circuit, f)

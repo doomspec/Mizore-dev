@@ -40,7 +40,7 @@ class GreedyConstructor(CircuitConstructor):
     def __init__(self, construct_obj: Objective, block_pool: BlockPool, max_n_iter=100, gradient_screening_rate=0.05,
                  terminate_cost=-NOT_DEFINED, optimizer=BasinhoppingOptimizer(), global_optimizer=None,
                  no_global_optimization=False, task_manager: TaskManager = None, init_circuit=None,
-                 project_name="Untitled"):
+                 project_name="Untitled",not_save=False):
 
         CircuitConstructor.__init__(self)
         self.circuit = init_circuit
@@ -51,6 +51,7 @@ class GreedyConstructor(CircuitConstructor):
         self.terminate_cost = terminate_cost
         self.gradient_screening_rate = gradient_screening_rate
         self.block_pool = block_pool
+        self.not_save=not_save
         self.n_qubit = construct_obj.n_qubit
         self.cost = construct_obj.get_cost()
         self.id = id(self)
@@ -62,7 +63,8 @@ class GreedyConstructor(CircuitConstructor):
         self.no_global_optimization = no_global_optimization
         self.time_string = time.strftime(
             '%m-%d-%Hh%Mm%Ss', time.localtime(time.time()))
-        self.project_name = project_name + "_" + self.time_string
+        self.project_name = project_name
+        self.save_name = project_name+"_"+self.time_string
         self.trial_circuits = []
         if "terminate_cost" in construct_obj.obj_info.keys():
             self.terminate_cost = construct_obj.obj_info["terminate_cost"]
@@ -81,6 +83,9 @@ class GreedyConstructor(CircuitConstructor):
         print("Project Name:", self.project_name)
         print("Block Pool Size:", len(self.block_pool.blocks))
         self.init_cost = self.cost.get_cost_value(self.circuit)
+        if self.init_cost<self.terminate_cost:
+            print("The objective has already been met! Reture the input circuit.")
+            return self.circuit
         self.current_cost = self.init_cost
         self.cost_list.append(self.current_cost)
         print("Initial Cost:", self.init_cost)
@@ -109,7 +114,7 @@ class GreedyConstructor(CircuitConstructor):
                     self.task_manager.close()
                 is_return = True
             self.add_time_point()
-            save_construction(self, self.project_name)
+            save_construction(self, self.save_name)
             if is_return:
                 return self.circuit
         print("Circuit Construction ended as it has iterated enough times!")
@@ -142,7 +147,9 @@ class GreedyConstructor(CircuitConstructor):
                 print("Global Optimized Cost:", self.current_cost)
                 
             self.cost_list.append(self.current_cost)
-            save_construction(self, self.project_name)
+
+            if not self.not_save:
+                save_construction(self, self.save_name)
 
             print("Distance to target cost:",
                   self.current_cost - self.terminate_cost)

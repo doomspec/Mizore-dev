@@ -1,14 +1,15 @@
 from ._objective import Objective, CostFunction
-from ParameterOptimizer._vqs_utilities import calc_RTE_quality_by_circuit
+from ParameterOptimizer._vqs_utilities import calc_RTE_quality_by_circuit,calc_RTE_quality_by_circuit_analytical
 from Utilities.Tools import qubit_operator2matrix
 import numpy as np
 
 
 class CircuitQualityObjective(Objective):
 
-    def __init__(self, energy_obj, diff, obj_info={}):
+    def __init__(self, energy_obj, diff=1e-4, is_analytical=False,obj_info={}):
         self.hamiltonian = energy_obj.hamiltonian
         self.diff = diff
+        self.is_analytical=is_analytical
         self.hamiltonian_square = self.hamiltonian*self.hamiltonian
         self.hamiltonian_square.compress()
         self.n_qubit = energy_obj.n_qubit
@@ -17,7 +18,10 @@ class CircuitQualityObjective(Objective):
         self.obj_info["terminate_cost"] = 0
 
     def get_cost(self):
-        return CircuitQualityCost(self.n_qubit,self.hamiltonian,self.hamiltonian_square, self.diff)
+        if not self.is_analytical:
+            return CircuitQualityCost(self.n_qubit,self.hamiltonian,self.hamiltonian_square, self.diff)
+        else:
+            return AnalyticalCircuitQualityCost(self.n_qubit,self.hamiltonian,self.hamiltonian_square, self.diff)
 
 
 class CircuitQualityCost(CostFunction):
@@ -35,4 +39,13 @@ class CircuitQualityCost(CostFunction):
 
     def get_cost_value(self, circuit):
         quality=calc_RTE_quality_by_circuit(circuit,self.hamiltonian_mat,self.hamiltonian_square,self.diff)
+        return quality
+
+class AnalyticalCircuitQualityCost(CircuitQualityCost):
+    def get_cost_obj(self, circuit):
+        def obj(parameter):
+            return calc_RTE_quality_by_circuit_analytical(circuit,self.hamiltonian_mat,self.hamiltonian_square)
+        return obj
+    def get_cost_value(self, circuit):
+        quality=calc_RTE_quality_by_circuit_analytical(circuit,self.hamiltonian_mat,self.hamiltonian_square)
         return quality
