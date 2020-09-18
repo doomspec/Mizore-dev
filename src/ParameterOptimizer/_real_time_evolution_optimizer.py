@@ -107,7 +107,7 @@ class RealTimeEvolutionOptimizer(ImaginaryTimeEvolutionOptimizer):
             if evolved_time+delta_t_evolve>=evolution_time:
                 delta_t_evolve=evolution_time-evolved_time
             
-            para_shift = derivative * delta_t_evolve
+            para_shift = derivative * (-1*delta_t_evolve)
             evolved_time+=delta_t_evolve
 
             self.evolution_time_list.append(evolved_time)
@@ -122,5 +122,8 @@ class RealTimeEvolutionOptimizer(ImaginaryTimeEvolutionOptimizer):
             if n_step>=max_n_step:
                 print("ATTENTION: n_step>=max_n_step !")
                 break
+
+        self.evolution_time_list=np.array(self.evolution_time_list)
+        self.quality_list=np.array(self.quality_list)
 
         return circuit,evolved_time

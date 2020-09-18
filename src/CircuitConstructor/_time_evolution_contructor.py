@@ -6,7 +6,7 @@ import time,json,pickle,os
 from Blocks import TimeEvolutionBlock,BlockCircuit
 from Blocks._utilities import get_inner_two_circuit_product
 from Blocks._trotter_evolution_block import TrotterTimeEvolutionBlock
-
+import numpy as np
 class TimeEvolutionConstructor():
 
     def __init__(self, energy_obj, pool, init_circuit, project_name="Untitled",task_manager=None,is_analytical=False, n_block_per_iter=1,quality_cutoff=0.0001, diff=1e-4, n_circuit=3, stepsize=1e-3,delta_t=0.1):
@@ -42,6 +42,7 @@ class TimeEvolutionConstructor():
 
         self.quality_list=[]
         self.evolution_time_list=[]
+        self.n_block_change=[]
 
         pass
 
@@ -51,7 +52,7 @@ class TimeEvolutionConstructor():
         construct_needed = True
         total_time_evolved=0
         total_time_evolved_list=[]
-
+        last_evolved_time=-1
         self.circuit.save_self_file(self.save_path,"0")
 
         while(True):
@@ -64,30 +65,35 @@ class TimeEvolutionConstructor():
                     print("Circuit constructor can not reach the object quality, consider using a larger pool!!!")
                     assert False
                 new_circuit.set_all_block_active()
+                self.n_block_change.append((total_time_evolved,len(new_circuit.block_list),new_circuit.get_gate_used()))
             else:
                 new_circuit = self.circuit
 
             local_time_to_evolve = self.delta_t-(total_time_evolved % self.delta_t)
+            local_time_to_evolve = np.round(local_time_to_evolve,10)
             print("local_time_to_evolve",local_time_to_evolve)
 
             new_circuit,evolved_time = self.evolver.do_time_evolution(
                 new_circuit, self.energy_obj.hamiltonian, local_time_to_evolve)
+            
+
+            self.quality_list=np.append(self.quality_list,self.evolver.quality_list)
+            self.evolution_time_list=np.append(self.evolution_time_list,total_time_evolved+self.evolver.evolution_time_list)
+
             total_time_evolved+=evolved_time
-            self.quality_list.extend(self.evolver.quality_list)
-            #self.evolution_time_list.extend(self.evolver.evolution_time_list)
+
             print("Time evolved:",evolved_time)
 
-            construct_needed = (evolved_time <= local_time_to_evolve-1e-7)
+            construct_needed = (abs(evolved_time-local_time_to_evolve)>=1e-7)
 
-            if (not construct_needed) and (evolved_time>1e-7):
+            if (not construct_needed) and (total_time_evolved>last_evolved_time):
                 circuit_list.append(new_circuit.duplicate())
-
+                last_evolved_time=total_time_evolved
                 new_circuit.save_self_file(self.save_path,str(len(circuit_list)-1))
-
+                self.save_run_status_info()
                 total_time_evolved_list.append(total_time_evolved)
                 print("Circuit added, time list:",total_time_evolved_list)
-                for q in self.quality_list:
-                    print(q)
+
             self.circuit = new_circuit
             if len(circuit_list) == self.n_circuit+1:
                 return circuit_list
@@ -112,6 +118,15 @@ class TimeEvolutionConstructor():
         with open(path, "wb") as f:
             pickle.dump(self.energy_obj, f)
 
+    def save_run_status_info(self):
+        log_dict = {}
+        log_dict["n_block_change"]=self.n_block_change
+        log_dict["quality_list"]=self.quality_list.tolist()
+        log_dict["evolution_time_list"]=self.evolution_time_list.tolist()
+        path = self.save_path + "/run_status_info.json"
+        with open(path, "w") as f:
+            json.dump(log_dict, f)
+
 def generate_benchmark(circuit_list,hamiltonian,delta_t):
 
     n_circuit=len(circuit_list)
@@ -119,7 +134,7 @@ def generate_benchmark(circuit_list,hamiltonian,delta_t):
     benchmark_circuits=[init_circuit]
     for step in range(1,n_circuit):
         bc=init_circuit.duplicate()
-        bc.add_block(TimeEvolutionBlock(hamiltonian,init_angle=delta_t*step))
+        bc.add_block(TimeEvolutionBlock(hamiltonian,init_angle=-delta_t*step))
         benchmark_circuits.append(bc)
     fidelity_list=[0]*n_circuit
     fidelity_list[0]=1
