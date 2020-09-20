@@ -7,7 +7,7 @@ class RTEAnalyticalOptimizer(RealTimeEvolutionOptimizer):
     def __init__(self, *args, **kwargs):
         RealTimeEvolutionOptimizer.__init__(self, *args, **kwargs)
 
-    def calc_derivative(self, circuit, hamiltonian):
+    def calc_derivative(self, circuit, hamiltonian, hamiltonian_square=None):
         derivative_circuits = get_derivative_circuit(circuit)
         mat_C = np.imag(self.calc_C_mat(
             circuit, derivative_circuits, hamiltonian))
@@ -18,10 +18,11 @@ class RTEAnalyticalOptimizer(RealTimeEvolutionOptimizer):
             n_parameter = len(derivative_circuits)
             derivative = np.array(random_list(-self.random_adjust,
                                               self.random_adjust, n_parameter))
-
-        quality = self.calc_quality(mat_A, mat_C, derivative, circuit)
-
-        return derivative, quality
+        if hamiltonian_square is not None:
+            quality=self.calc_quality(mat_A, mat_C, derivative, hamiltonian_square, circuit)
+            return derivative,quality
+        else:
+            return derivative
 
     def calc_A_mat(self, circuit, derivative_circuits):
         if self.task_manager == None:

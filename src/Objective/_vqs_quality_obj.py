@@ -6,13 +6,13 @@ import numpy as np
 
 class CircuitQualityObjective(Objective):
 
-    def __init__(self, energy_obj, diff=1e-4, is_analytical=False,obj_info={}):
-        self.hamiltonian = energy_obj.hamiltonian
+    def __init__(self, n_qubit,hamiltonian, diff=1e-4, is_analytical=False,obj_info={}):
+        self.hamiltonian = hamiltonian
         self.diff = diff
         self.is_analytical=is_analytical
         self.hamiltonian_square = self.hamiltonian*self.hamiltonian
         self.hamiltonian_square.compress()
-        self.n_qubit = energy_obj.n_qubit
+        self.n_qubit = n_qubit
         Objective.__init__(self, n_qubit=self.n_qubit)
         self.obj_info = obj_info
         self.obj_info["terminate_cost"] = 0

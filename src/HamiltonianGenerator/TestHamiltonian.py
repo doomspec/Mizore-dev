@@ -8,6 +8,8 @@ from .QAOA._QAOA_from_graph import get_random_maxcut_hamiltonian, get_random_tsp
 from Objective._energy_obj import EnergyObjective
 from Blocks import HartreeFockInitBlock
 from Utilities.Tools import get_operator_qsubset
+from HamiltonianGenerator.FermionTransform import make_transform_spin_separating, get_parity_transform
+
 
 NOT_DEFINED = 999999
 CHEMICAL_ACCURACY = 0.001
@@ -22,7 +24,6 @@ make_molecular_energy_obj can be used to generate Hamiltonians in a more expert 
 Selecting active space based on *Irrep* is implemented in Mizore based on PySCF
 Please refer to the document of PySCF to see how to use the irrep symbols
 """
-
 
 def make_example_H2(basis="sto-3g",
                     geometry_info=equilibrium_geometry_dict["H2"],
@@ -76,6 +77,20 @@ def make_example_N2(basis="cc-pvdz", geometry_info=equilibrium_geometry_dict["N2
                                      n_cancel_orbital=n_cancel_orbital, n_frozen_orbital=n_frozen_orbital,
                                      fermi_qubit_transform=fermi_qubit_transform, is_computed=is_computed)
 
+
+def make_2_qubit_H2(geometry_info=equilibrium_geometry_dict["H2"],is_computed=False):
+    from HamiltonianGenerator import get_reduced_energy_obj_with_HF_init
+    transform = make_transform_spin_separating(get_parity_transform(4), 4)
+    energy_obj=make_example_H2(fermi_qubit_transform=transform,geometry_info=geometry_info,is_computed=is_computed)
+    energy_obj = get_reduced_energy_obj_with_HF_init(energy_obj, [1, 3])
+    return energy_obj
+
+def make_6_qubit_H2(geometry_info=equilibrium_geometry_dict["H2"],is_computed=False):
+    from HamiltonianGenerator import get_reduced_energy_obj_with_HF_init
+    transform = make_transform_spin_separating(get_parity_transform(8), 8)
+    energy_obj=make_example_H2(basis="6-31g",fermi_qubit_transform=transform,geometry_info=geometry_info,is_computed=is_computed)
+    energy_obj = get_reduced_energy_obj_with_HF_init(energy_obj, [3, 7])
+    return energy_obj
 
 def make_molecular_energy_obj(molecule_name, basis="sto-3g", geometry_info=None, n_cancel_orbital=0, n_frozen_orbital=0,
                               cas_irrep_nocc=None, cas_irrep_ncore=None, fermi_qubit_transform=bravyi_kitaev,

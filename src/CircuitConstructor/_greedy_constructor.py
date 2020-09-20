@@ -83,6 +83,7 @@ class GreedyConstructor(CircuitConstructor):
         print("Project Name:", self.project_name)
         print("Block Pool Size:", len(self.block_pool.blocks))
         self.init_cost = self.cost.get_cost_value(self.circuit)
+        self.current_cost=self.init_cost
         if self.init_cost<self.terminate_cost:
             print("The objective has already been met! Reture the input circuit.")
             return self.circuit
