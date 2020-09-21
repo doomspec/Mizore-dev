@@ -33,6 +33,20 @@ def get_H6_geo(bond_len):
     return geometry
 
 
+def get_H4_geo(bond_len):
+    atom_1 = 'H'
+    atom_2 = 'H'
+    atom_3 = 'H'
+    atom_4 = 'H'
+    coordinate_1 = (0.0, 0.0, 0.0)
+    coordinate_2 = (bond_len, 0.0, 0.0)
+    coordinate_3 = (bond_len * 2, 0.0, 0.0)
+    coordinate_4 = (bond_len * 3, 0.0, 0.0)
+    geometry = [(atom_1, coordinate_1), (atom_2, coordinate_2), (atom_3, coordinate_3),
+                (atom_4, coordinate_4)]
+    return geometry
+
+
 def get_LiH_geo(bond_len):
     atom_1 = 'H'
     atom_2 = 'Li'
@@ -104,5 +118,5 @@ def get_C2H2_geo(bond_len):
     return geometry
 
 
-equilibrium_geometry_dict = {"H2": 0.74, "H6": 1.0, "LiH": 1.4, "H2O": 0.96, "N2": 1.1}
-geometry_generator_dict = {"H2": get_H2_geo, "H6": get_H6_geo, "LiH": get_LiH_geo, "H2O": get_H2O_geo, "N2": get_N2_geo}
+equilibrium_geometry_dict = {"H2": 0.74, "H6": 1.0,"H4": 1.0, "LiH": 1.4, "H2O": 0.96, "N2": 1.1}
+geometry_generator_dict = {"H2": get_H2_geo, "H6": get_H6_geo,"H4": get_H4_geo, "LiH": get_LiH_geo, "H2O": get_H2O_geo, "N2": get_N2_geo}

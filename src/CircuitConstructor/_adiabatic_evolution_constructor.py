@@ -1,14 +1,20 @@
 from ._time_evolution_contructor import TimeEvolutionConstructor, get_hamiltoian_in_adiabatic
 from Blocks._utilities import get_circuit_energy
+from Objective import EnergyObjective
+from openfermion.ops import QubitOperator
+
 
 class AdiabaticEvolutionConstructor(TimeEvolutionConstructor):
+    
     def __init__(self, init_energy_obj, final_energy_obj, pool, init_circuit, **kwargs):
-        TimeEvolutionConstructor.__init__(
-            self,init_energy_obj, pool, init_circuit, **kwargs)
         self.init_hamiltonian = init_energy_obj.hamiltonian
         self.final_hamiltonian = final_energy_obj.hamiltonian
         self.init_energy_list=[]
         self.final_energy_list=[]
+        energy_obj=EnergyObjective(1.01*self.init_hamiltonian+self.final_hamiltonian,init_energy_obj.n_qubit)
+        TimeEvolutionConstructor.__init__(
+            self,energy_obj, pool, init_circuit, **kwargs)
+        
         pass
 
     def get_circuit_constructor(self):
@@ -37,7 +43,6 @@ class AdiabaticEvolutionConstructor(TimeEvolutionConstructor):
         log_dict["final_energy_list"]=self.final_energy_list
         return log_dict
 
-from openfermion.ops import QubitOperator
 
 def get_init_hamil_by_HF_init(energy_obj):
     init_hamil=QubitOperator()
@@ -46,6 +51,5 @@ def get_init_hamil_by_HF_init(energy_obj):
             init_hamil+=QubitOperator("Z"+str(i))
         else:
             init_hamil-=QubitOperator("Z"+str(i))
-    from Objective import EnergyObjective
 
     return EnergyObjective(init_hamil,energy_obj.n_qubit,init_block=energy_obj.init_block)
