@@ -133,18 +133,19 @@ def calc_A_mat_analytical_0(circuit, derivative_circuits):
     return mat_A
     
 def calc_A_mat_analytical_parallel(task_manager, circuit, derivative_circuits):
-
+    
     n_parameter = len(derivative_circuits)
     mat_A = np.array([[0.0 for col in range(n_parameter)]
                       for row in range(n_parameter)], dtype=complex)
     
     task_id_i = "mat_A_calc"+ str(time.time() % 10000)
-
+    n_task=0
     for i in range(n_parameter):
         for j in range(i, n_parameter):
             task_manager.add_task_to_buffer(InnerProductTask(
                 derivative_circuits[j], derivative_circuits[i]), task_series_id=task_id_i)
-    task_manager.flush()
+            n_task+=1
+    task_manager.flush(task_package_size=max(20,(n_task//task_manager.n_processor)+1))
     inner_product_list = task_manager.receive_task_result(task_series_id=task_id_i)
     inner_index=0
     for i in range(n_parameter):

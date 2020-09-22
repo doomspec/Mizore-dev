@@ -2,16 +2,21 @@ from ._time_evolution_contructor import TimeEvolutionConstructor, get_hamiltoian
 from Blocks._utilities import get_circuit_energy
 from Objective import EnergyObjective
 from openfermion.ops import QubitOperator
-
+from Blocks._utilities import get_circuit_energy
+from Precalculation.NumPyCore import solve_ground_state_energy
 
 class AdiabaticEvolutionConstructor(TimeEvolutionConstructor):
     
     def __init__(self, init_energy_obj, final_energy_obj, pool, init_circuit, **kwargs):
         self.init_hamiltonian = init_energy_obj.hamiltonian
         self.final_hamiltonian = final_energy_obj.hamiltonian
+        self.final_energy=solve_ground_state_energy(final_energy_obj)
+        self.init_energy=solve_ground_state_energy(init_energy_obj)
+
         self.init_energy_list=[]
         self.final_energy_list=[]
-        energy_obj=EnergyObjective(1.01*self.init_hamiltonian+self.final_hamiltonian,init_energy_obj.n_qubit)
+        
+        energy_obj=EnergyObjective(self.final_hamiltonian,init_energy_obj.n_qubit)
         TimeEvolutionConstructor.__init__(
             self,energy_obj, pool, init_circuit, **kwargs)
         
@@ -24,7 +29,6 @@ class AdiabaticEvolutionConstructor(TimeEvolutionConstructor):
         return self.energy_obj.hamiltonian
 
     def get_current_hamiltonian(self):
-        print(get_hamiltoian_in_adiabatic(self.init_hamiltonian, self.final_hamiltonian, self.total_time_to_evolve, self.total_time_evolved))
         return get_hamiltoian_in_adiabatic(self.init_hamiltonian, self.final_hamiltonian, self.total_time_to_evolve, self.total_time_evolved)
 
     def evolve(self, circuit, time):
@@ -35,13 +39,14 @@ class AdiabaticEvolutionConstructor(TimeEvolutionConstructor):
         self.init_energy_list.append(init_energy)
         self.final_energy_list.append(final_energy)
         print("Evolve finished")
-        print("Final energy:",self.final_energy_list)
+        print("Energy list (obj:"+str(self.final_energy)+"):",self.final_energy_list)
         return new_circuit,evolved_time
 
     def get_run_status_info_dict(self):
         log_dict = TimeEvolutionConstructor.get_run_status_info_dict(self)
         log_dict["init_energy_list"]=self.init_energy_list
         log_dict["final_energy_list"]=self.final_energy_list
+        log_dict["final_energy"]=self.final_energy
         return log_dict
 
 
