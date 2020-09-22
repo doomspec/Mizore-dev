@@ -15,10 +15,17 @@ def random_list(start, stop, length):
         length = int(length)
     start, stop = (start, stop) if start <= stop else (stop, start)
     random_list = []
-    for i in range(length):
+    for _i in range(length):
         random_list.append(random.uniform(start, stop))
     return random_list
 
+def get_random_coeff_operator(operator,start,end):
+    import random
+    new_operator=QubitOperator()
+    for pauli_and_coeff in operator.get_operators():
+        for string_pauli in pauli_and_coeff.terms:
+            new_operator+=random.uniform(start,end)*QubitOperator(string_pauli)
+    return new_operator
 
 def get_operator_qsubset(operator: QubitOperator):
     qubit_set = [False] * 200  # Assume there are at most 200 qubits
