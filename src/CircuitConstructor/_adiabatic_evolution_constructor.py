@@ -24,6 +24,7 @@ class AdiabaticEvolutionConstructor(TimeEvolutionConstructor):
         return self.energy_obj.hamiltonian
 
     def get_current_hamiltonian(self):
+        print(get_hamiltoian_in_adiabatic(self.init_hamiltonian, self.final_hamiltonian, self.total_time_to_evolve, self.total_time_evolved))
         return get_hamiltoian_in_adiabatic(self.init_hamiltonian, self.final_hamiltonian, self.total_time_to_evolve, self.total_time_evolved)
 
     def evolve(self, circuit, time):
