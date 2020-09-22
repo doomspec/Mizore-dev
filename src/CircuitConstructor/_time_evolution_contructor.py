@@ -1,4 +1,5 @@
 from CircuitConstructor._no_parameter_constructor import NoParameterConstructor
+from CircuitConstructor._analytical_rts_constructor import AnalyticalRTSConstructor
 from Objective._vqs_quality_obj import CircuitQualityObjective
 from ParameterOptimizer import RealTimeEvolutionOptimizer
 from ParameterOptimizer._rte_analytical_optimizer import RTEAnalyticalOptimizer
@@ -59,8 +60,12 @@ class TimeEvolutionConstructor():
         return self.get_circuit_constructor_by_quality_obj(self.quality_obj)
 
     def get_circuit_constructor_by_quality_obj(self,quality_obj):
-        return NoParameterConstructor(
-            quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True)        
+        if self.is_analytical:
+            return AnalyticalRTSConstructor(
+                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True)        
+        else:
+            return NoParameterConstructor(
+                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True)        
 
     def get_circuit_constructor_by_hamiltonian(self,hamiltonian):
         quality_obj = CircuitQualityObjective(self.n_qubit,
@@ -114,7 +119,7 @@ class TimeEvolutionConstructor():
             print("Time evolved:", evolved_time)
 
             construct_needed = (abs(evolved_time-local_time_to_evolve) >= 1e-10)
-
+            
             if ((not construct_needed) and (self.total_time_evolved > last_evolved_time)):
                 circuit_list.append(new_circuit.duplicate())
                 last_evolved_time = self.total_time_evolved
@@ -303,7 +308,9 @@ def draw_run_status_figure(path):
     labs = [l.get_label() for l in lns]
     ax.legend(lns, labs, loc='upper right', ncol=2)
 
-    ax2.set_ylim(0, first_trotter_gate_use*1.2)
+    gate_used_lim=max(first_trotter_gate_use,n_gate_list[-1])
+    
+    ax2.set_ylim(0, gate_used_lim*1.3)
     ax.set_ylim(0, max(quality_list)*1.4)
     plt.savefig(path+'/run_status.png', bbox_inches='tight')
 

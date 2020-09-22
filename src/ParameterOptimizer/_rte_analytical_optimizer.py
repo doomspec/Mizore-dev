@@ -9,9 +9,9 @@ class RTEAnalyticalOptimizer(RealTimeEvolutionOptimizer):
 
     def calc_derivative(self, circuit, hamiltonian, hamiltonian_square=None):
         derivative_circuits = get_derivative_circuit(circuit)
-        mat_C = np.imag(self.calc_C_mat(
-            circuit, derivative_circuits, hamiltonian))
-        mat_A = np.real(self.calc_A_mat(circuit, derivative_circuits))
+        mat_C,mat_A=self.calc_C_A_mat(circuit, derivative_circuits, hamiltonian)
+        mat_C = np.imag(mat_C)
+        mat_A = np.real(mat_A)
         try:
             derivative = linalg.solve(mat_A, mat_C)
         except linalg.LinAlgError:
@@ -23,6 +23,17 @@ class RTEAnalyticalOptimizer(RealTimeEvolutionOptimizer):
             return derivative,quality
         else:
             return derivative
+
+    def calc_C_A_mat(self, circuit, derivative_circuits, hamiltonian):
+        if self.hamiltonian_mat is None:
+            self.hamiltonian_mat = qubit_operator2matrix(
+                circuit.n_qubit, hamiltonian)
+        if self.task_manager == None:
+            mat_C=self.calc_C_mat(circuit, derivative_circuits, hamiltonian)
+            mat_A=self.calc_A_mat(circuit, derivative_circuits)
+            return mat_C,mat_A
+        else:
+            return calc_mat_C_A_parallel_ana(self.task_manager,self.hamiltonian_mat,circuit,derivative_circuits)
 
     def calc_A_mat(self, circuit, derivative_circuits):
         if self.task_manager == None:

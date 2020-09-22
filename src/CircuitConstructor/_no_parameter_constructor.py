@@ -51,8 +51,7 @@ class NoParameterConstructor(GreedyConstructor):
             # See whether the new entangler decreases the cost
             if cost_descent > 1e-12:
                 trial_result_list.append((cost, trial_circuits[i]))
-        if not trial_result_list:
-            return self.do_trial_on_circuits_by_cost_gradient(trial_circuits=get_trial_circuits(self.circuit,self.n_block_per_iter+1,self.block_pool))
+                
         return trial_result_list
 
     def update_trial_circuits(self, block_pool=None):

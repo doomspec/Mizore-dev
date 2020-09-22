@@ -79,7 +79,7 @@ class RealTimeEvolutionOptimizer(ImaginaryTimeEvolutionOptimizer):
 
         return circuit, evolved_time, n_step_evolved
 
-    def do_time_evolution(self, _circuit: BlockCircuit, hamiltonian, evolution_time, max_n_step=100):
+    def do_time_evolution(self, _circuit: BlockCircuit, hamiltonian, evolution_time, max_n_step=500):
 
         self.hamiltonian_square = hamiltonian*hamiltonian
         self.hamiltonian_square.compress()
@@ -122,15 +122,14 @@ class RealTimeEvolutionOptimizer(ImaginaryTimeEvolutionOptimizer):
             if evolved_time >= evolution_time-1e-10:
                 break
             if n_step >= max_n_step:
-                print("ATTENTION: n_step>=max_n_step !")
-                break
+                print("ATTENTION: n_step>=max_n_step ! time evolved in this step:",delta_t_evolve)
 
         self.evolution_time_list = np.array(self.evolution_time_list)
         self.quality_list = np.array(self.quality_list)
 
         return circuit, evolved_time
 
-    def do_adiabatic_time_evolution(self, _circuit: BlockCircuit, init_hamiltonian, final_hamiltonian, evolution_time, final_time=-1, start_time=0, max_n_step=10000):
+    def do_adiabatic_time_evolution(self, _circuit: BlockCircuit, init_hamiltonian, final_hamiltonian, evolution_time, final_time=-1, start_time=0, max_n_step=500):
 
         self.hamiltonian_square = None
         if final_time < 0:
@@ -180,8 +179,7 @@ class RealTimeEvolutionOptimizer(ImaginaryTimeEvolutionOptimizer):
             if evolved_time >= evolution_time-1e-10:
                 break
             if n_step >= max_n_step:
-                print("ATTENTION: n_step>=max_n_step !")
-                break
+                print("ATTENTION: n_step>=max_n_step ! time evolved in this step:",delta_t_evolve)
 
         self.evolution_time_list = np.array(self.evolution_time_list)
         self.quality_list = np.array(self.quality_list)
