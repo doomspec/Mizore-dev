@@ -3,7 +3,8 @@ from Blocks._utilities import get_inner_two_circuit_product
 from Blocks._sparse_circuit_utilities import get_0000_amplitude_on_sparse_circuit
 from Blocks import BlockCircuit, PauliGatesBlock
 from Blocks._utilities import concatenate_circuit, get_inverse_circuit, get_0000_amplitude_on_circuit
-
+from Blocks._utilities import get_circuit_complete_amplitudes,evaluate_off_diagonal_term_by_amps
+from Utilities.Tools import qubit_operator2matrix
 
 class MatrixTermTask(Task):
 
@@ -17,8 +18,21 @@ class MatrixTermTask(Task):
     def run(self):
         return get_matrix_term(self.circuit1, self.circuit2, self.hamiltonian, is_sparse=self.is_sparse)
 
-
 def get_matrix_term(circuit1: BlockCircuit, circuit2: BlockCircuit, hamiltonian, is_sparse=False):
+    if is_sparse:
+        for _i in range(10):
+            print("Sparse circuit is not supported in QSD solver now. Please wait for development.")
+    circuit1_amp = get_circuit_complete_amplitudes(circuit1)
+    circuit2_amp = get_circuit_complete_amplitudes(circuit2)
+    hamiltonian_mat=qubit_operator2matrix(
+            circuit1.n_qubit, hamiltonian)
+    mat_term=evaluate_off_diagonal_term_by_amps(
+            circuit1_amp, circuit2_amp, hamiltonian_mat)
+
+    return mat_term
+
+
+def get_matrix_term_0(circuit1: BlockCircuit, circuit2: BlockCircuit, hamiltonian, is_sparse=False):
     temp_circuit = circuit1.duplicate()
     temp_circuit.add_block(PauliGatesBlock([(0, 'X')]))
     paulistring_index = len(temp_circuit.block_list) - 1

@@ -243,7 +243,7 @@ def generate_benchmark_from_file(path):
     return generate_benchmark(circuit_list, hamiltonian, delta_t)
 
 
-def read_circuits_from_file(path):
+def read_circuits_from_file(path,delta_n=1):
     circuit_list = []
     circuit_index = 0
     while True:
@@ -253,7 +253,7 @@ def read_circuits_from_file(path):
         with open(circuit_path, "rb") as f:
             step_circuit = pickle.load(f)
         circuit_list.append(step_circuit)
-        circuit_index += 1
+        circuit_index += delta_n
     return circuit_list
 
 
@@ -315,12 +315,14 @@ def draw_run_status_figure(path):
     plt.savefig(path+'/run_status.png', bbox_inches='tight')
 
 
-def generate_benchmark_for_compare_from_paths(paths):
+def generate_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None):
+    if trotter_steps is None:
+        trotter_steps=[1]
     label_list = []
     delta_t_list = []
     circuit_list_list = []
     for path in paths:
-        circuit_list = read_circuits_from_file(path)
+        circuit_list = read_circuits_from_file(path,delta_n=delta_n)
         circuit_list_list.append(circuit_list)
         with open(path + "/run_info.json", "r") as f:
             log_dict = json.load(f)
@@ -328,11 +330,12 @@ def generate_benchmark_for_compare_from_paths(paths):
         delta_t_list.append(log_dict["delta_t"])
     delta_t = max(delta_t_list)
     assert delta_t == min(delta_t_list)
+    delta_t=delta_t*delta_n
     init_circuit = circuit_list_list[0][0]
     with open(paths[0] + "/energy_obj.pickle", "rb") as f:
         hamiltonian = pickle.load(f).hamiltonian
 
-    for n_trotter_step in [1, 2]:
+    for n_trotter_step in trotter_steps:
         list_n_circuit = [len(circuit_list)
                           for circuit_list in circuit_list_list]
         max_n_circuit = max(list_n_circuit)
@@ -345,9 +348,9 @@ def generate_benchmark_for_compare_from_paths(paths):
     return fidelity_list_list, label_list, delta_t
 
 
-def draw_benchmark_for_compare_from_paths(paths):
+def draw_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None):
     fidelity_list_list, label_list, delta_t = generate_benchmark_for_compare_from_paths(
-        paths)
+        paths,delta_n=delta_n,trotter_steps=trotter_steps)
     min_fidelity = 1
 
     import matplotlib

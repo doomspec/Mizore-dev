@@ -28,7 +28,7 @@ class RTEAnalyticalOptimizer(RealTimeEvolutionOptimizer):
         if self.hamiltonian_mat is None:
             self.hamiltonian_mat = qubit_operator2matrix(
                 circuit.n_qubit, hamiltonian)
-        if self.task_manager == None:
+        if self.task_manager == None or len(derivative_circuits)<=1:
             mat_C=self.calc_C_mat(circuit, derivative_circuits, hamiltonian)
             mat_A=self.calc_A_mat(circuit, derivative_circuits)
             return mat_C,mat_A
