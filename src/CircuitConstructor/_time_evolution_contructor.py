@@ -166,8 +166,39 @@ class TimeEvolutionConstructor():
         with open(path, "w") as f:
             json.dump(self.get_run_status_info_dict(), f)
 
+def generate_benchmark_for_compare(circuit_list_list, hamiltonian, delta_t, task_manager=None):
+    if task_manager is None:
+        return generate_benchmark_for_compare_0(circuit_list_list, hamiltonian, delta_t)
+    else:
+        return generate_benchmark_for_compare_parallel(circuit_list_list, hamiltonian, delta_t,task_manager)
 
-def generate_benchmark_for_compare(circuit_list_list, hamiltonian, delta_t):
+def generate_benchmark_for_compare_parallel(circuit_list_list, hamiltonian, delta_t, task_manager):
+    from ParallelTaskRunner import InnerProductTask
+    list_n_circuit = [len(circuit_list) for circuit_list in circuit_list_list]
+    init_circuit = circuit_list_list[0][0]
+    benchmark_circuits = [init_circuit]
+    for step in range(1, max(list_n_circuit)):
+        bc = init_circuit.duplicate()
+        bc.add_block(TimeEvolutionBlock(hamiltonian, init_angle=delta_t*step))
+        benchmark_circuits.append(bc)
+    fidelity_list_list = []
+    task_series_id="Benchmark"+ str(time.time() % 10000)
+    for i in range(len(circuit_list_list)):
+        for step in range(1, list_n_circuit[i]):
+            task_manager.add_task_to_buffer(InnerProductTask(circuit_list_list[i][step],benchmark_circuits[step]),task_series_id=task_series_id)
+    task_manager.flush()
+    res_list=task_manager.receive_task_result(task_series_id=task_series_id,progress_bar=True)
+    task_index=0
+    for i in range(len(circuit_list_list)):
+        fidelity_list = [0]*list_n_circuit[i]
+        fidelity_list[0] = 1
+        for step in range(1, list_n_circuit[i]):
+            fidelity_list[step] = abs(res_list[task_index])
+            task_index+=1
+        fidelity_list_list.append(fidelity_list)
+    return fidelity_list_list
+
+def generate_benchmark_for_compare_0(circuit_list_list, hamiltonian, delta_t):
     list_n_circuit = [len(circuit_list) for circuit_list in circuit_list_list]
     init_circuit = circuit_list_list[0][0]
     benchmark_circuits = [init_circuit]
@@ -186,8 +217,8 @@ def generate_benchmark_for_compare(circuit_list_list, hamiltonian, delta_t):
     return fidelity_list_list
 
 
-def generate_benchmark(circuit_list, hamiltonian, delta_t):
-    return generate_benchmark_for_compare([circuit_list], hamiltonian, delta_t)[0]
+def generate_benchmark(circuit_list, hamiltonian, delta_t,task_manager=None):
+    return generate_benchmark_for_compare([circuit_list], hamiltonian, delta_t,task_manager=task_manager)[0]
 
 
 def generate_trotter_benchmark_from_file(path, n_trotter_step):
@@ -315,7 +346,7 @@ def draw_run_status_figure(path):
     plt.savefig(path+'/run_status.png', bbox_inches='tight')
 
 
-def generate_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None):
+def generate_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None,task_manager=None):
     if trotter_steps is None:
         trotter_steps=[1]
     label_list = []
@@ -344,13 +375,13 @@ def generate_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None
         circuit_list_list.append(trotter_circuits)
         label_list.append("Trotter "+str(n_trotter_step))
     fidelity_list_list = generate_benchmark_for_compare(
-        circuit_list_list, hamiltonian, delta_t)
+        circuit_list_list, hamiltonian, delta_t,task_manager=task_manager)
     return fidelity_list_list, label_list, delta_t
 
 
-def draw_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None):
+def draw_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None,task_manager=None):
     fidelity_list_list, label_list, delta_t = generate_benchmark_for_compare_from_paths(
-        paths,delta_n=delta_n,trotter_steps=trotter_steps)
+        paths,delta_n=delta_n,trotter_steps=trotter_steps,task_manager=task_manager)
     min_fidelity = 1
 
     import matplotlib
@@ -362,7 +393,7 @@ def draw_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None):
     for i in range(len(fidelity_list_list)):
         fidelity_list = np.array(fidelity_list_list[i])
         x_data = [step*delta_t for step in range(len(fidelity_list))]
-        ax.plot(x_data, (-1*fidelity_list)+1, '-o', label=label_list[i])
+        ax.plot(x_data, (-1*fidelity_list)+1, '-o', label=label_list[i],alpha=0.8)
         local_min_fidelity = min(fidelity_list)
         if local_min_fidelity < min_fidelity:
             min_fidelity = local_min_fidelity
@@ -370,9 +401,9 @@ def draw_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None):
     ax.grid()
     ax.set_xlabel("Time")
     ax.set_ylabel("1-Fidelity")
-    ax.legend(loc='upper right', ncol=2)
+    ax.legend(loc='upper right', ncol=3)
     max_diff = 1-min_fidelity
-    ax.set_ylim(-max_diff*0.2, max_diff*1.2)
+    ax.set_ylim(-max_diff*0.05, max_diff*1.2)
 
     for path in paths:
         plt.savefig(path+'/comprison.png', bbox_inches='tight')

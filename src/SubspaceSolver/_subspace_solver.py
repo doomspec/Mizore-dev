@@ -49,11 +49,13 @@ class SubspaceSolver:
         return
 
     def execute(self):
-        print("Subspace Expansion Method Started")
+        print("QSD solver Started")
         print("Calculating S matrix")
         self.calc_S_mat()
+        revise_little_negative(self.S_mat)
         print("Calculating H matrix")
         self.calc_H_mat()
+        
         # print(self.H_mat)
         # print(self.S_mat)
         self.eigvals, self.eigvecs = eigh(
@@ -100,7 +102,7 @@ class SubspaceSolver:
             else:
                 pbar.set_description(str("S matrix"))
 
-        task_series_id ="QSD H mat"+str(time.time()%10000)
+        task_series_id ="QSD mat"+str(time.time()%10000)
         
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
@@ -134,11 +136,11 @@ class SubspaceSolver:
                 # print(i,j,s)
                 self.S_mat[i][j] = s
                 self.S_mat[j][i] = np.conjugate(s)
-        revise_little_negative(self.S_mat)
+        
         return
 
 
-VERY_SMALL_NUMBER = 1e-7
+VERY_SMALL_NUMBER = 1e-8
 
 
 def revise_little_negative(S_mat: np.array):
