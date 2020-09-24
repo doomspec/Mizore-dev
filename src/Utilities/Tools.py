@@ -41,14 +41,24 @@ def get_operator_qsubset(operator: QubitOperator):
 
 def get_operator_n_qubit(operator: QubitOperator):
     n_qubit = -1
-    for pauli_and_coff in operator.get_operators():
-        for string_pauli in pauli_and_coff.terms:
+    for pauli_and_coeff in operator.get_operators():
+        for string_pauli in pauli_and_coeff.terms:
             if len(string_pauli) == 0:
                 continue
             highest_index = string_pauli[len(string_pauli) - 1][0]
             if highest_index > n_qubit:
                 n_qubit = highest_index
     return n_qubit + 1
+
+def get_operator_nontrivial_term_weight_sum(operator: QubitOperator):
+    coeff_sum=0
+    for pauli_and_coeff in operator.get_operators():
+        for string_pauli in pauli_and_coeff.terms:
+            if len(string_pauli) == 0:
+                print(string_pauli)
+                continue
+            coeff_sum+=abs(pauli_and_coeff.terms[string_pauli])
+    return coeff_sum
 
 PauliI = np.array([[1, 0], [0, 1]], np.complex)
 PauliX = np.array([[0, 1], [1, 0]], np.complex)
@@ -90,5 +100,16 @@ def pauliword2string(pauli):
     return string
 
 
-if __name__ == "__main__":
-    print(get_operator_qsubset(QubitOperator("X0 X2")))
+def put_log_item_in_json(path,keyname,value):
+    import pathlib,json
+    pathlib.Path(path).touch()
+    with open(path, "r") as f:
+        raw=f.read()
+    if len(raw)!=0:
+        log_dict = json.loads(raw)
+    else:
+        log_dict=dict()
+    log_dict[keyname]=value
+    with open(path, "w") as f:
+        json.dump(log_dict, f)
+

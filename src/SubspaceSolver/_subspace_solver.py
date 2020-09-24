@@ -64,6 +64,7 @@ class SubspaceSolver:
         self.ground_state = self.eigvecs[:, 0]
         print("The ground state energy is", self.ground_energy)
         print("It's eigenvector is", self.ground_state)
+        return self.ground_energy
 
     def calc_S_mat(self):
         if self.task_manager != None:
@@ -140,7 +141,7 @@ class SubspaceSolver:
         return
 
 
-VERY_SMALL_NUMBER = 1e-8
+VERY_SMALL_NUMBER = 1e-9
 
 
 def revise_little_negative(S_mat: np.array):
