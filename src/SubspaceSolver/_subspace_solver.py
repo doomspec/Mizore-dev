@@ -63,9 +63,15 @@ class SubspaceSolver:
         print("The ground state energy is", self.ground_energy)
         print("It's eigenvector is", self.ground_state)
 
+    def calc_S_mat(self):
+        if self.task_manager != None:
+            self.S_mat=self._calc_mat_term_parellel(None)
+        else:
+            self._calc_S_mat_0()
+
     def calc_H_mat(self):
         if self.task_manager != None:
-            self._calc_H_mat_parellel()
+            self.H_mat=self._calc_mat_term_parellel(self.hamiltonian)
         else:
             self._calc_H_mat_0()
 
@@ -86,33 +92,38 @@ class SubspaceSolver:
             pbar.close()
         return
 
-    def _calc_H_mat_parellel(self):
+    def _calc_mat_term_parellel(self,hamiltonian):
         if self.progress_bar:
             pbar = tqdm(total=(self.n_basis + 1) * self.n_basis // 2)
-            pbar.set_description(str("H matrix"))
+            if hamiltonian is not None:
+                pbar.set_description(str("H matrix"))
+            else:
+                pbar.set_description(str("S matrix"))
 
         task_series_id ="QSD H mat"+str(time.time()%10000)
         
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
-                self.task_manager.add_task_to_buffer(MatrixTermTask(self.circuit_list[i],self.circuit_list[j],self.hamiltonian),task_series_id=task_series_id)
+                self.task_manager.add_task_to_buffer(MatrixTermTask(self.circuit_list[i],self.circuit_list[j],hamiltonian),task_series_id=task_series_id)
 
         self.task_manager.flush()
         res_list = self.task_manager.receive_task_result(
                     task_series_id=task_series_id)
         res_index=0
+        mat = np.array([[0.0] * self.n_basis] * self.n_basis, dtype=complex)
+
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
-                self.H_mat[i][j] = res_list[res_index]
-                self.H_mat[j][i] = np.conjugate(res_list[res_index])
+                mat[i][j] = res_list[res_index]
+                mat[j][i] = np.conjugate(res_list[res_index])
                 if self.progress_bar:
                     pbar.update(1)
                 res_index+=1
         if self.progress_bar:
             pbar.close()
-        return
+        return mat
 
-    def calc_S_mat(self):
+    def _calc_S_mat_0(self):
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
                 if i == j:

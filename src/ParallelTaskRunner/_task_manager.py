@@ -74,6 +74,8 @@ class TaskManager:
         self.recieve_buffer_by_series_id = dict()
         self.task_package_size = task_package_size
 
+        self.task_difficulty_dict = dict()
+
         for i in range(n_processor):
             self.processor_list.append(TaskRunner(
                 self.task_queue, self.result_queue))
@@ -107,23 +109,6 @@ class TaskManager:
         self.buffer_to_send = []
 
     RECEIVE_PERIOD = 0.1
-
-    def receive_task_result_old(self, task_series_id=0):
-        result_list = []
-        index_list = []
-        while (self.n_task_remain_by_series_id[task_series_id] != 0):
-
-            result_package = self.result_queue.get(True)
-            for task_result in result_package:
-                result_list.append(task_result.result)
-                index_list.append(task_result.index_of_in)
-                self.n_task_remain_by_series_id[task_series_id] -= 1
-            time.sleep(TaskManager.RECEIVE_PERIOD)
-        index_rank_list = numpy.argsort(numpy.array(index_list))
-        ranked_result_list = []
-        for i in range(len(index_list)):
-            ranked_result_list.append(result_list[index_rank_list[i]])
-        return ranked_result_list
 
     def receive_task_result(self, task_series_id=0, progress_bar=False):
 

@@ -2,7 +2,7 @@ from ParallelTaskRunner._task import Task
 from Blocks._utilities import get_inner_two_circuit_product
 from Blocks._sparse_circuit_utilities import get_0000_amplitude_on_sparse_circuit
 from Blocks import BlockCircuit, PauliGatesBlock
-from Blocks._utilities import concatenate_circuit, get_inverse_circuit, get_0000_amplitude_on_circuit
+from Blocks._utilities import concatenate_circuit, get_inverse_circuit, get_0000_amplitude_on_circuit,get_inner_two_circuit_product
 from Blocks._utilities import get_circuit_complete_amplitudes,evaluate_off_diagonal_term_by_amps
 from Utilities.Tools import qubit_operator2matrix
 
@@ -22,12 +22,16 @@ def get_matrix_term(circuit1: BlockCircuit, circuit2: BlockCircuit, hamiltonian,
     if is_sparse:
         for _i in range(10):
             print("Sparse circuit is not supported in QSD solver now. Please wait for development.")
-    circuit1_amp = get_circuit_complete_amplitudes(circuit1)
-    circuit2_amp = get_circuit_complete_amplitudes(circuit2)
-    hamiltonian_mat=qubit_operator2matrix(
-            circuit1.n_qubit, hamiltonian)
-    mat_term=evaluate_off_diagonal_term_by_amps(
-            circuit1_amp, circuit2_amp, hamiltonian_mat)
+
+    if hamiltonian is not None:
+        circuit1_amp = get_circuit_complete_amplitudes(circuit1)
+        circuit2_amp = get_circuit_complete_amplitudes(circuit2)
+        hamiltonian_mat=qubit_operator2matrix(
+                circuit1.n_qubit, hamiltonian)
+        mat_term=evaluate_off_diagonal_term_by_amps(
+                circuit1_amp, circuit2_amp, hamiltonian_mat)
+    else:
+        mat_term=get_inner_two_circuit_product(circuit1,circuit2)
 
     return mat_term
 
