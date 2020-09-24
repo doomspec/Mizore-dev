@@ -7,7 +7,7 @@ from ParallelTaskRunner import TaskManager
 from ParallelTaskRunner._mat_term_task import MatrixTermTask
 from tqdm import tqdm
 from Utilities.Iterators import iter_partial_operators
-
+import time
 
 class SubspaceSolver:
     """
@@ -90,28 +90,24 @@ class SubspaceSolver:
         if self.progress_bar:
             pbar = tqdm(total=(self.n_basis + 1) * self.n_basis // 2)
             pbar.set_description(str("H matrix"))
+
+        task_series_id ="QSD H mat"+str(time.time()%10000)
+        
         for i in range(self.n_basis):
             for j in range(i, self.n_basis):
-                task_series_id = str(id(self) % 10000) + "i" + str(i) + "j" + str(j)
-                add_hamiltonian_overlap_tasks(
-                    self.circuit_list[i], self.circuit_list[j], self.hamiltonian, self.task_manager, task_series_id,
-                    sparse_circuit=self.sparse_circuit)
+                self.task_manager.add_task_to_buffer(MatrixTermTask(self.circuit_list[i],self.circuit_list[j],self.hamiltonian),task_series_id=task_series_id)
 
-        self.task_manager.flush(task_package_size=1)
-
-        for i in range(self.n_basis):
-            for j in range(i, self.n_basis):
-                task_series_id = str(id(self) % 10000) + "i" + str(i) + "j" + str(j)
-                res = self.task_manager.receive_task_result(
+        self.task_manager.flush()
+        res_list = self.task_manager.receive_task_result(
                     task_series_id=task_series_id)
-                h = 0
-                for k in range(len(res)):
-                    h += res[k]
-                self.H_mat[i][j] = h
-                self.H_mat[j][i] = np.conjugate(h)
-
+        res_index=0
+        for i in range(self.n_basis):
+            for j in range(i, self.n_basis):
+                self.H_mat[i][j] = res_list[res_index]
+                self.H_mat[j][i] = np.conjugate(res_list[res_index])
                 if self.progress_bar:
                     pbar.update(1)
+                res_index+=1
         if self.progress_bar:
             pbar.close()
         return

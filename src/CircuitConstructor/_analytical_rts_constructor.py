@@ -10,10 +10,14 @@ class AnalyticalRTSConstructor(NoParameterConstructor):
         return
     
     def get_current_cost(self):
+        return 999999
+        """
         if self.circuit.count_n_parameter_on_active_position()>1:
             return calc_quality_derivative_by_obj_parallel_ana(self.task_manager,self.cost,self.circuit)
         else:
             return NoParameterConstructor.get_current_cost(self)
+        """
+
     """
     def do_trial_on_circuits_by_cost_gradient(self, trial_circuits=None):
         if trial_circuits == None:

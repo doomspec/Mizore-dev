@@ -193,6 +193,8 @@ def calc_A_mat_analytical_by_task_results(task_manager, task_id_i, n_parameter):
 
 def calc_A_mat_analytical_parallel(task_manager, circuit, derivative_circuits,min_n_task=20):
     n_parameter = len(derivative_circuits)
+    if n_parameter==1:
+        return np.array([[1]],dtype=complex)
     task_id_i=add_calc_A_mat_analytical_tasks(task_manager,circuit,derivative_circuits)
     n_task=task_manager.n_task_remain_by_series_id[task_id_i]
     task_manager.flush(task_package_size=max(min_n_task,(n_task//task_manager.n_processor)+1))
