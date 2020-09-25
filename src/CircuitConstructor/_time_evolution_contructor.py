@@ -15,7 +15,7 @@ import numpy as np
 
 class TimeEvolutionConstructor():
 
-    def __init__(self, energy_obj, pool, init_circuit, project_name="Untitled", task_manager=None, is_analytical=False, n_block_per_iter=1, quality_cutoff=0.0001, diff=1e-4, n_circuit=3, stepsize=1e-3, delta_t=0.1):
+    def __init__(self, energy_obj, pool, init_circuit, project_name="Untitled", task_manager=None, is_analytical=False, n_block_per_iter=1, quality_cutoff=0.0001, diff=1e-4, n_circuit=3, stepsize=1e-3, delta_t=0.1, special_save_name = None):
 
         self.energy_obj = energy_obj
         self.n_qubit = energy_obj.n_qubit
@@ -44,7 +44,10 @@ class TimeEvolutionConstructor():
         self.time_string = time.strftime(
             '%m-%d-%Hh%Mm%Ss', time.localtime(time.time()))
         self.project_name = project_name
-        self.save_name = project_name+"_"+self.time_string
+        if special_save_name==None:
+            self.save_name = project_name+"_"+self.time_string
+        else:
+            self.save_name = special_save_name
         self.save_path = "mizore_results/"+"adaptive_evolution/"+self.save_name
         self.save_self_info()
 
@@ -446,6 +449,54 @@ def draw_benchmark_for_compare_from_paths(paths, delta_n=1, trotter_steps=None, 
 
     for path in paths:
         plt.savefig(path+'/comprison.png', bbox_inches='tight')
+
+def draw_n_gate_for_compare_from_paths(paths,stop_time=999999):
+
+    import matplotlib
+    import matplotlib.pyplot as plt
+    #plt.style.use('ggplot')
+    gate_name = "CNOT"
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    ax.grid()
+    ax.set_xlabel("Time")
+    ax.set_ylabel(gate_name+" gate count")
+
+    for path in paths:
+        with open(path + "/run_status_info.json", "r") as f:
+            log_dict = json.load(f)
+        with open(path + "/run_info.json", "r") as f:
+            log_dict_0 = json.load(f)
+        
+        n_block_change = log_dict["n_block_change"]
+        gate_name = "CNOT"
+        n_gate_list = []
+        n_gate_time_list = []
+        for item in n_block_change:
+            n_gate_time_list.append(item[0])
+            n_gate_list.append(item[2][gate_name])
+        end_time = log_dict["evolution_time_list"][-1]
+        n_gate_list = []
+        n_gate_time_list = []
+        n_block_change.append((end_time, None, None))
+        for i in range(len(n_block_change)-1):
+            n_gate_time_list.append(n_block_change[i][0])
+            n_gate_list.append(n_block_change[i][2][gate_name])
+            next_time=n_block_change[i+1][0]
+            if next_time>stop_time:
+                n_gate_time_list.append(stop_time)
+                n_gate_list.append(n_block_change[i][2][gate_name])
+                break
+            n_gate_time_list.append(n_block_change[i+1][0])
+            n_gate_list.append(n_block_change[i][2][gate_name])
+
+        ax.plot(n_gate_time_list, n_gate_list, '-', label="D_cut "+str(log_dict_0["quality_cutoff"]))
+
+        
+        ax.legend(loc='upper right', ncol=2)
+
+    for path in paths:
+        plt.savefig(path+'/n_gate_for_compare.png', bbox_inches='tight')
 
 
 def mkdir(path):
