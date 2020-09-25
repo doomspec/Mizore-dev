@@ -14,10 +14,11 @@ class AmplitudeObjective(Objective):
         get_cost(): generate a Cost object which can be used by optimizers
     """
 
-    def __init__(self, n_qubit, obj_info={}):
+    def __init__(self, n_qubit, final_block=None, obj_info={}):
         self.n_qubit = n_qubit
         self.obj_info = obj_info
-
+        if final_block != None:
+            self.final_block = final_block
         return
 
     def get_cost(self, maximum = False):
