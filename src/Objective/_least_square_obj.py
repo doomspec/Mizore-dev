@@ -12,20 +12,24 @@ class LeastSquareObjective(Objective):
         hamiltonian:
         obj_info: The dict for additional information of the Hamiltonian, e.g. the HF energy and the ground state energy
     Methods:
-        get_cost(): generate a EnergyCost object which can be used by optimizers
+        get_cost(): generate an EnergyCost object which can be used by optimizers
     """
 
-    def __init__(self, function, n_qubit, hamiltonian=None, obj_info={}):
+    def __init__(self, function, n_qubit, hamiltonian=None, init_block=None, obj_info={}):
         
         self.function = function
         self.n_qubit = n_qubit
         self.obj_info = obj_info
-        if hamiltonian = None:
-            self.hamiltonian = init_block
+        if init_block != None:
+            self.init_block = init_block
         else:
+            self.init_block = HartreeFockInitBlock([])
+        if hamiltonian = None:
             self.hamiltonian = QubitOperator()
             for i in range(n_qubit):
             self.hamiltonian += QubitOperator("Z"+str(i))
+        else:
+            self.hamiltonian = hamiltonian
         return
 
     def get_cost(self):

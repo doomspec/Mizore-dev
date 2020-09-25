@@ -65,7 +65,7 @@ def evaluate_ansatz_expectation(parameter, n_qubit, hamiltonian, ansatz):
     """
     Args:
 
-    Returns:
+    Returns: 
 
     """
 
@@ -114,7 +114,7 @@ def get_ansatz_complete_amplitudes(n_qubit, ansatz):
     return raw_amps
 
 
-def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list):
+def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list, parameter=[]):
     """
     Return the amplitudes of the kets in the bit_string_list
     Each bit_string should be a list of booleans like [False]*n_qubit
@@ -126,7 +126,10 @@ def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list):
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
 
     # Apply the circuit
-    ansatz([0] * 100, wavefunction)
+    if len(parameter) == 0:
+        ansatz([0] * 100, wavefunction)
+    else:
+        ansatz(parameter, wavefunction)
 
     # Use the engine to implement the gates
     compiler_engine.flush()
@@ -144,8 +147,8 @@ def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list):
     return amp_list
 
 
-def evaluate_ansatz_0000_amplitudes(n_qubit, ansatz):
-    return evaluate_ansatz_amplitudes(n_qubit, ansatz, [[False] * n_qubit])[0]
+def evaluate_ansatz_0000_amplitudes(n_qubit, ansatz, parameter=None):
+    return evaluate_ansatz_amplitudes(n_qubit, ansatz, [[False] * n_qubit], parameter)[0]
 
 
 def evaluate_ansatz_1DMs(parameter, n_qubit, ansatz):
