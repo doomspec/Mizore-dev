@@ -120,7 +120,8 @@ class GreedyConstructor(CircuitConstructor):
                     self.task_manager.close()
                 is_return = True
             self.add_time_point()
-            save_construction(self, self.save_name)
+            if not self.not_save:
+                save_construction(self, self.save_name)
             if is_return:
                 return self.circuit
         print("Circuit Construction ended as it has iterated enough times!")

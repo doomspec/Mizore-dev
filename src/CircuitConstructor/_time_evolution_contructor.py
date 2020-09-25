@@ -52,7 +52,10 @@ class TimeEvolutionConstructor():
         self.evolution_time_list = []
         self.n_block_change = []
         self.total_time_evolved = 0
-        self.total_time_to_evolve=self.delta_t*self.n_circuit
+
+        self.circuit_list = [self.circuit.duplicate()]
+        self.total_time_evolved = 0
+        self.circuit.save_self_file(self.save_path, "0")
 
         pass
 
@@ -76,14 +79,11 @@ class TimeEvolutionConstructor():
         return self.evolver.do_time_evolution(
                 circuit, self.energy_obj.hamiltonian, time)
 
-    def run(self):
+    def run(self,construct_first=True):
 
-        circuit_list = [self.circuit.duplicate()]
-        construct_needed = True
-        self.total_time_evolved = 0
-        total_time_evolved_list = []
         last_evolved_time = -1
-        self.circuit.save_self_file(self.save_path, "0")
+        total_time_evolved_list = []
+        construct_needed = construct_first # Default to be True
 
         while(True):
 
@@ -121,17 +121,17 @@ class TimeEvolutionConstructor():
             construct_needed = (abs(evolved_time-local_time_to_evolve) >= 1e-10)
             
             if ((not construct_needed) and (self.total_time_evolved > last_evolved_time)):
-                circuit_list.append(new_circuit.duplicate())
+                self.circuit_list.append(new_circuit.duplicate())
                 last_evolved_time = self.total_time_evolved
                 new_circuit.save_self_file(
-                    self.save_path, str(len(circuit_list)-1))
+                    self.save_path, str(len(self.circuit_list)-1))
                 self.save_run_status_info()
                 total_time_evolved_list.append(self.total_time_evolved)
                 print("Circuit added, time list:", total_time_evolved_list)
 
             self.circuit = new_circuit
-            if len(circuit_list) == self.n_circuit+1:
-                return circuit_list
+            if len(self.circuit_list) == self.n_circuit+1:
+                return self.circuit_list
 
     def save_self_info(self):
         """
@@ -153,6 +153,9 @@ class TimeEvolutionConstructor():
         path = self.save_path + "/energy_obj.pickle"
         with open(path, "wb") as f:
             pickle.dump(self.energy_obj, f)
+        path = self.save_path + "/pool.pickle"
+        with open(path, "wb") as f:
+            pickle.dump(self.pool, f)
 
     def get_run_status_info_dict(self):
         log_dict = {}
@@ -165,6 +168,28 @@ class TimeEvolutionConstructor():
         path = self.save_path + "/run_status_info.json"
         with open(path, "w") as f:
             json.dump(self.get_run_status_info_dict(), f)
+
+def resume_run_from_file(path,pool,task_manager,n_circuit):
+
+    with open(path + "/energy_obj.pickle", "rb") as f:
+        energy_obj = pickle.load(f)
+
+    with open(path + "/run_info.json", "r") as f:
+        log_dict = json.load(f)
+    
+    circuit_list=read_circuits_from_file(path)
+    project_name=path.split("/")[-1]
+
+    constructor=TimeEvolutionConstructor(energy_obj,pool,circuit_list[-1],log_dict["project_name"],task_manager,log_dict["is_analytical"],log_dict["n_block_per_iter"],log_dict["quality_cutoff"],None,n_circuit,log_dict["stepsize"],log_dict["delta_t"])
+    constructor.circuit_list=circuit_list
+    constructor.total_time_evolved=(len(circuit_list)-1)*log_dict["delta_t"]
+    old_save_path_split=constructor.save_path.split("/")
+    old_save_path_split[-1]=project_name
+    new_save_path="/".join(old_save_path_split)
+    print(new_save_path)
+    constructor.save_path=new_save_path
+    constructor.run(construct_first=False)
+    
 
 def generate_benchmark_for_compare(circuit_list_list, hamiltonian, delta_t, task_manager=None):
     if task_manager is None:

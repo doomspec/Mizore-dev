@@ -98,18 +98,3 @@ def pauliword2string(pauli):
     for i in pauli:
         string += number2pauli_name[i]
     return string
-
-
-def put_log_item_in_json(path,keyname,value):
-    import pathlib,json
-    pathlib.Path(path).touch()
-    with open(path, "r") as f:
-        raw=f.read()
-    if len(raw)!=0:
-        log_dict = json.loads(raw)
-    else:
-        log_dict=dict()
-    log_dict[keyname]=value
-    with open(path, "w") as f:
-        json.dump(log_dict, f)
-
