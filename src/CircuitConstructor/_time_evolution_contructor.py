@@ -18,7 +18,7 @@ class TimeEvolutionConstructor():
     def __init__(self, energy_obj, pool, init_circuit, project_name="Untitled", task_manager=None, is_analytical=False, n_block_per_iter=1, quality_cutoff=0.0001, diff=1e-4, n_circuit=3, stepsize=1e-3, delta_t=0.1):
 
         self.energy_obj = energy_obj
-        self.n_qubit=energy_obj.n_qubit
+        self.n_qubit = energy_obj.n_qubit
         self.circuit = init_circuit
         self.quality_cutoff = quality_cutoff
         self.pool = pool
@@ -62,28 +62,28 @@ class TimeEvolutionConstructor():
     def get_circuit_constructor(self):
         return self.get_circuit_constructor_by_quality_obj(self.quality_obj)
 
-    def get_circuit_constructor_by_quality_obj(self,quality_obj):
+    def get_circuit_constructor_by_quality_obj(self, quality_obj):
         if self.is_analytical:
             return AnalyticalRTSConstructor(
-                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True)        
+                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True)
         else:
             return NoParameterConstructor(
-                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True)        
+                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True)
 
-    def get_circuit_constructor_by_hamiltonian(self,hamiltonian):
+    def get_circuit_constructor_by_hamiltonian(self, hamiltonian):
         quality_obj = CircuitQualityObjective(self.n_qubit,
-            hamiltonian, self.diff, is_analytical=self.is_analytical)
+                                              hamiltonian, self.diff, is_analytical=self.is_analytical)
         return self.get_circuit_constructor_by_quality_obj(quality_obj)
 
-    def evolve(self,circuit,time):
+    def evolve(self, circuit, time):
         return self.evolver.do_time_evolution(
-                circuit, self.energy_obj.hamiltonian, time)
+            circuit, self.energy_obj.hamiltonian, time)
 
-    def run(self,construct_first=True):
+    def run(self, construct_first=True):
 
         last_evolved_time = -1
         total_time_evolved_list = []
-        construct_needed = construct_first # Default to be True
+        construct_needed = construct_first  # Default to be True
 
         while(True):
 
@@ -107,7 +107,8 @@ class TimeEvolutionConstructor():
 
             print("local_time_to_evolve", local_time_to_evolve)
 
-            new_circuit, evolved_time = self.evolve(new_circuit,local_time_to_evolve)
+            new_circuit, evolved_time = self.evolve(
+                new_circuit, local_time_to_evolve)
 
             self.quality_list = np.append(
                 self.quality_list, self.evolver.quality_list)
@@ -118,8 +119,9 @@ class TimeEvolutionConstructor():
 
             print("Time evolved:", evolved_time)
 
-            construct_needed = (abs(evolved_time-local_time_to_evolve) >= 1e-10)
-            
+            construct_needed = (
+                abs(evolved_time-local_time_to_evolve) >= 1e-10)
+
             if ((not construct_needed) and (self.total_time_evolved > last_evolved_time)):
                 self.circuit_list.append(new_circuit.duplicate())
                 last_evolved_time = self.total_time_evolved
@@ -169,33 +171,42 @@ class TimeEvolutionConstructor():
         with open(path, "w") as f:
             json.dump(self.get_run_status_info_dict(), f)
 
-def resume_run_from_file(path,pool,task_manager,n_circuit):
+
+def resume_run_from_file(path, pool, task_manager, n_circuit):
 
     with open(path + "/energy_obj.pickle", "rb") as f:
         energy_obj = pickle.load(f)
-
     with open(path + "/run_info.json", "r") as f:
         log_dict = json.load(f)
-    
-    circuit_list=read_circuits_from_file(path)
-    project_name=path.split("/")[-1]
+    with open(path + "/run_status_info.json", "r") as f:
+        status_dict = json.load(f)
 
-    constructor=TimeEvolutionConstructor(energy_obj,pool,circuit_list[-1],log_dict["project_name"],task_manager,log_dict["is_analytical"],log_dict["n_block_per_iter"],log_dict["quality_cutoff"],None,n_circuit,log_dict["stepsize"],log_dict["delta_t"])
-    constructor.circuit_list=circuit_list
-    constructor.total_time_evolved=(len(circuit_list)-1)*log_dict["delta_t"]
-    old_save_path_split=constructor.save_path.split("/")
-    old_save_path_split[-1]=project_name
-    new_save_path="/".join(old_save_path_split)
-    print(new_save_path)
-    constructor.save_path=new_save_path
+    circuit_list = read_circuits_from_file(path)
+    project_name = path.split("/")[-1]
+    constructor = TimeEvolutionConstructor(energy_obj, pool, circuit_list[-1], log_dict["project_name"], task_manager, log_dict["is_analytical"],
+                                           log_dict["n_block_per_iter"], log_dict["quality_cutoff"], None, len(circuit_list)+n_circuit, log_dict["stepsize"], log_dict["delta_t"])
+    constructor.circuit_list = circuit_list
+    constructor.total_time_evolved = (len(circuit_list)-1)*log_dict["delta_t"]
+    old_save_path_split = constructor.save_path.split("/")
+    old_save_path_split[-1] = project_name
+    new_save_path = "/".join(old_save_path_split)
+    constructor.save_path = new_save_path
+    print("Resume from circuit:")
+    print(circuit_list[-1])
+    constructor.n_block_change = status_dict["n_block_change"]
+    constructor.quality_list = np.array(status_dict["quality_list"])
+    constructor.evolution_time_list = np.array(
+        status_dict["evolution_time_list"])
+
     constructor.run(construct_first=False)
-    
+
 
 def generate_benchmark_for_compare(circuit_list_list, hamiltonian, delta_t, task_manager=None):
     if task_manager is None:
         return generate_benchmark_for_compare_0(circuit_list_list, hamiltonian, delta_t)
     else:
-        return generate_benchmark_for_compare_parallel(circuit_list_list, hamiltonian, delta_t,task_manager)
+        return generate_benchmark_for_compare_parallel(circuit_list_list, hamiltonian, delta_t, task_manager)
+
 
 def generate_benchmark_for_compare_parallel(circuit_list_list, hamiltonian, delta_t, task_manager):
     from ParallelTaskRunner import InnerProductTask
@@ -207,21 +218,24 @@ def generate_benchmark_for_compare_parallel(circuit_list_list, hamiltonian, delt
         bc.add_block(TimeEvolutionBlock(hamiltonian, init_angle=delta_t*step))
         benchmark_circuits.append(bc)
     fidelity_list_list = []
-    task_series_id="Benchmark"+ str(time.time() % 10000)
+    task_series_id = "Benchmark" + str(time.time() % 10000)
     for i in range(len(circuit_list_list)):
         for step in range(1, list_n_circuit[i]):
-            task_manager.add_task_to_buffer(InnerProductTask(circuit_list_list[i][step],benchmark_circuits[step]),task_series_id=task_series_id)
+            task_manager.add_task_to_buffer(InnerProductTask(
+                circuit_list_list[i][step], benchmark_circuits[step]), task_series_id=task_series_id)
     task_manager.flush()
-    res_list=task_manager.receive_task_result(task_series_id=task_series_id,progress_bar=True)
-    task_index=0
+    res_list = task_manager.receive_task_result(
+        task_series_id=task_series_id, progress_bar=True)
+    task_index = 0
     for i in range(len(circuit_list_list)):
         fidelity_list = [0]*list_n_circuit[i]
         fidelity_list[0] = 1
         for step in range(1, list_n_circuit[i]):
             fidelity_list[step] = abs(res_list[task_index])
-            task_index+=1
+            task_index += 1
         fidelity_list_list.append(fidelity_list)
     return fidelity_list_list
+
 
 def generate_benchmark_for_compare_0(circuit_list_list, hamiltonian, delta_t):
     list_n_circuit = [len(circuit_list) for circuit_list in circuit_list_list]
@@ -242,8 +256,8 @@ def generate_benchmark_for_compare_0(circuit_list_list, hamiltonian, delta_t):
     return fidelity_list_list
 
 
-def generate_benchmark(circuit_list, hamiltonian, delta_t,task_manager=None):
-    return generate_benchmark_for_compare([circuit_list], hamiltonian, delta_t,task_manager=task_manager)[0]
+def generate_benchmark(circuit_list, hamiltonian, delta_t, task_manager=None):
+    return generate_benchmark_for_compare([circuit_list], hamiltonian, delta_t, task_manager=task_manager)[0]
 
 
 def generate_trotter_benchmark_from_file(path, n_trotter_step):
@@ -299,7 +313,7 @@ def generate_benchmark_from_file(path):
     return generate_benchmark(circuit_list, hamiltonian, delta_t)
 
 
-def read_circuits_from_file(path,delta_n=1):
+def read_circuits_from_file(path, delta_n=1):
     circuit_list = []
     circuit_index = 0
     while True:
@@ -311,7 +325,6 @@ def read_circuits_from_file(path,delta_n=1):
         circuit_list.append(step_circuit)
         circuit_index += delta_n
     return circuit_list
-
 
 
 def draw_run_status_figure(path):
@@ -364,21 +377,21 @@ def draw_run_status_figure(path):
     labs = [l.get_label() for l in lns]
     ax.legend(lns, labs, loc='upper right', ncol=2)
 
-    gate_used_lim=max(first_trotter_gate_use,n_gate_list[-1])
-    
+    gate_used_lim = max(first_trotter_gate_use, n_gate_list[-1])
+
     ax2.set_ylim(0, gate_used_lim*1.3)
     ax.set_ylim(0, max(quality_list)*1.4)
     plt.savefig(path+'/run_status.png', bbox_inches='tight')
 
 
-def generate_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None,task_manager=None):
+def generate_benchmark_for_compare_from_paths(paths, delta_n=1, trotter_steps=None, task_manager=None):
     if trotter_steps is None:
-        trotter_steps=[1]
+        trotter_steps = [1]
     label_list = []
     delta_t_list = []
     circuit_list_list = []
     for path in paths:
-        circuit_list = read_circuits_from_file(path,delta_n=delta_n)
+        circuit_list = read_circuits_from_file(path, delta_n=delta_n)
         circuit_list_list.append(circuit_list)
         with open(path + "/run_info.json", "r") as f:
             log_dict = json.load(f)
@@ -386,7 +399,7 @@ def generate_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None
         delta_t_list.append(log_dict["delta_t"])
     delta_t = max(delta_t_list)
     assert delta_t == min(delta_t_list)
-    delta_t=delta_t*delta_n
+    delta_t = delta_t*delta_n
     init_circuit = circuit_list_list[0][0]
     with open(paths[0] + "/energy_obj.pickle", "rb") as f:
         hamiltonian = pickle.load(f).hamiltonian
@@ -400,13 +413,13 @@ def generate_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None
         circuit_list_list.append(trotter_circuits)
         label_list.append("Trotter "+str(n_trotter_step))
     fidelity_list_list = generate_benchmark_for_compare(
-        circuit_list_list, hamiltonian, delta_t,task_manager=task_manager)
+        circuit_list_list, hamiltonian, delta_t, task_manager=task_manager)
     return fidelity_list_list, label_list, delta_t
 
 
-def draw_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None,task_manager=None):
+def draw_benchmark_for_compare_from_paths(paths, delta_n=1, trotter_steps=None, task_manager=None):
     fidelity_list_list, label_list, delta_t = generate_benchmark_for_compare_from_paths(
-        paths,delta_n=delta_n,trotter_steps=trotter_steps,task_manager=task_manager)
+        paths, delta_n=delta_n, trotter_steps=trotter_steps, task_manager=task_manager)
     min_fidelity = 1
 
     import matplotlib
@@ -418,7 +431,8 @@ def draw_benchmark_for_compare_from_paths(paths,delta_n=1,trotter_steps=None,tas
     for i in range(len(fidelity_list_list)):
         fidelity_list = np.array(fidelity_list_list[i])
         x_data = [step*delta_t for step in range(len(fidelity_list))]
-        ax.plot(x_data, (-1*fidelity_list)+1, '-o', label=label_list[i],alpha=0.8)
+        ax.plot(x_data, (-1*fidelity_list)+1, '-o',
+                label=label_list[i], alpha=0.8)
         local_min_fidelity = min(fidelity_list)
         if local_min_fidelity < min_fidelity:
             min_fidelity = local_min_fidelity
@@ -442,9 +456,10 @@ def mkdir(path):
     else:
         return False
 
+
 def get_hamiltoian_in_adiabatic(init_hamiltonian, final_hamiltonian, total_time, time_now):
     final_portion = time_now/total_time
     init_portion = 1-final_portion
-    #print("portion",final_portion)
+    # print("portion",final_portion)
     new_hamiltonian = init_portion*init_hamiltonian+final_portion*final_hamiltonian
     return new_hamiltonian
