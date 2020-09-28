@@ -461,7 +461,8 @@ def draw_n_gate_for_compare_from_paths(paths,stop_time=999999):
     ax.grid()
     ax.set_xlabel("Time")
     ax.set_ylabel(gate_name+" gate count")
-
+    max_n_gate=0
+    min_n_gate=999999
     for path in paths:
         with open(path + "/run_status_info.json", "r") as f:
             log_dict = json.load(f)
@@ -489,11 +490,12 @@ def draw_n_gate_for_compare_from_paths(paths,stop_time=999999):
                 break
             n_gate_time_list.append(n_block_change[i+1][0])
             n_gate_list.append(n_block_change[i][2][gate_name])
-
+        max_n_gate=max(max_n_gate,max(n_gate_list))
+        min_n_gate=min(min_n_gate,n_gate_list[0])
         ax.plot(n_gate_time_list, n_gate_list, '-', label="D_cut "+str(log_dict_0["quality_cutoff"]))
-
         
-        ax.legend(loc='upper right', ncol=2)
+    ax.legend(loc='upper right', ncol=3)
+    ax.set_ylim(min_n_gate*0.9,max_n_gate*1.2)
 
     for path in paths:
         plt.savefig(path+'/n_gate_for_compare.png', bbox_inches='tight')

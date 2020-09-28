@@ -1,7 +1,7 @@
 from .Iterators import iter_qsubset_pauli_of_operator
 from openfermion.ops import QubitOperator
 import numpy as np
-
+import copy
 number2pauli_name = ["I", "X", "Y", "Z"]
 
 
@@ -25,6 +25,15 @@ def get_random_coeff_operator(operator,start,end):
     for pauli_and_coeff in operator.get_operators():
         for string_pauli in pauli_and_coeff.terms:
             new_operator+=random.uniform(start,end)*QubitOperator(string_pauli)
+    return new_operator
+
+def normalize_operator_coeff(operator,average):
+    import random
+    coeff_sum=0
+    for pauli_and_coeff in operator.get_operators():
+        for string_pauli in pauli_and_coeff.terms:
+            coeff_sum+=abs(pauli_and_coeff.terms[string_pauli])
+    new_operator=copy.copy(operator)*(average/coeff_sum)
     return new_operator
 
 def get_operator_qsubset(operator: QubitOperator):

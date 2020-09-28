@@ -114,7 +114,7 @@ def get_ansatz_complete_amplitudes(n_qubit, ansatz):
     return raw_amps
 
 
-def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list, parameter=[]):
+def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list, parameter=None):
     """
     Return the amplitudes of the kets in the bit_string_list
     Each bit_string should be a list of booleans like [False]*n_qubit
@@ -126,8 +126,8 @@ def evaluate_ansatz_amplitudes(n_qubit, ansatz, bit_string_list, parameter=[]):
     wavefunction = compiler_engine.allocate_qureg(n_qubit)
 
     # Apply the circuit
-    if len(parameter) == 0:
-        ansatz([0] * 100, wavefunction)
+    if  parameter is None:
+        ansatz([0] * 150, wavefunction)
     else:
         ansatz(parameter, wavefunction)
 
