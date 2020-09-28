@@ -15,7 +15,7 @@ import numpy as np
 
 class TimeEvolutionConstructor():
 
-    def __init__(self, energy_obj, pool, init_circuit, project_name="Untitled", task_manager=None, is_analytical=False, n_block_per_iter=1, quality_cutoff=0.0001, diff=1e-4, n_circuit=3, stepsize=1e-3, delta_t=0.1, special_save_name = None):
+    def __init__(self, energy_obj, pool, init_circuit, project_name="Untitled", task_manager=None, is_analytical=False, n_block_per_iter=1, quality_cutoff=0.0001, diff=1e-4, n_circuit=3, stepsize=1e-3, delta_t=0.1, special_save_name = None, always_active_blocks=None,n_extra_active_blocks=-1):
 
         self.energy_obj = energy_obj
         self.n_qubit = energy_obj.n_qubit
@@ -31,6 +31,9 @@ class TimeEvolutionConstructor():
             energy_obj.n_qubit, energy_obj.hamiltonian, self.diff, is_analytical=is_analytical)
         self.n_circuit = n_circuit
         self.stepsize = stepsize
+        
+        self.always_active_blocks=always_active_blocks
+        self.n_extra_active_blocks=n_extra_active_blocks
 
         if not is_analytical:
             self.evolver = RealTimeEvolutionOptimizer(random_adjust=0.0,
@@ -68,10 +71,10 @@ class TimeEvolutionConstructor():
     def get_circuit_constructor_by_quality_obj(self, quality_obj):
         if self.is_analytical:
             return AnalyticalRTSConstructor(
-                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True)
+                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True,always_active_blocks=self.always_active_blocks,n_extra_active_blocks=self.n_extra_active_blocks)
         else:
             return NoParameterConstructor(
-                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True)
+                quality_obj, self.pool, task_manager=self.task_manager, terminate_cost=self.quality_cutoff/2, init_circuit=self.circuit, n_block_per_iter=self.n_block_per_iter, not_save=True,always_active_blocks=self.always_active_blocks,n_extra_active_blocks=self.n_extra_active_blocks)
 
     def get_circuit_constructor_by_hamiltonian(self, hamiltonian):
         quality_obj = CircuitQualityObjective(self.n_qubit,
@@ -145,7 +148,7 @@ class TimeEvolutionConstructor():
         mkdir(self.save_path)
 
         name_to_save = ["project_name", "n_block_per_iter",
-                        "quality_cutoff", "is_analytical", "stepsize", "delta_t"]
+                        "quality_cutoff", "is_analytical", "stepsize", "delta_t","always_active_blocks","n_extra_active_blocks"]
         log_dict = {}
         for key in name_to_save:
             log_dict[key] = self.__dict__[key]
@@ -187,7 +190,7 @@ def resume_run_from_file(path, pool, task_manager, n_circuit):
     circuit_list = read_circuits_from_file(path)
     project_name = path.split("/")[-1]
     constructor = TimeEvolutionConstructor(energy_obj, pool, circuit_list[-1], log_dict["project_name"], task_manager, log_dict["is_analytical"],
-                                           log_dict["n_block_per_iter"], log_dict["quality_cutoff"], None, len(circuit_list)+n_circuit, log_dict["stepsize"], log_dict["delta_t"])
+                                           log_dict["n_block_per_iter"], log_dict["quality_cutoff"], None, len(circuit_list)+n_circuit, log_dict["stepsize"], log_dict["delta_t"],log_dict["always_active_blocks",log_dict["n_extra_active_blocks"]])
     constructor.circuit_list = circuit_list
     constructor.total_time_evolved = (len(circuit_list)-1)*log_dict["delta_t"]
     old_save_path_split = constructor.save_path.split("/")
