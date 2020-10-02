@@ -66,8 +66,9 @@ def get_parameter_efficiency(bc: BlockCircuit, state_init='0000'):
         state_j = ''
         for value in state:
             state_j += str(value)
-        """ print(state_j)
-        break """
+
+        print(state_j)
+
         coverage = get_coverage(bc, state_init, state_j)  # list of coverage
         for i, block in enumerate(bc.block_list):
             efficiency[i] += coverage[i] / n_parameter[i]
@@ -99,15 +100,19 @@ state_init = '0000'
 state_j = '1100'
 n_qubit = len(state_init)
 bc = BlockCircuit(n_qubit)
-bc.add_block(SingleParameterMultiRotationEntangler(0.3 * QubitOperator("X" + str(0) + " Y" + str(1))
+bc.add_block(HartreeFockInitBlock([0,1]))
+""" bc.add_block(SingleParameterMultiRotationEntangler(0.3 * QubitOperator("X" + str(0) + " Y" + str(1))
                                                    + 0.5 * QubitOperator("X" + str(1) + " Y" + str(2)),
-                                                   init_angle=[0.5]))
+                                                   init_angle=[0.5])) """
 bc.add_block(RotationEntangler((1, 2, 3), (3, 2, 1)))
 print(bc)
+bc.remove_block(0)
 
-print(get_coverage(bc, state_init, state_j))
 
-# print(get_parameter_efficiency(bc, state_init))
+#print(get_coverage(bc, state_init, state_j))
+
+print(get_parameter_efficiency(bc, state_init))
 
 # energy_obj = make_example_H2()
 # print(output_region(bc,energy_obj,state_init))
+
