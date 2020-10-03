@@ -12,13 +12,28 @@ from Benchmark.MaxCut.util import dec2bin
 from HamiltonianGenerator import make_example_H2
 
 
-def get_gate_efficiency(bc: BlockCircuit, n: int):
-    obj = AmplitudeObjective(n)
-    optimizer = BasinhoppingOptimizer(random_initial=0.1)
-    circuit = BlockCircuit(n)
-    circuit.add_block(bc)
-    return optimizer.run_optimization(circuit, obj.get_cost()), optimizer.run_optimization(circuit,
-                                                                                           obj.get_cost(maximunm=True))
+def get_gate_efficiency(bc: BlockCircuit, state_init='0000'):
+    n_qubit = len(state_init)
+    normalize = 2**n_qubit
+    efficiency = [0.0 for i in range(len(bc.block_list))]
+    n_parameter = []
+
+    for i, block in enumerate(bc.block_list):
+        gates = block.get_gate_used()
+        print(gates)
+        n_parameter.append(2*gates['CNOT']+gates["SingleRotation"])
+
+    for j in range(pow(2, n_qubit)):
+        state = dec2bin(j, n_qubit)
+        state_j = ''
+        for value in state:
+            state_j += str(value)
+
+        coverage = get_coverage(bc, state_init, state_j)  # list of coverage
+        for i, block in enumerate(bc.block_list):
+            efficiency[i] += coverage[i] / (n_parameter[i]*normalize)
+
+    return efficiency
 
 
 def get_coverage(bc: BlockCircuit, state_init='0000', state_j='1111'):
@@ -55,6 +70,7 @@ def get_coverage(bc: BlockCircuit, state_init='0000', state_j='1111'):
 
 def get_parameter_efficiency(bc: BlockCircuit, state_init='0000'):
     n_qubit = len(state_init)
+    normalize = 2**n_qubit
     efficiency = [0.0 for i in range(len(bc.block_list))]
     n_parameter = []
 
@@ -67,11 +83,9 @@ def get_parameter_efficiency(bc: BlockCircuit, state_init='0000'):
         for value in state:
             state_j += str(value)
 
-        print(state_j)
-
         coverage = get_coverage(bc, state_init, state_j)  # list of coverage
         for i, block in enumerate(bc.block_list):
-            efficiency[i] += coverage[i] / n_parameter[i]
+            efficiency[i] += coverage[i] / (n_parameter[i]*normalize)
 
     return efficiency
 
@@ -111,7 +125,7 @@ bc.remove_block(0)
 
 #print(get_coverage(bc, state_init, state_j))
 
-print(get_parameter_efficiency(bc, state_init))
+print(get_gate_efficiency(bc, state_init))
 
 # energy_obj = make_example_H2()
 # print(output_region(bc,energy_obj,state_init))
