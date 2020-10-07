@@ -76,7 +76,6 @@ class OneDMObjective(Objective):
 
 
 from Utilities.CircuitEvaluation import evaluate_ansatz_1DMs
-from Utilities.WaveLocalProperties import get_processed_eigv_for_DM
 
 class OneDMCost(CostFunction):
     def __init__(self, maximum=False, qubit=0, state=0):
@@ -92,7 +91,7 @@ class OneDMCost(CostFunction):
         def obj(parameter):
             OneDM = evaluate_ansatz_1DMs(parameter, pcircuit.n_qubit, pcircuit.ansatz)
             #print(OneDM)
-            probability = get_processed_eigv_for_DM(OneDM[qubit])[state]
+            probability = OneDM[qubit][state][state]
             if self.maximum :
                 coverage = -probability
             else: 
@@ -107,7 +106,7 @@ class OneDMCost(CostFunction):
         qubit = self.qubit
         state = self.state
         OneDM = evaluate_ansatz_1DMs([], pcircuit.n_qubit, pcircuit.ansatz)
-        amp = get_processed_eigv_for_DM(OneDM[qubit])[state]
+        amp = OneDM[qubit][state][state]
         if self.maximum :
             coverage = -amp
         else: 
@@ -139,7 +138,6 @@ class TwoDMObjective(Objective):
 
 
 from Utilities.CircuitEvaluation import evaluate_ansatz_2DMs
-from Utilities.WaveLocalProperties import get_processed_eigv_for_DM
 
 class TwoDMCost(CostFunction):
     def __init__(self, maximum=False, qubit_i=1, qubit_j=0, state=0):
@@ -153,7 +151,7 @@ class TwoDMCost(CostFunction):
         
         def obj(parameter):
             TwoDM = evaluate_ansatz_2DMs(parameter, pcircuit.n_qubit, pcircuit.ansatz)
-            probability = get_processed_eigv_for_DM(TwoDM[self.qubit_i][self.qubit_j])[self.state]
+            probability = TwoDM[self.qubit_i][self.qubit_j][self.state][self.state]
             if self.maximum :
                 coverage = -probability
             else: 
@@ -166,9 +164,9 @@ class TwoDMCost(CostFunction):
     def get_cost_value(self, circuit):
         pcircuit = circuit.get_fixed_parameter_ansatz()
         TwoDM = evaluate_ansatz_2DMs([], pcircuit.n_qubit, pcircuit.ansatz)
-        amp = get_processed_eigv_for_DM(TwoDM[self.qubit_i][self.qubit_j])[self.state]
+        probability = TwoDM[self.qubit_i][self.qubit_j][self.state][self.state]
         if self.maximum :
-            coverage = -amp
+            coverage = -probability
         else: 
-            coverage = amp
+            coverage = probability
         return coverage
