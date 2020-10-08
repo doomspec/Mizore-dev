@@ -50,6 +50,8 @@ def get_gate_efficiency_one(bc: BlockCircuit, state_init='0000'):
         gates = block.get_gate_used()
         print(gates)
         n_parameter.append(2*gates['CNOT']+gates["SingleRotation"])
+        for j in range(i):
+            n_parameter[i] += n_parameter[j]
 
     for qubit in range(n_qubit):
         for state in range(2):
@@ -67,6 +69,8 @@ def get_parameter_efficiency_one(bc: BlockCircuit, state_init='0000'):
 
     for i, block in enumerate(bc.block_list):
         n_parameter.append(block.n_parameter)
+        for j in range(i):
+            n_parameter[i] += n_parameter[j]
 
     for qubit in range(n_qubit):
         for state in range(2):
@@ -118,6 +122,8 @@ def get_gate_efficiency_two(bc: BlockCircuit, state_init='0000'):
         gates = block.get_gate_used()
         print(gates)
         n_parameter.append(2*gates['CNOT']+gates["SingleRotation"])
+        for j in range(i):
+            n_parameter[i] += n_parameter[j]
 
     for qubit in range(n_qubit):
         for j in range(qubit):
@@ -136,6 +142,8 @@ def get_parameter_efficiency_two(bc: BlockCircuit, state_init='0000'):
 
     for i, block in enumerate(bc.block_list):
         n_parameter.append(block.n_parameter)
+        for j in range(i):
+            n_parameter[i] += n_parameter[j]
 
     for qubit in range(n_qubit):
         for j in range(qubit):
@@ -189,6 +197,8 @@ def get_gate_efficiency(bc: BlockCircuit, state_init='0000'):
         gates = block.get_gate_used()
         print(gates)
         n_parameter.append(2*gates['CNOT']+gates["SingleRotation"])
+        for j in range(i):
+            n_parameter[i] += n_parameter[j]
 
     for j in range(pow(2, n_qubit)):
         state = dec2bin(j, n_qubit)
@@ -210,6 +220,8 @@ def get_parameter_efficiency(bc: BlockCircuit, state_init='0000'):
 
     for i, block in enumerate(bc.block_list):
         n_parameter.append(block.n_parameter)
+        for j in range(i):
+            n_parameter[i] += n_parameter[j]
 
     for j in range(pow(2, n_qubit)):
         state = dec2bin(j, n_qubit)
