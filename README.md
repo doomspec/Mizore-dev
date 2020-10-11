@@ -17,9 +17,9 @@ Mizore is an open source effort for providing a *programmer-efficient, *highly-m
 Different from most of the software platform for quantum  computing, Mizore aims to provide a programmer-efficient programming framework to decrease the difficulty for developers from all fields to learn and carry out research on near-term quantum algorithms. Here we present how to start a easiest VQE run by Mizore.
 
 ```python
-from Blocks import BlockCircuit,HardwareEfficientEntangler
-from ParameterOptimizer import BasinhoppingOptimizer
-from HamiltonianGenerator.TestHamiltonian import make_example_H2
+from mizore.Blocks import BlockCircuit,HardwareEfficientEntangler
+from mizore.ParameterOptimizer import BasinhoppingOptimizer
+from mizore.HamiltonianGenerator.TestHamiltonian import make_example_H2
 # Generate the Objective of optimization
 energy_obj=make_example_H2()
 # Construct the parameterized circuit
@@ -70,12 +70,10 @@ openfermion, openfermionpyscf (HiQ Fermion) # Fermion Encoding and Operator oper
 networkx # Network Processing
 infomap # Community detection
 minorminer # Graph Embedding
-dmrgpy # Classical Pre-calculation (Manual install required)
 ```
 
 Notice: 
 1. Mizore does not support Windows now because PySCF is used for Hamiltonian generating.
-2. `install.sh` is for compile the code for a GPU backend. Mizore can be used without running it.
 
 
 ## Authors
