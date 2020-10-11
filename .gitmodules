@@ -1,3 +1,0 @@
-[submodule "src/GPUSimulator/pybind11"]
-	path = src/GPUSimulator/pybind11
-	url = https://github.com/pybind/pybind11.git
