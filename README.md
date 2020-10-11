@@ -7,9 +7,9 @@ This project is still under intensive development and should be used carefully.
 
 Mizore is an open source effort for providing a *programmer-efficient, *highly-modularized* and *high-performance* software platform for *near-term* quantum algorithm developing. Currently, Mizore focus on solving the ground state energy problem with affordable resources requirement for near-term devices. There are three main modules in Mizore.
 
-- [Quantum Subspace Diagonalization](src/SubspaceSolver&Sparse.ipynb)
-- [Adaptive Circuit Construction](src/AdaptiveCircuitConstruction.ipynb)
-- [Correlation Network Analysis](src/CorrelationNetwork.ipynb)
+- [Quantum Subspace Diagonalization](tutorial/SubspaceSolver&Sparse.ipynb)
+- [Adaptive Circuit Construction](tutorial/AdaptiveCircuitConstruction.ipynb)
+- [Correlation Network Analysis](tutorial//CorrelationNetwork.ipynb)
 
 
 ## Basic ideas
@@ -30,7 +30,7 @@ energy,amp=BasinhoppingOptimizer(random_initial=0.1).run_optimization(bc,energy_
 print(energy) #Output: -1.1372838344885012
 ```
 
-Mizore provides intrinsic support to parameterized circuit by `Block` and `BlockCircuit`. The users can easily produce highly flexible parameterized quantum circuit with Mizore. We believe that a detailed introduction note is vital for interdisciplinary researchers. One can start learning Mizore by our interactive notes [BasicConcepts](src/BasicConcepts.ipynb).
+Mizore provides intrinsic support to parameterized circuit by `Block` and `BlockCircuit`. The users can easily produce highly flexible parameterized quantum circuit with Mizore. We believe that a detailed introduction note is vital for interdisciplinary researchers. One can start learning Mizore by our interactive notes [BasicConcepts](tutorial/BasicConcepts.ipynb).
 
 Besides, Mizore also
 
@@ -55,11 +55,11 @@ It is very simple to download Mizore in your computer.
 
 ```shell
 # clone mizore into your local computer
-git clone https://github.com/doomspec/Mizore.git
+git clone https://github.com/DeepsnowTech/Mizore.git
 cd Mizore
 pip3 install -r requirements.txt
 ```
-After installing the dependency, one can directly work under the `Mizore\src` folder.
+After installing the dependency, one should add the path `Mizore/src` to `$PYTHONPATH`.
 
 Here, we list the package required by Mizore. 
 ```shell
