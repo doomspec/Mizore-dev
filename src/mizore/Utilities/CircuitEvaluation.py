@@ -153,3 +153,18 @@ def evaluate_ansatz_1DMs(parameter, n_qubit, ansatz):
     All(Measure) | wavefunction
     compiler_engine.flush()
     return one_DMs
+
+def evaluate_ansatz_2DMs(parameter, n_qubit, ansatz):
+    from Utilities.WaveLocalProperties import get_two_DMs
+    import numpy as np
+    from openfermion.ops import QubitOperator
+    compiler_engine = get_quantum_engine()
+    wavefunction = compiler_engine.allocate_qureg(n_qubit)
+    ansatz(parameter, wavefunction)
+    compiler_engine.flush()
+    two_DMs = get_two_DMs(
+        compiler_engine.backend.get_expectation_value, wavefunction)
+
+    All(Measure) | wavefunction
+    compiler_engine.flush()
+    return two_DMs

@@ -1,0 +1,12 @@
+
+make_example_H2
+Block Num:1; Qubit Num:4
+Block list:
+Type:RotationEntangler; Para Num:1; Qsubset:[0, 1, 2, 3]; Pauli:XYYY
+'parameter_efficiency: [(0.12499999999999996+0j)]
+'gate_efficiency: '[(0.00595238095238095+0j)]
+'parameter_efficiency_one: '[0.9999999999999998]
+'gate_efficiency_one: '[0.04761904761904761]
+'parameter_efficiency_two: '[(0.24999999999999986+0j)]
+'gate_efficiency_two: '[(0.011904761904761897+0j)]
+

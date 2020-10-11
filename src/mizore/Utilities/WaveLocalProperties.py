@@ -31,7 +31,7 @@ def get_one_DMs(get_expectation_value, wavefunction):
     return one_DMs
 
 
-def get_two_density_matrix(get_expectation_value, wavefunction):
+def get_two_DMs(get_expectation_value, wavefunction):
     n_qubit = len(wavefunction)
     two_DMs = np.array([[np.kron(PauliI, PauliI)] * n_qubit] * n_qubit)
     for i in range(0, n_qubit):

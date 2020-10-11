@@ -35,6 +35,10 @@ class BlockCircuit:
             self.block_list.append(copy(block))
             self.active_position_list.append(len(self.block_list) - 1)
 
+    def remove_block(self, position):
+        self.active_position_list.remove(len(self.block_list) - 1)
+        self.block_list.remove(self.block_list[position])
+
     def count_n_parameter_by_position_list(self, position_list):
         n_parameter = 0
         for i in position_list:

@@ -33,13 +33,13 @@ class LeastSquareObjective(Objective):
         return
 
     def get_cost(self):
-        return EnergyCost(self.function, self.hamiltonian)
+        return  LeastSquareCost(self.function, self.hamiltonian)
 
 
 from ..Utilities.CircuitEvaluation import evaluate_ansatz_expectation
 
 
-class EnergyCost(CostFunction):
+class LeastSquareCost(CostFunction):
     def __init__(self, function, hamiltonian):
         self.function = function
         self.hamiltonian = hamiltonian
