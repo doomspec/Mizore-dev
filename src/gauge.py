@@ -1,15 +1,15 @@
 import numpy as np
-
-from Utilities.CircuitEvaluation import get_quantum_engine
 from projectq.ops import All, Measure
-from Blocks import BlockCircuit
-from Blocks import HardwareEfficientEntangler, RotationEntangler, HartreeFockInitBlock, \
-    SingleParameterMultiRotationEntangler
-from ParameterOptimizer import BasinhoppingOptimizer
-from Objective import EnergyObjective, AmplitudeObjective, OneDMObjective, TwoDMObjective
 from openfermion.ops import QubitOperator
-from Benchmark.MaxCut.util import dec2bin
-from HamiltonianGenerator import make_example_H2
+
+from mizore.Utilities.CircuitEvaluation import get_quantum_engine, evaluate_ansatz_1DMs, evaluate_ansatz_2DMs
+from mizore.Blocks import BlockCircuit
+from mizore.Blocks import HardwareEfficientEntangler, RotationEntangler, HartreeFockInitBlock, \
+    SingleParameterMultiRotationEntangler
+from mizore.ParameterOptimizer import BasinhoppingOptimizer
+from mizore.Objective import EnergyObjective, AmplitudeObjective, OneDMObjective, TwoDMObjective
+from mizore.Benchmark.MaxCut.util import dec2bin
+from mizore.HamiltonianGenerator import make_example_H2
 
 def get_coverage_one(bc: BlockCircuit, state_init='0000', qubit=0, state=0):
     n_qubit = len(state_init)
@@ -35,10 +35,43 @@ def get_coverage_one(bc: BlockCircuit, state_init='0000', qubit=0, state=0):
         
         coverage_low, para = optimizer.run_optimization(circuit, obj.get_cost())
         coverage_high, para = optimizer.run_optimization(circuit, obj.get_cost(maximum=True))
-        coverage.append(- coverage_high - coverage_low)
-        print(coverage_high, coverage_low)
+        coverage.append(- np.real(coverage_high) - np.real(coverage_low))
 
     return coverage
+
+def get_full_coverage_one(bc: BlockCircuit, n_qubit):
+    normalize = 2*n_qubit
+    efficiency = [0.0 for i in range(len(bc.block_list))]
+
+    for position, block in enumerate(bc.block_list):
+        coverage_high = [0.0 for i in range(normalize)]
+        coverage_low = [1.0 for i in range(normalize)]
+        for j in range(pow(2, n_qubit)):
+            state_init = dec2bin(j, n_qubit)
+            init_set = [] 
+            for k, value in enumerate(state_init):
+                if value == 1:
+                    init_set.append(k)    
+            
+            init_block = HartreeFockInitBlock(init_set)
+            circuit = BlockCircuit(n_qubit)
+            circuit.add_block(init_block)
+            for l in range(position + 1):
+                circuit.add_block(bc.block_list[l])
+            pcircuit = circuit.get_fixed_parameter_ansatz()
+
+            OneDM = evaluate_ansatz_1DMs([], pcircuit.n_qubit, pcircuit.ansatz)
+            for qubit in range(n_qubit):
+                for state in range(2):
+                    coverage = np.real(OneDM[qubit][state][state]) 
+                    if coverage > coverage_high[2*qubit+state]:
+                        coverage_high[2*qubit+state] = coverage
+                    if coverage < coverage_low[2*qubit+state]:
+                        coverage_low[2*qubit+state] = coverage
+        
+        efficiency[position] = (sum(coverage_high) - sum(coverage_low)) / normalize
+
+    return efficiency
 
 def get_gate_efficiency_one(bc: BlockCircuit, state_init='0000'):
     n_qubit = len(state_init)
@@ -107,10 +140,45 @@ def get_coverage_two(bc: BlockCircuit, state_init='0000', qubit_i=1, qubit_j=0, 
         
         coverage_low, para = optimizer.run_optimization(circuit, obj.get_cost())
         coverage_high, para = optimizer.run_optimization(circuit, obj.get_cost(maximum=True))
-        coverage.append(- coverage_high - coverage_low)
-        print(coverage_high, coverage_low)
+        coverage.append(- np.real(coverage_high) - np.real(coverage_low))
 
     return coverage
+
+def get_full_coverage_two(bc: BlockCircuit, n_qubit):
+    normalize = 2*n_qubit*(n_qubit-1)
+    efficiency = [0.0 for i in range(len(bc.block_list))]
+
+    for position, block in enumerate(bc.block_list):
+        coverage_high = [0.0 for i in range(normalize)]
+        coverage_low = [1.0 for i in range(normalize)]
+        for j in range(pow(2, n_qubit)):
+            state_init = dec2bin(j, n_qubit)
+            init_set = [] 
+            for k, value in enumerate(state_init):
+                if value == 1:
+                    init_set.append(k)    
+            
+            init_block = HartreeFockInitBlock(init_set)
+            circuit = BlockCircuit(n_qubit)
+            circuit.add_block(init_block)
+            for l in range(position + 1):
+                circuit.add_block(bc.block_list[l])
+            pcircuit = circuit.get_fixed_parameter_ansatz()
+
+            TwoDM = evaluate_ansatz_2DMs([], pcircuit.n_qubit, pcircuit.ansatz)
+            count = 0
+            for qubit in range(n_qubit):
+                for i in range(qubit):
+                    for state in range(4):
+                        coverage = np.real(TwoDM[qubit][i][state][state])
+                        if coverage > coverage_high[count]:
+                            coverage_high[count] = coverage
+                        if coverage < coverage_low[count]:
+                            coverage_low[count] = coverage
+                        count += 1
+        efficiency[position] = (sum(coverage_high) - sum(coverage_low)) / normalize
+
+    return efficiency
 
 def get_gate_efficiency_two(bc: BlockCircuit, state_init='0000'):
     n_qubit = len(state_init)
@@ -183,7 +251,7 @@ def get_coverage(bc: BlockCircuit, state_init='0000', state_j='1111'):
 
         coverage_low, para = optimizer.run_optimization(circuit, obj.get_cost())
         coverage_high, para = optimizer.run_optimization(circuit, obj.get_cost(maximum=True))
-        coverage.append(- coverage_high - coverage_low)
+        coverage.append(- np.real(coverage_high) - np.real(coverage_low))
 
     return coverage
 
@@ -255,26 +323,4 @@ def output_region(bc: BlockCircuit, obj, state_init='0000'):
 
     return region
 
-
-state_init = '0000'
-state_j = '1100'
-n_qubit = len(state_init)
-bc = BlockCircuit(n_qubit)
-bc.add_block(HartreeFockInitBlock([0,1]))
-""" bc.add_block(SingleParameterMultiRotationEntangler(0.3 * QubitOperator("X" + str(0) + " Y" + str(1))
-                                                   + 0.5 * QubitOperator("X" + str(1) + " Y" + str(2)),
-                                                   init_angle=[0.5])) """
-#bc.add_block(RotationEntangler((1, 2, 3), (3, 2, 1)))
-bc.add_block(RotationEntangler((0,1), (1,1)))
-bc.add_block(RotationEntangler((1,2), (1,1)))
-print(bc)
-bc.remove_block(0)
-
-
-#print(get_coverage(bc, state_init, state_j))
-
-print(get_parameter_efficiency_two(bc, state_init))
-
-# energy_obj = make_example_H2()
-# print(output_region(bc,energy_obj,state_init))
 

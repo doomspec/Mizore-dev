@@ -155,7 +155,7 @@ def evaluate_ansatz_1DMs(parameter, n_qubit, ansatz):
     return one_DMs
 
 def evaluate_ansatz_2DMs(parameter, n_qubit, ansatz):
-    from Utilities.WaveLocalProperties import get_two_DMs
+    from ..Utilities.WaveLocalProperties import get_two_DMs
     import numpy as np
     from openfermion.ops import QubitOperator
     compiler_engine = get_quantum_engine()

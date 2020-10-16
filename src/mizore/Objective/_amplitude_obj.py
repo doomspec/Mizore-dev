@@ -2,6 +2,7 @@ import numpy as np
 
 from ._objective import Objective, CostFunction
 from ..Blocks import HartreeFockInitBlock
+from ..Utilities.CircuitEvaluation import evaluate_ansatz_0000_amplitudes, evaluate_ansatz_1DMs, evaluate_ansatz_2DMs
 
 class AmplitudeObjective(Objective):
     """
@@ -21,9 +22,6 @@ class AmplitudeObjective(Objective):
 
     def get_cost(self, maximum = False):
         return AmplitudeCost(maximum)
-
-
-from ..Utilities.CircuitEvaluation import evaluate_ansatz_0000_amplitudes
 
 class AmplitudeCost(CostFunction):
     def __init__(self, maximum=False):
@@ -73,9 +71,6 @@ class OneDMObjective(Objective):
 
     def get_cost(self, maximum = False):
         return OneDMCost(maximum, self.qubit, self.state)
-
-
-from Utilities.CircuitEvaluation import evaluate_ansatz_1DMs
 
 class OneDMCost(CostFunction):
     def __init__(self, maximum=False, qubit=0, state=0):
@@ -135,9 +130,6 @@ class TwoDMObjective(Objective):
 
     def get_cost(self, maximum = False):
         return TwoDMCost(maximum, self.qubit_i, self.qubit_j, self.state)
-
-
-from Utilities.CircuitEvaluation import evaluate_ansatz_2DMs
 
 class TwoDMCost(CostFunction):
     def __init__(self, maximum=False, qubit_i=1, qubit_j=0, state=0):
