@@ -55,7 +55,7 @@ print(get_full_coverage_two(bc, 4))
 """ with open('result.txt', 'a', newline='') as f:
     print("\n{}\n{}\nparameter_efficiency: {}\ngate_efficiency: {}\nparameter_efficiency_one: {}\ngate_efficiency_one: {}\nparameter_efficiency_two: {}\ngate_efficiency_two: {}\n".format(
         'make_example_H2', bc, pe, ge, peo, geo, pet, get), file=f) """
-
+constructor.close()
 # Calculate the time used(usually not accurate)
 end = time.time()
 print(end-start)
